@@ -25,4 +25,4 @@ repository:
   description: "Creates and configures an IBM Cloud Databases for MySQL instance"
 
   # Use a comma-separated list of topics to set on the repo (ensure not to use any caps in the topic string).
-  topics: terraform, ibm-cloud, terraform-module, core-team, supported, icd, mysql
+  topics: terraform, ibm-cloud, terraform-module, core-team, supported, icd, mysql, database
