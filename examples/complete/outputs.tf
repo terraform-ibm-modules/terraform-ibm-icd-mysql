@@ -1,23 +1,44 @@
 ##############################################################################
 # Outputs
 ##############################################################################
-
-output "region" {
-  description = "The region all resources were provisioned in"
-  value       = var.region
+output "id" {
+  description = "MySQL instance id"
+  value       = module.mysql_db.id
 }
 
-output "prefix" {
-  description = "The prefix used to name all provisioned resources"
-  value       = var.prefix
+output "guid" {
+  description = "MySQL instance guid"
+  value       = module.mysql_db.guid
 }
 
-output "resource_group_name" {
-  description = "The name of the resource group used"
-  value       = var.resource_group
+output "version" {
+  description = "MySQL instance version"
+  value       = module.mysql_db.version
 }
 
-output "resource_tags" {
-  description = "List of resource tags"
-  value       = var.resource_tags
+output "service_credentials_json" {
+  description = "Service credentials json map"
+  value       = module.mysql_db.service_credentials_json
+  sensitive   = true
+}
+
+output "service_credentials_object" {
+  description = "Service credentials object"
+  value       = module.mysql_db.service_credentials_object
+  sensitive   = true
+}
+
+output "cbr_rule_ids" {
+  description = "CBR rule ids created to restrict MySQL"
+  value       = module.mysql_db.cbr_rule_ids
+}
+
+output "hostname" {
+  description = "MySQL instance hostname"
+  value       = module.mysql_db.hostname
+}
+
+output "port" {
+  description = "MySQL instance port"
+  value       = module.mysql_db.port
 }
