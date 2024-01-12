@@ -1,5 +1,4 @@
-<!-- Update the title -->
-# Terraform Modules Template Project
+# IBM Cloud Databases for MySQL module
 
 <!--
 Update status and "latest release" badges:
