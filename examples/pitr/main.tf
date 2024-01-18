@@ -10,7 +10,7 @@ module "resource_group" {
   existing_resource_group_name = var.resource_group
 }
 
-# New ICD postgresql database instance pointing to a PITR time
+# New ICD mysql database instance pointing to a PITR time
 module "mysql_db_pitr" {
   source            = "../.."
   resource_group_id = module.resource_group.resource_group_id

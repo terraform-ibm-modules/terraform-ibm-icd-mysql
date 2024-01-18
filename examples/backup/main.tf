@@ -26,7 +26,7 @@ data "ibm_database_backups" "backup_database" {
   deployment_id = module.mysql_db[0].id
 }
 
-# New postgresql instance pointing to the backup instance
+# New mysql instance pointing to the backup instance
 module "restored_mysql_db" {
   source            = "../.."
   resource_group_id = module.resource_group.resource_group_id
