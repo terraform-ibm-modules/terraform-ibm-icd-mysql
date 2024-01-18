@@ -87,7 +87,7 @@ func TestRunUpgradeCompleteExample(t *testing.T) {
 		BestRegionYAMLPath: regionSelectionPath,
 		ResourceGroup:      resourceGroup,
 		TerraformVars: map[string]interface{}{
-			"mysql_version": "8.0", // Always lock to the lowest supported Postgres version
+			"mysql_version": "8.0", // Always lock to the lowest supported MySQL version
 			"users": []map[string]interface{}{
 				{
 					"name":     "testuser",
