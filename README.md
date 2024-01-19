@@ -56,7 +56,7 @@ provider "ibm" {
 
 module "mysql_db" {
   source            = "terraform-ibm-modules/icd-mysql/ibm"
-  version           = "latest" # Replace "latest" with a release version to lock into a specific release
+  version           = "X.X.X" # Replace "X.X.X" with a release version to lock into a specific release
   resource_group_id = "xxXXxxXXxXxXXXXxxXxxxXXXXxXXXXX"
   name              = "my-instance"
   region            = "us-south"
