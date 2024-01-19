@@ -6,6 +6,8 @@ This code is a version of the [parent root module](../../) that includes a defau
 
 The default values in this profile were scanned by [IBM Code Risk Analyzer (CRA)](https://cloud.ibm.com/docs/code-risk-analyzer-cli-plugin?topic=code-risk-analyzer-cli-plugin-cra-cli-plugin#terraform-command) for compliance with the IBM Cloud Framework for Financial Services profile that is specified by the IBM Security and Compliance Center.
 
+The IBM Cloud Framework for Financial Services mandates the application of an inbound network-based allowlist in front of the IBM Cloud Databases for (ICD) MySQL instance. You can comply with this requirement by using the cbr_rules variable in the module, which can be used to create a narrow context-based restriction rule that is scoped to the MySQL instance.
+
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ### Requirements
 

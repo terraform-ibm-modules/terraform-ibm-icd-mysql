@@ -1,8 +1,13 @@
 # IBM Cloud Databases for MySQL module
 
-[![Graduated (Supported)](https://img.shields.io/badge/Status-Graduated%20(Supported)-brightgreen)](https://terraform-ibm-modules.github.io/documentation/#/badge-status)
+<!--
+Update status and "latest release" badges:
+  1. For the status options, see https://terraform-ibm-modules.github.io/documentation/#/badge-status
+  2. Update the "latest release" badge to point to the correct module's repo. Replace "terraform-ibm-module-template" in two places.
+-->
+[![Stable (With quality checks)](https://img.shields.io/badge/Status-Stable%20(With%20quality%20checks)-green)](https://terraform-ibm-modules.github.io/documentation/#/badge-status)
+[![latest release](https://img.shields.io/github/v/release/terraform-ibm-modules/terraform-ibm-module-template?logo=GitHub&sort=semver)](https://github.com/terraform-ibm-modules/terraform-ibm-module-template/releases/latest)
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
-[![latest release](https://img.shields.io/github/v/release/terraform-ibm-modules/terraform-ibm-icd-mysql?logo=GitHub&sort=semver)](https://github.com/terraform-ibm-modules/terraform-ibm-icd-mysql/releases/latest)
 [![Renovate enabled](https://img.shields.io/badge/renovate-enabled-brightgreen.svg)](https://renovatebot.com/)
 [![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release)
 
@@ -10,7 +15,36 @@ This module implements an instance of the IBM Cloud Databases for MySQL service.
 
 :exclamation: The module does not support major version upgrades or updates to encryption and backup encryption keys. To upgrade the version, create another instance of Databases for MySQL with the updated version and follow the steps in [Upgrading MySQL docs](https://cloud.ibm.com/docs/databases-for-mysql?topic=databases-for-mysql-mysql-upgrading) in the IBM Cloud Docs.
 
-## Usage
+
+<!-- Below content is automatically populated via pre-commit hook -->
+<!-- BEGIN OVERVIEW HOOK -->
+## Overview
+* [terraform-ibm-icd-mysql](#terraform-ibm-icd-mysql)
+* [Submodules](./modules)
+    * [fscloud](./modules/fscloud)
+* [Examples](./examples)
+    * [Basic with read-only replica example](./examples/basic)
+    * [Complete example with BYOK encryption, CBR rules and VPE creation](./examples/complete)
+    * [Financial Services Cloud profile example with autoscaling enabled](./examples/fscloud)
+    * [Point in time recovery example (PITR)](./examples/pitr)
+    * [Restore from backup example](./examples/backup)
+* [Contributing](#contributing)
+<!-- END OVERVIEW HOOK -->
+
+
+<!--
+If this repo contains any reference architectures, uncomment the heading below and links to them.
+(Usually in the `/reference-architectures` directory.)
+See "Reference architecture" in Authoring Guidelines in the public documentation at
+https://terraform-ibm-modules.github.io/documentation/#/implementation-guidelines?id=reference-architecture
+-->
+<!-- ## Reference architectures -->
+
+
+<!-- This heading should always match the name of the root level module (aka the repo name) -->
+## terraform-ibm-icd-mysql
+
+### Usage
 
 IBM Cloud Databases supports only Key Protect encryption for backups, not Hyper Protect Crypto Services. If you enable key management encryption and no value is passed for 'backup_encryption_key_crn', the value of 'kms_key_crn' is used. And if a HPCS value is set for `kms_key_crn`, the database backup encryption uses the default encryption keys. For more information, see [Hyper Protect Crypto Services Integration](https://cloud.ibm.com/docs/cloud-databases?topic=cloud-databases-hpcs) in the IBM Cloud Docs.
 
@@ -29,7 +63,7 @@ module "mysql_db" {
 }
 ```
 
-## Required IAM access policies
+### Required IAM access policies
 
 You need the following permissions to run this module.
 
@@ -43,22 +77,15 @@ To attach access management tags to resources in this module, you need the follo
     - **Tagging** service
         - `Administrator` platform access
 
-<!-- BEGIN EXAMPLES HOOK -->
-## Examples
 
-- [ Restore from backup example](examples/backup)
-- [ Basic with read-only replica example](examples/basic)
-- [ Complete example with BYOK encryption, CBR rules and VPE creation](examples/complete)
-- [ Financial Services Cloud profile example with autoscaling enabled](examples/fscloud)
-- [ Point in time recovery example (PITR)](examples/pitr)
-<!-- END EXAMPLES HOOK -->
+<!-- Below content is automatically populated via pre-commit hook -->
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ### Requirements
 
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.3.0, <1.6.0 |
-| <a name="requirement_ibm"></a> [ibm](#requirement\_ibm) | >= 1.56.1, < 2.0.0 |
+| <a name="requirement_ibm"></a> [ibm](#requirement\_ibm) | >= 1.61.0, < 2.0.0 |
 | <a name="requirement_time"></a> [time](#requirement\_time) | >= 0.9.1 |
 
 ### Modules
@@ -124,7 +151,6 @@ To attach access management tags to resources in this module, you need the follo
 | <a name="output_service_credentials_object"></a> [service\_credentials\_object](#output\_service\_credentials\_object) | Service credentials object |
 | <a name="output_version"></a> [version](#output\_version) | MySQL instance version |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
-<!-- BEGIN CONTRIBUTING HOOK -->
 
 <!-- Leave this section as is so that your module has a link to local development environment set up steps for contributors to follow -->
 ## Contributing
@@ -132,5 +158,3 @@ To attach access management tags to resources in this module, you need the follo
 You can report issues and request features for this module in GitHub issues in the module repo. See [Report an issue or request a feature](https://github.com/terraform-ibm-modules/.github/blob/main/.github/SUPPORT.md).
 
 To set up your local development environment, see [Local development setup](https://terraform-ibm-modules.github.io/documentation/#/local-dev-setup) in the project documentation.
-<!-- Source for this readme file: https://github.com/terraform-ibm-modules/common-dev-assets/tree/main/module-assets/ci/module-template-automation -->
-<!-- END CONTRIBUTING HOOK -->
