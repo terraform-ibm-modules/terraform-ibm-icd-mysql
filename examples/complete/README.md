@@ -1,4 +1,12 @@
-# Complete example
+# Complete example with BYOK encryption, CBR rules and VPE creation
 
-<!-- There is a pre-commit hook that will take the title of each example add include it in the repos main README.md  -->
-<!-- Add text below should describe exactly what resources are provisioned / configured by the example  -->
+An end-to-end example that does the following:
+
+- Create a new resource group if one is not passed in.
+- Create Key Protect instance with root key.
+- Create a new ICD MySQL database instance with BYOK encryption.
+- Set 250 max connection for ICD MySQL database instance.
+- Create service credentials for the database instance.
+- Create a Virtual Private Cloud (VPC).
+- Create Context Based Restriction (CBR) to only allow MySQL to be accessible from the VPC.
+- Create a security group and a VPE for the MySQL instance.

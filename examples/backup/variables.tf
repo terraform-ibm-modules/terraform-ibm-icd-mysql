@@ -13,11 +13,11 @@ variable "region" {
 variable "prefix" {
   type        = string
   description = "Prefix to append to all resources created by this example"
-  default     = "mysql"
+  default     = "mysql-res"
 }
 
 variable "mysql_version" {
-  description = "Version of the mysql instance. If no value passed, the current ICD preferred version is used."
+  description = "Version of the MySQL instance. If no value passed, the current ICD preferred version is used."
   type        = string
   default     = null
 }
@@ -40,15 +40,8 @@ variable "access_tags" {
   default     = []
 }
 
-variable "read_only_replicas_count" {
-  type        = number
-  description = "Number of read-only replicas per leader"
-  default     = 1
-  validation {
-    condition = alltrue([
-      var.read_only_replicas_count >= 1,
-      var.read_only_replicas_count <= 5
-    ])
-    error_message = "There is a limit of five read-only replicas per leader"
-  }
+variable "mysql_db_backup_crn" {
+  type        = string
+  description = "The existing CRN of a backup resource to restore from. If null then it will create a new instance first and then create another instance pointing to the backup of the first instance."
+  default     = null
 }
