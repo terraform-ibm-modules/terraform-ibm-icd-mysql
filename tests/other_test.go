@@ -2,6 +2,7 @@
 package test
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -27,13 +28,6 @@ func TestRunRestoredDBExample(t *testing.T) {
 	assert.NotNil(t, output, "Expected some output")
 }
 
-/************************************************
-TO-DO: set up a permanent mysql with point-in-time
-This extra test can be enabled only after a permanent mysql is set up in test account
-and info is added to the resources yaml.
-NOTE: double check key values of permanentResources references
-*************************************************/
-/*
 func TestRunPointInTimeRecoveryDBExample(t *testing.T) {
 	t.Parallel()
 
@@ -44,10 +38,10 @@ func TestRunPointInTimeRecoveryDBExample(t *testing.T) {
 		ResourceGroup: resourceGroup,
 		Region:        fmt.Sprint(permanentResources["mysqlPITRRegion"]),
 		TerraformVars: map[string]interface{}{
-			"pitr_id":    permanentResources["mysqlPITRCrn"],
-			"pitr_time":  " ",
+			"pitr_id":       permanentResources["mysqlPITRCrn"],
+			"pitr_time":     " ",
 			"mysql_version": permanentResources["mysqlPITRVersion"],
-			"members":    "3", // Lock members to 3 as the permanent mysql instances has 3 members
+			"members":       "3", // Lock members to 3 as the permanent mysql instances has 3 members
 		},
 	})
 
@@ -55,7 +49,6 @@ func TestRunPointInTimeRecoveryDBExample(t *testing.T) {
 	assert.Nil(t, err, "This should not have errored")
 	assert.NotNil(t, output, "Expected some output")
 }
-*/
 
 func TestRunBasicExample(t *testing.T) {
 	t.Parallel()
