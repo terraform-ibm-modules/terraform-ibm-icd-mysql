@@ -21,6 +21,10 @@ func TestRunRestoredDBExample(t *testing.T) {
 		TerraformVars: map[string]interface{}{
 			"mysql_version": "8.0",
 		},
+		ImplicitDestroy: []string{
+			"module.mysql_db.time_sleep.wait_for_authorization_policy",
+			"module.restored_mysql_db.time_sleep.wait_for_authorization_policy",
+		},
 	})
 
 	output, err := options.RunTestConsistency()
@@ -41,7 +45,9 @@ func TestRunPointInTimeRecoveryDBExample(t *testing.T) {
 			"pitr_id":       permanentResources["mysqlPITRCrn"],
 			"pitr_time":     " ",
 			"mysql_version": permanentResources["mysqlPITRVersion"],
-			"members":       "3", // Lock members to 3 as the permanent mysql instances has 3 members
+		},
+		ImplicitDestroy: []string{
+			"module.mysql_db_pitr.time_sleep.wait_for_authorization_policy",
 		},
 	})
 
@@ -61,6 +67,10 @@ func TestRunBasicExample(t *testing.T) {
 		ResourceGroup:      resourceGroup,
 		TerraformVars: map[string]interface{}{
 			"mysql_version": "8.0",
+		},
+		ImplicitDestroy: []string{
+			"module.mysql_db.time_sleep.wait_for_authorization_policy",
+			"module.read_only_replica_mysql_db[0].time_sleep.wait_for_authorization_policy",
 		},
 	})
 
