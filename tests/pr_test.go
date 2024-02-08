@@ -15,7 +15,7 @@ import (
 )
 
 // Use existing resource group
-const resourceGroup = "geretain-test-resources"
+const resourceGroup = "geretain-test-mysql"
 
 // Restricting due to limited availability of BYOK in certain regions
 const regionSelectionPath = "../common-dev-assets/common-go-assets/icd-region-prefs.yaml"
