@@ -15,7 +15,7 @@ import (
 )
 
 // Use existing resource group
-const resourceGroup = "geretain-test-resources"
+const resourceGroup = "geretain-test-mysql"
 
 // Restricting due to limited availability of BYOK in certain regions
 const regionSelectionPath = "../common-dev-assets/common-go-assets/icd-region-prefs.yaml"
@@ -58,6 +58,9 @@ func TestRunFSCloudExample(t *testing.T) {
 			"kms_key_crn":                permanentResources["hpcs_south_root_key_crn"],
 			"mysql_version":              "8.0", // Always lock this test into the latest supported mysql version
 		},
+		ImplicitDestroy: []string{
+			"module.mysql_db.time_sleep.wait_for_authorization_policy",
+		},
 	})
 	options.SkipTestTearDown = true
 	output, err := options.RunTestConsistency()
@@ -96,6 +99,9 @@ func TestRunUpgradeCompleteExample(t *testing.T) {
 				},
 			},
 			"admin_pass": randomPass,
+		},
+		ImplicitDestroy: []string{
+			"module.mysql_db.time_sleep.wait_for_authorization_policy",
 		},
 	})
 

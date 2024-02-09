@@ -2,6 +2,7 @@
 package test
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -20,6 +21,10 @@ func TestRunRestoredDBExample(t *testing.T) {
 		TerraformVars: map[string]interface{}{
 			"mysql_version": "8.0",
 		},
+		ImplicitDestroy: []string{
+			"module.mysql_db.time_sleep.wait_for_authorization_policy",
+			"module.restored_mysql_db.time_sleep.wait_for_authorization_policy",
+		},
 	})
 
 	output, err := options.RunTestConsistency()
@@ -27,13 +32,6 @@ func TestRunRestoredDBExample(t *testing.T) {
 	assert.NotNil(t, output, "Expected some output")
 }
 
-/************************************************
-TO-DO: set up a permanent mysql with point-in-time
-This extra test can be enabled only after a permanent mysql is set up in test account
-and info is added to the resources yaml.
-NOTE: double check key values of permanentResources references
-*************************************************/
-/*
 func TestRunPointInTimeRecoveryDBExample(t *testing.T) {
 	t.Parallel()
 
@@ -44,10 +42,12 @@ func TestRunPointInTimeRecoveryDBExample(t *testing.T) {
 		ResourceGroup: resourceGroup,
 		Region:        fmt.Sprint(permanentResources["mysqlPITRRegion"]),
 		TerraformVars: map[string]interface{}{
-			"pitr_id":    permanentResources["mysqlPITRCrn"],
-			"pitr_time":  " ",
+			"pitr_id":       permanentResources["mysqlPITRCrn"],
+			"pitr_time":     " ",
 			"mysql_version": permanentResources["mysqlPITRVersion"],
-			"members":    "3", // Lock members to 3 as the permanent mysql instances has 3 members
+		},
+		ImplicitDestroy: []string{
+			"module.mysql_db_pitr.time_sleep.wait_for_authorization_policy",
 		},
 	})
 
@@ -55,7 +55,6 @@ func TestRunPointInTimeRecoveryDBExample(t *testing.T) {
 	assert.Nil(t, err, "This should not have errored")
 	assert.NotNil(t, output, "Expected some output")
 }
-*/
 
 func TestRunBasicExample(t *testing.T) {
 	t.Parallel()
@@ -68,6 +67,10 @@ func TestRunBasicExample(t *testing.T) {
 		ResourceGroup:      resourceGroup,
 		TerraformVars: map[string]interface{}{
 			"mysql_version": "8.0",
+		},
+		ImplicitDestroy: []string{
+			"module.mysql_db.time_sleep.wait_for_authorization_policy",
+			"module.read_only_replica_mysql_db[0].time_sleep.wait_for_authorization_policy",
 		},
 	})
 
