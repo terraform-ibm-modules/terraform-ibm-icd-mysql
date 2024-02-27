@@ -25,6 +25,7 @@ func TestRunRestoredDBExample(t *testing.T) {
 			"module.mysql_db.time_sleep.wait_for_authorization_policy",
 			"module.restored_mysql_db.time_sleep.wait_for_authorization_policy",
 		},
+		CloudInfoService: sharedInfoSvc,
 	})
 
 	output, err := options.RunTestConsistency()
@@ -49,6 +50,7 @@ func TestRunPointInTimeRecoveryDBExample(t *testing.T) {
 		ImplicitDestroy: []string{
 			"module.mysql_db_pitr.time_sleep.wait_for_authorization_policy",
 		},
+		CloudInfoService: sharedInfoSvc,
 	})
 
 	output, err := options.RunTestConsistency()
@@ -72,9 +74,36 @@ func TestRunBasicExample(t *testing.T) {
 			"module.mysql_db.time_sleep.wait_for_authorization_policy",
 			"module.read_only_replica_mysql_db[0].time_sleep.wait_for_authorization_policy",
 		},
+		CloudInfoService: sharedInfoSvc,
 	})
 
 	output, err := options.RunTestConsistency()
 	assert.Nil(t, err, "This should not have errored")
 	assert.NotNil(t, output, "Expected some output")
+}
+
+func testPlanICDVersions(t *testing.T, version string) {
+	t.Parallel()
+
+	options := testhelper.TestOptionsDefaultWithVars(&testhelper.TestOptions{
+		Testing:      t,
+		TerraformDir: "examples/basic",
+		TerraformVars: map[string]interface{}{
+			"mysql_version": version,
+		},
+		CloudInfoService: sharedInfoSvc,
+	})
+	output, err := options.RunTestPlan()
+	assert.Nil(t, err, "This should not have errored")
+	assert.NotNil(t, output, "Expected some output")
+}
+
+func TestPlanICDVersions(t *testing.T) {
+	t.Parallel()
+
+	// This test will run a terraform plan on available stable versions of mysql
+	versions, _ := sharedInfoSvc.GetAvailableIcdVersions("mysql")
+	for _, version := range versions {
+		t.Run(version, func(t *testing.T) { testPlanICDVersions(t, version) })
+	}
 }
