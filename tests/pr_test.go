@@ -10,6 +10,7 @@ import (
 
 	"github.com/gruntwork-io/terratest/modules/terraform"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"github.com/terraform-ibm-modules/ibmcloud-terratest-wrapper/cloudinfo"
 	"github.com/terraform-ibm-modules/ibmcloud-terratest-wrapper/common"
 	"github.com/terraform-ibm-modules/ibmcloud-terratest-wrapper/testhelper"
@@ -85,7 +86,9 @@ func TestRunUpgradeCompleteExample(t *testing.T) {
 
 	// Generate a 15 char long random string for the admin_pass
 	randomBytes := make([]byte, 13)
-	rand.Read(randomBytes)
+	_, randErr := rand.Read(randomBytes)
+	require.Nil(t, randErr) // do not proceed if we can't gen a random password
+
 	randomPass := "A1" + base64.URLEncoding.EncodeToString(randomBytes)[:13]
 
 	options := testhelper.TestOptionsDefaultWithVars(&testhelper.TestOptions{
