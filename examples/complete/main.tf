@@ -4,7 +4,7 @@
 
 module "resource_group" {
   source  = "terraform-ibm-modules/resource-group/ibm"
-  version = "1.1.4"
+  version = "1.1.5"
   # if an existing resource group is not set (null) create a new one using prefix
   resource_group_name          = var.resource_group == null ? "${var.prefix}-resource-group" : null
   existing_resource_group_name = var.resource_group
@@ -16,14 +16,20 @@ module "resource_group" {
 
 module "key_protect_all_inclusive" {
   source            = "terraform-ibm-modules/key-protect-all-inclusive/ibm"
-  version           = "4.4.2"
+  version           = "4.8.2"
   resource_group_id = module.resource_group.resource_group_id
   # Note: Database instance and Key Protect must be created in the same region when using BYOK
   # See https://cloud.ibm.com/docs/cloud-databases?topic=cloud-databases-key-protect&interface=ui#key-byok
   region                    = var.region
   key_protect_instance_name = "${var.prefix}-kp"
   resource_tags             = var.resource_tags
-  key_map                   = { "icd-mysql" = ["${var.prefix}-my"] }
+  keys = [
+    { key_ring_name = "icd-mysql"
+      keys = [
+        { key_name = "${var.prefix}-my" }
+      ]
+    }
+  ]
 }
 
 ##############################################################################
@@ -39,7 +45,7 @@ data "ibm_iam_account_settings" "iam_account_settings" {
 
 module "vpc" {
   source            = "terraform-ibm-modules/landing-zone-vpc/ibm"
-  version           = "7.13.2"
+  version           = "7.17.1"
   resource_group_id = module.resource_group.resource_group_id
   region            = var.region
   prefix            = var.prefix
@@ -68,7 +74,7 @@ resource "time_sleep" "wait_30_seconds" {
 
 module "cbr_zone" {
   source           = "terraform-ibm-modules/cbr/ibm//modules/cbr-zone-module"
-  version          = "1.17.1"
+  version          = "1.19.1"
   name             = "${var.prefix}-VPC-network-zone"
   zone_description = "CBR Network zone representing VPC"
   account_id       = data.ibm_iam_account_settings.iam_account_settings.account_id
@@ -92,7 +98,7 @@ module "mysql_db" {
   users                      = var.users
   kms_encryption_enabled     = true
   kms_key_crn                = module.key_protect_all_inclusive.keys["icd-mysql.${var.prefix}-my"].crn
-  existing_kms_instance_guid = module.key_protect_all_inclusive.key_protect_guid
+  existing_kms_instance_guid = module.key_protect_all_inclusive.kms_guid
   resource_tags              = var.resource_tags
   service_credential_names   = var.service_credential_names
   access_tags                = var.access_tags
@@ -131,7 +137,7 @@ resource "time_sleep" "wait_120_seconds" {
 
 module "vpe" {
   source  = "terraform-ibm-modules/vpe-gateway/ibm"
-  version = "4.1.0"
+  version = "4.1.1"
   prefix  = "vpe-to-my"
   cloud_service_by_crn = [
     {
