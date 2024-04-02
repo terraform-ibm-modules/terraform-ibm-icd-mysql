@@ -218,7 +218,7 @@ locals {
 }
 
 data "ibm_database_connection" "database_connection" {
-  endpoint_type = var.service_endpoints
+  endpoint_type = var.service_endpoints == "public-and-private" ? "public" : var.service_endpoints
   deployment_id = ibm_database.mysql_db.id
   user_id       = ibm_database.mysql_db.adminuser
   user_type     = "database"
