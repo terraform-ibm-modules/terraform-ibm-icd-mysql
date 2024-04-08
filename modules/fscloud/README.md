@@ -59,8 +59,8 @@ No resources.
 | <a name="output_certificate_base64"></a> [certificate\_base64](#output\_certificate\_base64) | Database connection certificate |
 | <a name="output_crn"></a> [crn](#output\_crn) | MySQL instance crn |
 | <a name="output_guid"></a> [guid](#output\_guid) | MySQL instance guid |
-| <a name="output_hostname"></a> [hostname](#output\_hostname) | MySQL instance hostname |
+| <a name="output_hostname"></a> [hostname](#output\_hostname) | Database connection hostname |
 | <a name="output_id"></a> [id](#output\_id) | MySQL instance id |
-| <a name="output_port"></a> [port](#output\_port) | MySQL instance port |
+| <a name="output_port"></a> [port](#output\_port) | Database connection port |
 | <a name="output_version"></a> [version](#output\_version) | MySQL instance version |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->

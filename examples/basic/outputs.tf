@@ -17,17 +17,17 @@ output "adminuser" {
 }
 
 output "hostname" {
-  description = "Database hostname"
+  description = "Database connection hostname"
   value       = module.mysql_db.hostname
 }
 
 output "port" {
-  description = "Database port"
+  description = "Database connection port"
   value       = module.mysql_db.port
 }
 
 output "certificate_base64" {
-  description = "Database port"
+  description = "Database connection certificate"
   value       = module.mysql_db.certificate_base64
   sensitive   = true
 }
