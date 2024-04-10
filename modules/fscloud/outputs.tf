@@ -28,12 +28,12 @@ output "adminuser" {
 }
 
 output "hostname" {
-  description = "MySQL instance hostname"
+  description = "Database connection hostname"
   value       = module.mysql_db.hostname
 }
 
 output "port" {
-  description = "MySQL instance port"
+  description = "Database connection port"
   value       = module.mysql_db.port
 }
 
