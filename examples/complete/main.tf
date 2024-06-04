@@ -24,12 +24,12 @@ module "key_protect_all_inclusive" {
   key_protect_instance_name = "${var.prefix}-kp"
   resource_tags             = var.resource_tags
   keys = [
-    { 
+    {
       key_ring_name         = "icd-mysql"
       force_delete_key_ring = true
       keys = [
-        { 
-          key_name     = "${var.prefix}-my" 
+        {
+          key_name     = "${var.prefix}-my"
           force_delete = true
         }
       ]
