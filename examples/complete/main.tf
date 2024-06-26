@@ -107,6 +107,7 @@ module "mysql_db" {
   resource_tags              = var.resource_tags
   service_credential_names   = var.service_credential_names
   access_tags                = var.access_tags
+  member_host_flavor         = "multitenant"
   configuration = {
     max_connections = 250
   }
