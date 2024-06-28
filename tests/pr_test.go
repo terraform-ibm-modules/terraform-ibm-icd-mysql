@@ -64,7 +64,7 @@ func TestRunFSCloudExample(t *testing.T) {
 			"mysql_version":              "8.0", // Always lock this test into the latest supported mysql version
 		},
 		ImplicitDestroy: []string{
-			"module.mysql_db.time_sleep.wait_for_authorization_policy",
+			"module.mysql_db.module.mysql_db.time_sleep.wait_for_authorization_policy",
 		},
 		CloudInfoService: sharedInfoSvc,
 	})
