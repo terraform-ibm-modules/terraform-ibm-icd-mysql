@@ -12,13 +12,14 @@ module "resource_group" {
 
 # New ICD mysql database instance pointing to a PITR time
 module "mysql_db_pitr" {
-  source            = "../.."
-  resource_group_id = module.resource_group.resource_group_id
-  name              = "${var.prefix}-mysql-pitr"
-  region            = var.region
-  resource_tags     = var.resource_tags
-  access_tags       = var.access_tags
-  mysql_version     = var.mysql_version
-  pitr_id           = var.pitr_id
-  pitr_time         = var.pitr_time == "" ? " " : var.pitr_time
+  source             = "../.."
+  resource_group_id  = module.resource_group.resource_group_id
+  name               = "${var.prefix}-mysql-pitr"
+  region             = var.region
+  resource_tags      = var.resource_tags
+  access_tags        = var.access_tags
+  mysql_version      = var.mysql_version
+  pitr_id            = var.pitr_id
+  pitr_time          = var.pitr_time == "" ? " " : var.pitr_time
+  member_host_flavor = "multitenant"
 }

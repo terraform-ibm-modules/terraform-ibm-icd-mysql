@@ -11,14 +11,15 @@ module "resource_group" {
 }
 
 module "mysql_db" {
-  count             = var.mysql_db_backup_crn != null ? 0 : 1
-  source            = "../.."
-  resource_group_id = module.resource_group.resource_group_id
-  name              = "${var.prefix}-mysql"
-  mysql_version     = var.mysql_version
-  region            = var.region
-  resource_tags     = var.resource_tags
-  access_tags       = var.access_tags
+  count              = var.mysql_db_backup_crn != null ? 0 : 1
+  source             = "../.."
+  resource_group_id  = module.resource_group.resource_group_id
+  name               = "${var.prefix}-mysql"
+  mysql_version      = var.mysql_version
+  region             = var.region
+  resource_tags      = var.resource_tags
+  access_tags        = var.access_tags
+  member_host_flavor = "multitenant"
 }
 
 data "ibm_database_backups" "backup_database" {
@@ -28,12 +29,13 @@ data "ibm_database_backups" "backup_database" {
 
 # New mysql instance pointing to the backup instance
 module "restored_mysql_db" {
-  source            = "../.."
-  resource_group_id = module.resource_group.resource_group_id
-  name              = "${var.prefix}-mysql-restored"
-  mysql_version     = var.mysql_version
-  region            = var.region
-  resource_tags     = var.resource_tags
-  access_tags       = var.access_tags
-  backup_crn        = var.mysql_db_backup_crn == null ? data.ibm_database_backups.backup_database[0].backups[0].backup_id : var.mysql_db_backup_crn
+  source             = "../.."
+  resource_group_id  = module.resource_group.resource_group_id
+  name               = "${var.prefix}-mysql-restored"
+  mysql_version      = var.mysql_version
+  region             = var.region
+  resource_tags      = var.resource_tags
+  access_tags        = var.access_tags
+  member_host_flavor = "multitenant"
+  backup_crn         = var.mysql_db_backup_crn == null ? data.ibm_database_backups.backup_database[0].backups[0].backup_id : var.mysql_db_backup_crn
 }
