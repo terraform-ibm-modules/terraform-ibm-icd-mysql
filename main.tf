@@ -82,26 +82,6 @@ resource "ibm_database" "mysql_db" {
     }
   }
 
-  #group {
-  #  group_id = "member" # Only member type is allowed for mysql
-  #  memory {
-  #    allocation_mb = var.member_memory_mb
-  #  }
-  #  disk {
-  #    allocation_mb = var.member_disk_mb
-  #  }
-  #  cpu {
-  #    allocation_count = var.member_cpu_count
-  #  }
-  #  dynamic "members" {
-  #    for_each = var.remote_leader_crn == null ? [1] : []
-  #    content {
-  #      allocation_count = var.members
-  #    }
-  #  }
-  #}
-
-
   ## This for_each block is NOT a loop to attach to multiple group blocks.
   ## This is used to conditionally add one, OR, the other group block depending on var.local.host_flavor_set
   ## This block is for if host_flavor IS set to specific pre-defined host sizes and not set to "multitenant"
