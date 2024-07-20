@@ -143,7 +143,7 @@ resource "time_sleep" "wait_120_seconds" {
 
 module "vpe" {
   source  = "terraform-ibm-modules/vpe-gateway/ibm"
-  version = "4.2.0"
+  version = "4.3.0"
   prefix  = "vpe-to-my"
   cloud_service_by_crn = [
     {
