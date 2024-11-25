@@ -139,7 +139,7 @@ resource "ibm_database" "mysql_db" {
 
   ## This block is for if host_flavor IS NOT set
   dynamic "group" {
-    for_each = local.host_flavor_set && !local.recovery_mode ? [] : [1]
+    for_each = !local.host_flavor_set && !local.recovery_mode ? [1] : []
     content {
       group_id = "member" # Only member type is allowed for IBM Cloud Databases
       memory {
