@@ -52,7 +52,7 @@ module "read_only_replica_mysql_db" {
   access_tags       = var.access_tags
   mysql_version     = var.mysql_version
   remote_leader_crn = module.mysql_db.crn
-  member_memory_mb  = 2304  # Must be an increment of 384 megabytes. The minimum size of a read-only replica is 2 GB RAM
-  member_disk_mb    = 20480 # Must be an increment of 512 megabytes. The minimum size of a read-only replica is 20 GB of disk
+  member_memory_mb  = 12288 # Must be an increment of 384 megabytes. The minimum size of a read-only replica is 12 GB RAM
+  member_disk_mb    = 10240 # Must be an increment of 512 megabytes. The minimum size of a read-only replica is 10 GB of disk
   depends_on        = [time_sleep.wait_time]
 }
