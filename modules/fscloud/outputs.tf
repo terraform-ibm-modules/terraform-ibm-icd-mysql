@@ -42,3 +42,20 @@ output "certificate_base64" {
   value       = module.mysql_db.certificate_base64
   sensitive   = true
 }
+
+output "cbr_rule_ids" {
+  description = "CBR rule ids created to restrict MySQL"
+  value       = module.mysql_db.cbr_rule_ids
+}
+
+output "service_credentials_json" {
+  description = "Service credentials json map"
+  value       = module.mysql_db.service_credentials_json
+  sensitive   = true
+}
+
+output "service_credentials_object" {
+  description = "Service credentials object"
+  value       = module.mysql_db.service_credentials_object
+  sensitive   = true
+}
