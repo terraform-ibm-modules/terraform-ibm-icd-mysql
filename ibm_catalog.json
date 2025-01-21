@@ -80,14 +80,14 @@
             }
           },
           {
-            "label": "Advanced",
-            "name": "advanced",
-            "working_directory": "examples/advanced",
+            "label": "Complete",
+            "name": "complete",
+            "working_directory": "examples/complete",
             "architecture": {
               "diagrams": [
                 {
                   "diagram": {
-                    "caption": "Advanced Example",
+                    "caption": "Advanced Complete",
                     "url": "https://raw.githubusercontent.com/terraform-ibm-modules/documentation/main/icons/ModuleExampleDiagram.svg",
                     "type": "image/svg+xml"
                   },
@@ -409,4 +409,3 @@
       }
     ]
   }
-  
