@@ -266,6 +266,7 @@ module "mysql" {
   auto_scaling                      = var.auto_scaling
   service_credential_names          = var.service_credential_names
   backup_crn                        = var.backup_crn
+  remote_leader_crn                 = var.remote_leader_crn
 }
 
 locals {

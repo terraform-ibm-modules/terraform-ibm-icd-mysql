@@ -24,4 +24,5 @@ module "mysql_db" {
   users                             = var.users
   service_credential_names          = var.service_credential_names
   auto_scaling                      = var.auto_scaling
+  remote_leader_crn                 = var.remote_leader_crn
 }
