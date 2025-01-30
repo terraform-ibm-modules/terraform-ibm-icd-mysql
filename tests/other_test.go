@@ -116,7 +116,6 @@ func TestRunFSCloudExample(t *testing.T) {
 		//ResourceGroup: resourceGroup,
 		TerraformVars: map[string]interface{}{
 			"access_tags":                permanentResources["accessTags"],
-			"existing_kms_instance_guid": permanentResources["hpcs_south"],
 			"kms_key_crn":                permanentResources["hpcs_south_root_key_crn"],
 			"mysql_version":              "8.0", // Always lock this test into the latest supported mysql version
 		},
