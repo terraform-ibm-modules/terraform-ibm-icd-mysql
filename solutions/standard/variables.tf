@@ -36,6 +36,12 @@ variable "region" {
   default     = "us-south"
 }
 
+variable "remote_leader_crn" {
+  type        = string
+  description = "A CRN of the leader database to make the replica(read-only) deployment. The leader database is created by a database deployment with the same service ID. A read-only replica is set up to replicate all of your data from the leader deployment to the replica deployment by using asynchronous replication. [Learn more](https://cloud.ibm.com/docs/databases-for-mysql?topic=databases-for-mysql-read-replicas)"
+  default     = null
+}
+
 variable "mysql_version" {
   description = "The version of the Databases for MySQL instance. If no value is specified, the current preferred version of Databases for MySQL is used."
   type        = string
