@@ -115,9 +115,9 @@ func TestRunFSCloudExample(t *testing.T) {
 		*/
 		//ResourceGroup: resourceGroup,
 		TerraformVars: map[string]interface{}{
-			"access_tags":                permanentResources["accessTags"],
-			"kms_key_crn":                permanentResources["hpcs_south_root_key_crn"],
-			"mysql_version":              "8.0", // Always lock this test into the latest supported mysql version
+			"access_tags":   permanentResources["accessTags"],
+			"kms_key_crn":   permanentResources["hpcs_south_root_key_crn"],
+			"mysql_version": "8.0", // Always lock this test into the latest supported mysql version
 		},
 		ImplicitDestroy: []string{
 			"module.mysql_db.module.mysql_db.time_sleep.wait_for_authorization_policy",
