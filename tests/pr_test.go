@@ -165,6 +165,7 @@ func TestRunStandardSolutionSchematics(t *testing.T) {
 		{Name: "existing_secrets_manager_instance_crn", Value: permanentResources["secretsManagerCRN"], DataType: "string"},
 		{Name: "service_credential_secrets", Value: serviceCredentialSecrets, DataType: "list(object)"},
 		{Name: "service_credential_names", Value: string(serviceCredentialNamesJSON), DataType: "map(string)"},
+		{Name: "admin_pass", Value: GetRandomAdminPassword(t), DataType: "string"},
 	}
 	err = options.RunSchematicTest()
 	assert.Nil(t, err, "This should not have errored")
@@ -181,20 +182,12 @@ func TestRunStandardUpgradeSolution(t *testing.T) {
 		ResourceGroup:      resourceGroup,
 	})
 
-	// Generate a 15 char long random string for the admin_pass
-	randomBytes := make([]byte, 13)
-	_, randErr := rand.Read(randomBytes)
-	require.Nil(t, randErr) // do not proceed if we can't gen a random password
-
-	randomPass := "A1" + base64.URLEncoding.EncodeToString(randomBytes)[:13]
-
 	options.TerraformVars = map[string]interface{}{
 		"access_tags":               permanentResources["accessTags"],
 		"existing_kms_instance_crn": permanentResources["hpcs_south_crn"],
 		"kms_endpoint_type":         "public",
 		"provider_visibility":       "public",
 		"resource_group_name":       options.Prefix,
-		"admin_pass":                randomPass,
 	}
 
 	output, err := options.RunTestUpgrade()
@@ -229,7 +222,6 @@ func TestRunUpgradeCompleteExample(t *testing.T) {
 					"type":     "database",
 				},
 			},
-			"admin_pass": randomPass,
 		},
 		ImplicitDestroy: []string{
 			"module.mysql_db.time_sleep.wait_for_authorization_policy",
@@ -242,4 +234,13 @@ func TestRunUpgradeCompleteExample(t *testing.T) {
 		assert.Nil(t, err, "This should not have errored")
 		assert.NotNil(t, output, "Expected some output")
 	}
+}
+
+func GetRandomAdminPassword(t *testing.T) string {
+	// Generate a 15 char long random string for the admin_pass
+	randomBytes := make([]byte, 13)
+	_, randErr := rand.Read(randomBytes)
+	require.Nil(t, randErr) // do not proceed if we can't gen a random password
+	randomPass := "A1" + base64.URLEncoding.EncodeToString(randomBytes)[:13]
+	return randomPass
 }
