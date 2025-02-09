@@ -119,6 +119,45 @@ variable "access_tags" {
   default     = []
 }
 
+variable "configuration" {
+  description = "Database Configuration for MySQL instance. [Learn more](https://github.com/terraform-ibm-modules/terraform-ibm-icd-mysql/tree/main/solutions/standard/DA-types.md)"
+  type = object({
+    shared_buffers            = optional(number)
+    max_connections           = optional(number)
+    max_prepared_transactions = optional(number)
+    synchronous_commit        = optional(string)
+    effective_io_concurrency  = optional(number)
+    deadlock_timeout          = optional(number)
+    # log_connections            = optional(string)
+    # log_disconnections         = optional(string)
+    log_min_duration_statement = optional(number)
+    # tcp_keepalives_idle        = optional(number)
+    # tcp_keepalives_interval    = optional(number)
+    # tcp_keepalives_count       = optional(number)
+    archive_timeout = optional(number)
+    wal_level       = optional(string)
+    # max_replication_slots      = optional(number)
+    # max_wal_senders            = optional(number)
+  })
+  default = {
+    shared_buffers            = 32000
+    max_connections           = 115
+    max_prepared_transactions = 0
+    synchronous_commit        = "local"
+    effective_io_concurrency  = 12
+    deadlock_timeout          = 10000
+    # log_connections            = "on"
+    # log_disconnections         = "on"
+    log_min_duration_statement = 100
+    # tcp_keepalives_idle        = 111
+    # tcp_keepalives_interval    = 15
+    # tcp_keepalives_count       = 6
+    archive_timeout = 1800
+    # max_replication_slots      = 10
+    # max_wal_senders            = 12
+  }
+}
+
 ##############################################################
 # Encryption
 ##############################################################

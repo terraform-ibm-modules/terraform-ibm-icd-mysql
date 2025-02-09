@@ -101,6 +101,32 @@ variable "access_tags" {
   default     = []
 }
 
+variable "configuration" {
+  type = object({
+    shared_buffers  = optional(number)
+    max_connections = optional(number)
+    # below field gives error when sent to provider
+    # tracking issue: https://github.com/IBM-Cloud/terraform-provider-ibm/issues/5403
+    # max_locks_per_transaction  = optional(number)
+    max_prepared_transactions = optional(number)
+    synchronous_commit        = optional(string)
+    effective_io_concurrency  = optional(number)
+    deadlock_timeout          = optional(number)
+    # log_connections            = optional(string)
+    # log_disconnections         = optional(string)
+    log_min_duration_statement = optional(number)
+    # tcp_keepalives_idle        = optional(number)
+    # tcp_keepalives_interval    = optional(number)
+    # tcp_keepalives_count       = optional(number)
+    archive_timeout = optional(number)
+    wal_level       = optional(string)
+    # max_replication_slots      = optional(number)
+    # max_wal_senders            = optional(number)
+  })
+  description = "Database configuration parameters, see https://cloud.ibm.com/docs/databases-for-postgresql?topic=databases-for-postgresql-changing-configuration&interface=api for more details."
+  default     = null
+}
+
 ##############################################################
 # Auto Scaling
 ##############################################################
