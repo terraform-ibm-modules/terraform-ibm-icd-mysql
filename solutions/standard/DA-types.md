@@ -203,7 +203,7 @@ The following example shows values for both disk and memory for the `auto_scalin
 The Configuration variable tunes the MySQL database to suit different use case. For more information, see [Configuration](https://cloud.ibm.com/docs/databases-for-mysql?topic=databases-for-mysql-changing-configuration&interface=cli).
 
 - Variable name: `configuration`
-- Type: An object with multiple attributes i.e.  `shared_buffers`, `max_connections`, `max_prepared_transactions`, `synchronous_commit` , `effective_io_concurrency` , `deadlock_timeout`, `log_connections`, `log_disconnections`, `log_min_duration_statement`, `tcp_keepalives_idle`, `tcp_keepalives_interval`, `tcp_keepalives_count`, `archive_timeout`, `wal_level`, `max_replication_slots` and `max_wal_senders`
+- Type: An object with multiple attributes i.e.  `default_authentication_plugin`, `innodb_buffer_pool_size_percentage`, `innodb_flush_log_at_trx_commit`, `innodb_log_buffer_size` , `innodb_log_file_size` , `innodb_lru_scan_depth`, `innodb_write_io_threads`, `max_allowed_packet`, `max_connections`, `max_prepared_stmt_count`, `mysql_max_binlog_age_sec`, `net_write_timeout`, `sql_mode` and `wait_timeout`
 
 ### Options for configuration
 
@@ -258,11 +258,6 @@ The configuration object in the input contains the following options
   - REAL_AS_FLOAT
   - STRICT_ALL_TABLES
   - STRICT_TRANS_TABLES
-
-wait_timeout
-
-Description: The number of seconds the server waits for activity on a noninteractive connection before closing it.
-Default: 28800
 
 - `wait_timeout`: The number of seconds the server waits for activity on a noninteractive connection before closing it. (default: `28800`).
 
