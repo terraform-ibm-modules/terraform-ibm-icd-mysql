@@ -207,32 +207,64 @@ The Configuration variable tunes the MySQL database to suit different use case. 
 
 ### Options for configuration
 
-The configuration object in the input contains the following options categorized under three sections. All options are optional.
+The configuration object in the input contains the following options
 
-**1. Memory Settings. [Learn more](https://cloud.ibm.com/docs/databases-for-mysql?topic=databases-for-mysql-changing-configuration&interface=cli#mem-settings).**
+**Available Settings. [Learn more](https://cloud.ibm.com/docs/databases-for-mysql?topic=databases-for-mysql-changing-configuration&interface=cli#available-config-settings).**
 
-- `shared_buffers`: Determines the amount of memory the database server uses for shared memory buffers. Larger values can improve performance by reducing disk I/O. (default: `32000`).
+- `default_authentication_plugin`: Allowable values are `sha256_password`, `caching_sha2_password` and `mysql_native_password`. Note: Unless strictly necessary, don't use `mysql_native_password`. (default: `sha256_password`).
 
-**2. General Settings. [Learn more](https://cloud.ibm.com/docs/databases-for-mysql?topic=databases-for-mysql-changing-configuration&interface=cli#gen-settings).**
+- `innodb_buffer_pool_size_percentage`: The percentage of memory to use for innodb_buffer_pool_size. The default value of 50% is a conservative value and works for databases of any size. If your database requires more RAM, this value can be increased. Setting this value too high can exceed your database's memory limits, which can cause it to crash. (default: `50`).
 
-- `max_connections`: Sets the maximum number of concurrent connections to the database. Increasing this value allows more users to connect simultaneously but requires more memory. (default: `115`)
-- `max_prepared_transactions`: Specifies the maximum number of transactions that can be in the prepared state simultaneously. This is important for applications using two-phase commit. (default: `0`)
-- `synchronous_commit`: Determines whether the server commits are synchronous or asynchronous. Setting to off can improve performance but at the risk of losing recent transactions in the event of a crash. (default: `local`)
-- `effective_io_concurrency`: Configures the number of concurrent disk I/O operations MySQL can handle, improving performance for SSDs and RAID arrays. (default: `12`)
-- `deadlock_timeout`: Specifies the amount of time to wait on a lock before checking for a deadlock condition. Shorter times can help detect deadlocks faster. (default: `10000`)
-- `log_connections`: When enabled, logs each successful connection to the server. Useful for monitoring and debugging. (default: `off`)
-- `log_disconnections`: When enabled, logs the end of each session, including the duration. Helpful for tracking user activity. (default: `off`)
-- `log_min_duration_statement`: Logs the execution time of each statement that exceeds the specified duration. Useful for identifying slow queries. (default: `100`)
-- `tcp_keepalives_idle`: Sets the amount of time between TCP keep-alive messages when no data has been sent. Helps to detect dead TCP connections. (default: `111`)
-- `tcp_keepalives_interval`: Specifies the interval between TCP keep-alive messages. Important for maintaining long-lived idle connections. (default: `15`)
-- `tcp_keepalives_count`: Determines the number of TCP keep-alive messages sent before the server decides the connection is dead. (default: `6`)
+- `innodb_flush_log_at_trx_commit`: Controls the balance between strict ACID compliance for commit operations and higher performance that is possible when commit-related I/O operations are rearranged and done in batches. You can achieve better performance by changing the default value but then you can lose transactions in a crash. (default: `2`).
 
-**3. WAL Settings. [Learn more](https://cloud.ibm.com/docs/databases-for-mysql?topic=databases-for-mysql-changing-configuration&interface=cli#wal-settings).**
+- `innodb_log_buffer_size`: The size in bytes of the buffer that InnoDB uses to write to the log files on disk. (default: `33554432`).
 
-- `archive_timeout`: Forces a switch to the next WAL file if no new file has been generated within the specified time. Useful for ensuring regular WAL archiving. (default: `1800`)
-- `wal_level`: Sets the level of information written to the WAL. Higher levels, like replica or logical, are required for replication and logical decoding. (default: `replica`)
-- `max_replication_slots`: Specifies the maximum number of replication slots, which are used for streaming replication and logical decoding. (default: `10`)
-- `max_wal_senders`: Determines the maximum number of concurrent WAL sender processes for streaming replication. Increasing this allows more standby servers to connect. (default: `12`)
+- `innodb_log_file_size`: The size in bytes of each log file in a log group.  Innodb_log_file_size and innodb_log_files_in_group have been superseded by innodb_redo_log_capacity. Setting innodb_log_file_size will also set innodb_redo_log_capacity. (default: `104857600`).
+
+- `innodb_lru_scan_depth`: A parameter that influences the algorithms and heuristics for the flush operation for the InnoDB buffer pool. A setting smaller than the default is generally suitable for most workloads. A value that is much higher than necessary might impact performance. Consider increasing the value only if you have spare I/O capacity under a typical workload. (default: `256`).
+
+- `innodb_write_io_threads`: The number of I/O threads for write operations in InnoDB. (default: `4`).
+
+- `max_allowed_packet`:  (default: `16777216`).
+
+- `max_connections`:  (default: `200`).
+
+- `max_prepared_stmt_count`: Specifies the total number of prepared statements on the server. (default: `16382`).
+
+- `mysql_max_binlog_age_sec`:  (default: `1800`).
+
+- `net_write_timeout`: The number of seconds to wait for a block to be written to a connection before aborting the write. (default: `60`).
+
+- `sql_mode`: Allowable values:
+  - ALLOW_INVALID_DATES
+  - ANSI_QUOTES
+  - ERROR_FOR_DIVISION_BY_ZERO
+  - HIGH_NOT_PRECEDENCE
+  - IGNORE_SPACE
+  - NO_AUTO_CREATE_USER
+  - NO_AUTO_VALUE_ON_ZERO
+  - NO_BACKSLASH_ESCAPES
+  - NO_DIR_IN_CREATE
+  - NO_ENGINE_SUBSTITUTION
+  - NO_FIELD_OPTIONS
+  - NO_KEY_OPTIONS
+  - NO_TABLE_OPTIONS
+  - NO_UNSIGNED_SUBTRACTION
+  - NO_ZERO_DATE
+  - NO_ZERO_IN_DATE
+  - ONLY_FULL_GROUP_BY
+  - PAD_CHAR_TO_FULL_LENGTH
+  - PIPES_AS_CONCAT
+  - REAL_AS_FLOAT
+  - STRICT_ALL_TABLES
+  - STRICT_TRANS_TABLES
+
+wait_timeout
+
+Description: The number of seconds the server waits for activity on a noninteractive connection before closing it.
+Default: 28800
+
+- `wait_timeout`: The number of seconds the server waits for activity on a noninteractive connection before closing it. (default: `28800`).
 
 ### Example configuration
 
@@ -240,20 +272,21 @@ The following example shows values for the `configuration` input.
 
 ```hcl
 {
-    "shared_buffers": 32000,
-    "max_connections": 115,
-    "max_prepared_transactions": 0,
-    "synchronous_commit": "local",
-    "effective_io_concurrency": 12,
-    "deadlock_timeout": 10000,
-    "log_connections": "on",
-    "log_disconnections": "on",
-    "log_min_duration_statement": 100,
-    "tcp_keepalives_idle": 111,
-    "tcp_keepalives_interval": 15,
-    "tcp_keepalives_count": 6,
-    "archive_timeout": 1800,
-    "max_replication_slots": 10,
-    "max_wal_senders": 12
+    default_authentication_plugin      = "sha256_password"
+    innodb_buffer_pool_size_percentage = 50
+    innodb_flush_log_at_trx_commit     = 2
+    innodb_log_buffer_size             = 33554432
+    innodb_log_file_size               = 104857600
+    innodb_lru_scan_depth              = 256
+    innodb_read_io_threads             = 4
+    innodb_write_io_threads            = 4
+    max_allowed_packet                 = 16777216
+    max_connections                    = 200
+    max_prepared_stmt_count            = 16382
+    mysql_max_binlog_age_sec           = 1800
+    net_read_timeout                   = 60
+    net_write_timeout                  = 60
+    sql_mode                           = "NO_ZERO_IN_DATE,NO_ENGINE_SUBSTITUTION"
+    wait_timeout                       = 28800
 }
 ```

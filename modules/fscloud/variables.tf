@@ -103,27 +103,24 @@ variable "access_tags" {
 
 variable "configuration" {
   type = object({
-    shared_buffers  = optional(number)
-    max_connections = optional(number)
-    # below field gives error when sent to provider
-    # tracking issue: https://github.com/IBM-Cloud/terraform-provider-ibm/issues/5403
-    # max_locks_per_transaction  = optional(number)
-    max_prepared_transactions = optional(number)
-    synchronous_commit        = optional(string)
-    effective_io_concurrency  = optional(number)
-    deadlock_timeout          = optional(number)
-    # log_connections            = optional(string)
-    # log_disconnections         = optional(string)
-    log_min_duration_statement = optional(number)
-    # tcp_keepalives_idle        = optional(number)
-    # tcp_keepalives_interval    = optional(number)
-    # tcp_keepalives_count       = optional(number)
-    archive_timeout = optional(number)
-    wal_level       = optional(string)
-    # max_replication_slots      = optional(number)
-    # max_wal_senders            = optional(number)
+    default_authentication_plugin      = optional(string) # sha256_password,caching_sha2_password,mysql_native_password
+    innodb_buffer_pool_size_percentage = optional(number) # 10 ≤ value ≤ 100
+    innodb_flush_log_at_trx_commit     = optional(number) # 0 ≤ value ≤ 2
+    innodb_log_buffer_size             = optional(number) # 1048576 ≤ value ≤ 4294967295
+    innodb_log_file_size               = optional(number) # 4194304 ≤ value ≤ 274877906900
+    innodb_lru_scan_depth              = optional(number) # 128 ≤ value ≤ 2048
+    innodb_read_io_threads             = optional(number) # 1 ≤ value ≤ 64
+    innodb_write_io_threads            = optional(number) # 1 ≤ value ≤ 64
+    max_allowed_packet                 = optional(number) # 1024 ≤ value ≤ 1073741824
+    max_connections                    = optional(number) # 100 ≤ value ≤ 200000
+    max_prepared_stmt_count            = optional(number) # 0 ≤ value ≤ 4194304
+    mysql_max_binlog_age_sec           = optional(number) # 300 ≤ value ≤ 1073741823 Default: 1800
+    net_read_timeout                   = optional(number) # 1 ≤ value ≤ 7200
+    net_write_timeout                  = optional(number) # 1 ≤ value ≤ 7200
+    sql_mode                           = optional(string) # The comma-separated list of SQL modes applied on this server globally.
+    wait_timeout                       = optional(number) # 1 ≤ value ≤ 31536000
   })
-  description = "Database configuration parameters, see https://cloud.ibm.com/docs/databases-for-postgresql?topic=databases-for-postgresql-changing-configuration&interface=api for more details."
+  description = "Database configuration parameters, see https://cloud.ibm.com/docs/databases-for-mysql?topic=databases-for-mysql-changing-configuration&interface=api for more details."
   default     = null
 }
 
