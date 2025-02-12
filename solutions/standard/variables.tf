@@ -154,8 +154,8 @@ variable "configuration" {
     mysql_max_binlog_age_sec           = 1800
     net_read_timeout                   = 60
     net_write_timeout                  = 60
-    sql_mode                           = "NO_ZERO_IN_DATE,NO_ENGINE_SUBSTITUTION" # https://dev.mysql.com/doc/refman/8.0/en/sql-mode.html
-    wait_timeout                       = 28800
+    # sql_mode No sensible default set of modes https://dev.mysql.com/doc/refman/8.0/en/sql-mode.html
+    wait_timeout = 28800
   }
 }
 
