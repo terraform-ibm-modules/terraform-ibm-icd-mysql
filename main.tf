@@ -173,18 +173,20 @@ resource "time_sleep" "wait_for_backup_kms_authorization_policy" {
 
 # Create MySQL database
 resource "ibm_database" "mysql_db" {
-  depends_on                           = [time_sleep.wait_for_authorization_policy]
-  resource_group_id                    = var.resource_group_id
-  name                                 = var.name
-  service                              = "databases-for-mysql"
-  location                             = var.region
-  plan                                 = "standard" # Only standard plan is available for mysql
-  backup_id                            = var.backup_crn
-  remote_leader_id                     = var.remote_leader_crn
-  version                              = var.mysql_version
-  tags                                 = var.resource_tags
-  adminpassword                        = var.admin_pass
-  service_endpoints                    = var.service_endpoints
+  depends_on        = [time_sleep.wait_for_authorization_policy]
+  resource_group_id = var.resource_group_id
+  name              = var.name
+  service           = "databases-for-mysql"
+  location          = var.region
+  plan              = "standard" # Only standard plan is available for mysql
+  backup_id         = var.backup_crn
+  remote_leader_id  = var.remote_leader_crn
+  version           = var.mysql_version
+  tags              = var.resource_tags
+  adminpassword     = var.admin_pass
+  service_endpoints = var.service_endpoints
+  # remove elements with null values: see https://github.com/terraform-ibm-modules/terraform-ibm-icd-postgresql/issues/273
+  configuration                        = var.configuration != null ? jsonencode({ for k, v in var.configuration : k => v if v != null }) : null
   key_protect_key                      = var.kms_key_crn
   backup_encryption_key_crn            = local.backup_encryption_key_crn
   point_in_time_recovery_deployment_id = var.pitr_id

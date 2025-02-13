@@ -229,7 +229,7 @@ resource "random_password" "admin_password" {
 }
 
 locals {
-  # _- are invalid first characters.
+  # _- are invalid first characters
   # if - replace first char with J
   # elseif _ replace first char with K
   # else use asis
@@ -264,6 +264,7 @@ module "mysql" {
   member_disk_mb                    = var.member_disk_mb
   member_cpu_count                  = var.member_cpu_count
   auto_scaling                      = var.auto_scaling
+  configuration                     = var.configuration
   service_credential_names          = var.service_credential_names
   backup_crn                        = var.backup_crn
   remote_leader_crn                 = var.remote_leader_crn

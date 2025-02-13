@@ -137,6 +137,106 @@ variable "access_tags" {
   }
 }
 
+variable "configuration" {
+  type = object({
+    default_authentication_plugin      = optional(string) # sha256_password,caching_sha2_password,mysql_native_password
+    innodb_buffer_pool_size_percentage = optional(number) # 10 ≤ value ≤ 100
+    innodb_flush_log_at_trx_commit     = optional(number) # 0 ≤ value ≤ 2
+    innodb_log_buffer_size             = optional(number) # 1048576 ≤ value ≤ 4294967295
+    innodb_log_file_size               = optional(number) # 4194304 ≤ value ≤ 274877906900
+    innodb_lru_scan_depth              = optional(number) # 128 ≤ value ≤ 2048
+    innodb_read_io_threads             = optional(number) # 1 ≤ value ≤ 64
+    innodb_write_io_threads            = optional(number) # 1 ≤ value ≤ 64
+    max_allowed_packet                 = optional(number) # 1024 ≤ value ≤ 1073741824
+    max_connections                    = optional(number) # 100 ≤ value ≤ 200000
+    max_prepared_stmt_count            = optional(number) # 0 ≤ value ≤ 4194304
+    mysql_max_binlog_age_sec           = optional(number) # 300 ≤ value ≤ 1073741823 Default: 1800
+    net_read_timeout                   = optional(number) # 1 ≤ value ≤ 7200
+    net_write_timeout                  = optional(number) # 1 ≤ value ≤ 7200
+    sql_mode                           = optional(string) # The comma-separated list of SQL modes applied on this server globally
+    wait_timeout                       = optional(number) # 1 ≤ value ≤ 31536000
+  })
+  description = "Database configuration parameters, see https://cloud.ibm.com/docs/databases-for-mysql?topic=databases-for-mysql-changing-configuration&interface=api for more details."
+  default     = null
+
+  validation {
+    condition     = var.configuration != null ? (var.configuration["default_authentication_plugin"] != null ? contains(["sha256_password", "caching_sha2_password", "mysql_native_password"], var.configuration["default_authentication_plugin"]) : true) : true
+    error_message = "Value for `configuration[\"default_authentication_plugin\"]` must be one of `sha256_password`, `caching_sha2_password`, or `mysql_native_password`, if specified."
+  }
+
+  validation {
+    condition     = var.configuration != null ? (var.configuration["innodb_buffer_pool_size_percentage"] != null ? (var.configuration["innodb_buffer_pool_size_percentage"] >= 10 && var.configuration["innodb_buffer_pool_size_percentage"] <= 100) : true) : true
+    error_message = "Value for `configuration[\"innodb_buffer_pool_size_percentage\"]` must be 10 ≤ value ≤ 100, if specified."
+  }
+
+  validation {
+    condition     = var.configuration != null ? (var.configuration["innodb_flush_log_at_trx_commit"] != null ? (var.configuration["innodb_flush_log_at_trx_commit"] >= 0 && var.configuration["innodb_flush_log_at_trx_commit"] <= 2) : true) : true
+    error_message = "Value for `configuration[\"innodb_flush_log_at_trx_commit\"]` must be 0 ≤ value ≤ 2, if specified."
+  }
+
+  validation {
+    condition     = var.configuration != null ? (var.configuration["innodb_log_buffer_size"] != null ? (var.configuration["innodb_log_buffer_size"] >= 1048576 && var.configuration["innodb_log_buffer_size"] <= 4294967295) : true) : true
+    error_message = "Value for `configuration[\"innodb_log_buffer_size\"]` must be 1048576 ≤ value ≤ 4294967295, if specified."
+  }
+
+  validation {
+    condition     = var.configuration != null ? (var.configuration["innodb_log_file_size"] != null ? (var.configuration["innodb_log_file_size"] >= 4194304 && var.configuration["innodb_log_file_size"] <= 274877906900) : true) : true
+    error_message = "Value for `configuration[\"innodb_log_file_size\"]` must be 4194304 ≤ value ≤ 274877906900, if specified."
+  }
+
+  validation {
+    condition     = var.configuration != null ? (var.configuration["innodb_lru_scan_depth"] != null ? (var.configuration["innodb_lru_scan_depth"] >= 128 && var.configuration["innodb_lru_scan_depth"] <= 2048) : true) : true
+    error_message = "Value for `configuration[\"innodb_lru_scan_depth\"]` must be 128 ≤ value ≤ 2048, if specified."
+  }
+
+  validation {
+    condition     = var.configuration != null ? (var.configuration["innodb_read_io_threads"] != null ? (var.configuration["innodb_read_io_threads"] >= 1 && var.configuration["innodb_read_io_threads"] <= 64) : true) : true
+    error_message = "Value for `configuration[\"innodb_read_io_threads\"]` must be 1 ≤ value ≤ 64, if specified."
+  }
+
+  validation {
+    condition     = var.configuration != null ? (var.configuration["innodb_write_io_threads"] != null ? (var.configuration["innodb_write_io_threads"] >= 1 && var.configuration["innodb_write_io_threads"] <= 64) : true) : true
+    error_message = "Value for `configuration[\"innodb_write_io_threads\"]` must be 1 ≤ value ≤ 64, if specified."
+  }
+
+  validation {
+    condition     = var.configuration != null ? (var.configuration["max_allowed_packet"] != null ? (var.configuration["max_allowed_packet"] >= 1024 && var.configuration["max_allowed_packet"] <= 1073741824) : true) : true
+    error_message = "Value for `configuration[\"max_allowed_packet\"]` must be 1024 ≤ value ≤ 1073741824, if specified."
+  }
+
+  validation {
+    condition     = var.configuration != null ? (var.configuration["max_connections"] != null ? (var.configuration["max_connections"] >= 100 && var.configuration["max_connections"] <= 200000) : true) : true
+    error_message = "Value for `configuration[\"max_connections\"]` must be 100 ≤ value ≤ 200000, if specified."
+  }
+
+  validation {
+    condition     = var.configuration != null ? (var.configuration["max_prepared_stmt_count"] != null ? (var.configuration["max_prepared_stmt_count"] >= 0 && var.configuration["max_prepared_stmt_count"] <= 4194304) : true) : true
+    error_message = "Value for `configuration[\"max_prepared_stmt_count\"]` must be 0 ≤ value ≤ 4194304, if specified."
+  }
+
+  validation {
+    condition     = var.configuration != null ? (var.configuration["mysql_max_binlog_age_sec"] != null ? (var.configuration["mysql_max_binlog_age_sec"] >= 300 && var.configuration["mysql_max_binlog_age_sec"] <= 1073741823) : true) : true
+    error_message = "Value for `configuration[\"mysql_max_binlog_age_sec\"]` must be 300 ≤ value ≤ 1073741823, if specified."
+  }
+
+  validation {
+    condition     = var.configuration != null ? (var.configuration["net_read_timeout"] != null ? (var.configuration["net_read_timeout"] >= 1 && var.configuration["net_read_timeout"] <= 7200) : true) : true
+    error_message = "Value for `configuration[\"net_read_timeout\"]` must be 1 ≤ value ≤ 7200, if specified."
+  }
+
+  validation {
+    condition     = var.configuration != null ? (var.configuration["net_write_timeout"] != null ? (var.configuration["net_write_timeout"] >= 1 && var.configuration["net_write_timeout"] <= 7200) : true) : true
+    error_message = "Value for `configuration[\"net_write_timeout\"]` must be 1 ≤ value ≤ 7200, if specified."
+  }
+
+  #  sql_mode = optional(string) # The comma-separated list of SQL modes applied on this server globally.
+
+  validation {
+    condition     = var.configuration != null ? (var.configuration["wait_timeout"] != null ? (var.configuration["wait_timeout"] >= 1 && var.configuration["wait_timeout"] <= 31536000) : true) : true
+    error_message = "Value for `configuration[\"wait_timeout\"]` must be 1 ≤ value ≤ 31536000, if specified."
+  }
+}
+
 ##############################################################
 # Auto Scaling
 ##############################################################

@@ -3,6 +3,7 @@ module "mysql_db" {
   resource_group_id                 = var.resource_group_id
   name                              = var.instance_name
   region                            = var.region
+  remote_leader_crn                 = var.remote_leader_crn
   skip_iam_authorization_policy     = var.skip_iam_authorization_policy
   service_endpoints                 = "private"
   mysql_version                     = var.mysql_version
@@ -15,6 +16,7 @@ module "mysql_db" {
   resource_tags                     = var.resource_tags
   access_tags                       = var.access_tags
   cbr_rules                         = var.cbr_rules
+  configuration                     = var.configuration
   member_memory_mb                  = var.member_memory_mb
   member_disk_mb                    = var.member_disk_mb
   member_cpu_count                  = var.member_cpu_count
@@ -24,5 +26,4 @@ module "mysql_db" {
   users                             = var.users
   service_credential_names          = var.service_credential_names
   auto_scaling                      = var.auto_scaling
-  remote_leader_crn                 = var.remote_leader_crn
 }
