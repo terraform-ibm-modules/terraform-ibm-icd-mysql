@@ -302,6 +302,9 @@
             },
             {
               "key": "remote_leader_crn"
+            },
+            {
+              "key": "configuration"
             }
           ]
         }
