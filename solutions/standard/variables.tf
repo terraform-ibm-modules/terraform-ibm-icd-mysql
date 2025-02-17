@@ -119,6 +119,46 @@ variable "access_tags" {
   default     = []
 }
 
+variable "configuration" {
+  description = "Database Configuration for MySQL instance. [Learn more](https://github.com/terraform-ibm-modules/terraform-ibm-icd-mysql/tree/main/solutions/standard/DA-types.md)"
+  type = object({
+    default_authentication_plugin      = optional(string) # sha256_password,caching_sha2_password,mysql_native_password
+    innodb_buffer_pool_size_percentage = optional(number) # 10 ≤ value ≤ 100
+    innodb_flush_log_at_trx_commit     = optional(number) # 0 ≤ value ≤ 2
+    innodb_log_buffer_size             = optional(number) # 1048576 ≤ value ≤ 4294967295
+    innodb_log_file_size               = optional(number) # 4194304 ≤ value ≤ 274877906900
+    innodb_lru_scan_depth              = optional(number) # 128 ≤ value ≤ 2048
+    innodb_read_io_threads             = optional(number) # 1 ≤ value ≤ 64
+    innodb_write_io_threads            = optional(number) # 1 ≤ value ≤ 64
+    max_allowed_packet                 = optional(number) # 1024 ≤ value ≤ 1073741824
+    max_connections                    = optional(number) # 100 ≤ value ≤ 200000
+    max_prepared_stmt_count            = optional(number) # 0 ≤ value ≤ 4194304
+    mysql_max_binlog_age_sec           = optional(number) # 300 ≤ value ≤ 1073741823 Default: 1800
+    net_read_timeout                   = optional(number) # 1 ≤ value ≤ 7200
+    net_write_timeout                  = optional(number) # 1 ≤ value ≤ 7200
+    sql_mode                           = optional(string) # The comma-separated list of SQL modes applied on this server globally.
+    wait_timeout                       = optional(number) # 1 ≤ value ≤ 31536000
+  })
+  default = {
+    default_authentication_plugin      = "sha256_password"
+    innodb_buffer_pool_size_percentage = 50
+    innodb_flush_log_at_trx_commit     = 2
+    innodb_log_buffer_size             = 33554432
+    innodb_log_file_size               = 104857600
+    innodb_lru_scan_depth              = 256
+    innodb_read_io_threads             = 4
+    innodb_write_io_threads            = 4
+    max_allowed_packet                 = 16777216
+    max_connections                    = 200
+    max_prepared_stmt_count            = 16382
+    mysql_max_binlog_age_sec           = 1800
+    net_read_timeout                   = 60
+    net_write_timeout                  = 60
+    # sql_mode No sensible default set of modes https://dev.mysql.com/doc/refman/8.0/en/sql-mode.html
+    wait_timeout = 28800
+  }
+}
+
 ##############################################################
 # Encryption
 ##############################################################
