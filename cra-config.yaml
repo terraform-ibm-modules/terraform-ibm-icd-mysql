@@ -9,4 +9,3 @@ CRA_TARGETS:
       TF_VAR_use_existing_resource_group: true
       TF_VAR_resource_group_name: "geretain-test-mysql"
       TF_VAR_provider_visibility: "public"
-      TF_VAR_use_ibm_owned_encryption_key: "true"
