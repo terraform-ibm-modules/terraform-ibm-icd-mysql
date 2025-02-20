@@ -312,8 +312,8 @@ variable "use_same_kms_key_for_backups" {
   description = "Set this to false if you wan't to use a different key that you own to encrypt backups. When set to false, a value is required for the `backup_encryption_key_crn` input. Alternatiely set `use_default_backup_encryption_key` to true to use the IBM Cloud Databases default encryption. Applies only if `use_ibm_owned_encryption_key` is false. Bare in mind that backups encryption is only available in certain regions. See [Bring your own key for backups](https://cloud.ibm.com/docs/cloud-databases?topic=cloud-databases-key-protect&interface=ui#key-byok) and [Using the HPCS Key for Backup encryption](https://cloud.ibm.com/docs/cloud-databases?topic=cloud-databases-hpcs#use-hpcs-backups)."
   default     = true
   validation {
-    condition     = (var.use_same_kms_key_for_backups && var.backup_encryption_key_crn == null && var.use_ibm_owned_encryption_key != false) || (!var.use_same_kms_key_for_backups && var.backup_encryption_key_crn != null && var.use_ibm_owned_encryption_key != false)
-    error_message = "If 'use_same_kms_key_for_backups' is true, 'backup_encryption_key_crn' must be null and 'use_ibm_owned_encryption_key' must not be false. If 'use_same_kms_key_for_backups' is false, 'backup_encryption_key_crn' must be set and 'use_ibm_owned_encryption_key' must not be false."
+    condition     = var.use_same_kms_key_for_backups || var.backup_encryption_key_crn != null
+    error_message = "If 'use_same_kms_key_for_backups' is false, 'backup_encryption_key_crn' must be set"
   }
 }
 
