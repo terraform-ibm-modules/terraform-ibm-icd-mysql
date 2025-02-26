@@ -7,7 +7,7 @@ variable "resource_group_id" {
   description = "The resource group ID where the MySQL instance will be created."
 }
 
-variable "instance_name" {
+variable "name" {
   type        = string
   description = "The name to give the MySQL instance."
 }

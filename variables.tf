@@ -118,7 +118,7 @@ variable "service_endpoints" {
   }
 }
 
-variable "resource_tags" {
+variable "tags" {
   type        = list(string)
   description = "Optional list of tags to be added to the MySQL instance."
   default     = []

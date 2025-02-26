@@ -245,7 +245,7 @@ module "mysql" {
   source                            = "../../modules/fscloud"
   depends_on                        = [time_sleep.wait_for_authorization_policy, time_sleep.wait_for_backup_kms_authorization_policy]
   resource_group_id                 = module.resource_group.resource_group_id
-  instance_name                     = var.prefix != null ? "${var.prefix}-${var.instance_name}" : var.instance_name
+  name                              = var.prefix != null ? "${var.prefix}-${var.instance_name}" : var.instance_name
   region                            = var.region
   mysql_version                     = var.mysql_version
   skip_iam_authorization_policy     = var.skip_mysql_kms_auth_policy
