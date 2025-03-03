@@ -6,6 +6,11 @@ output "id" {
   value       = module.database.id
 }
 
+output "mysql_crn" {
+  description = "Mysql CRN"
+  value       = module.database.crn
+}
+
 output "version" {
   description = "MySQL instance version"
   value       = module.database.version
