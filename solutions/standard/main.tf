@@ -233,8 +233,7 @@ locals {
   # if - replace first char with J
   # elseif _ replace first char with K
   # else use asis
-  generated_admin_password = startswith(random_password.admin_password[0].result, "-") ? "J${substr(random_password.admin_password[0].result, 1, -1)}" : startswith(random_password.admin_password[0].result, "_") ? "K${substr(random_password.admin_password[0].result, 1, -1)}" : random_password.admin_password[0].result
-
+  generated_admin_password = (length(random_password.admin_password) > 0 ? (startswith(random_password.admin_password[0].result, "-") ? "J${substr(random_password.admin_password[0].result, 1, -1)}" : startswith(random_password.admin_password[0].result, "_") ? "K${substr(random_password.admin_password[0].result, 1, -1)}" : random_password.admin_password[0].result) : null)
   # admin password to use
   admin_pass = var.admin_pass == null ? local.generated_admin_password : var.admin_pass
 }
@@ -324,7 +323,6 @@ locals {
   mysql_crn      = var.existing_db_instance_crn != null ? var.existing_db_instance_crn : module.mysql[0].crn
   mysql_hostname = var.existing_db_instance_crn != null ? data.ibm_database_connection.existing_connection[0].https[0].hosts[0].hostname : module.mysql[0].hostname
   mysql_port     = var.existing_db_instance_crn != null ? data.ibm_database_connection.existing_connection[0].https[0].hosts[0].port : module.mysql[0].port
-  mysql_cert     = var.existing_db_instance_crn != null ? data.ibm_database_connection.existing_connection[0].https[0].certificate[0].certificate_base64 : module.mysql[0].certificate_base64
 }
 
 

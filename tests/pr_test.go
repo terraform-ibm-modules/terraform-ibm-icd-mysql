@@ -27,7 +27,7 @@ import (
 
 const standardSolutionTerraformDir = "solutions/standard"
 const fscloudExampleTerraformDir = "examples/fscloud"
-const latestVersion = "7.2"
+const latestVersion = "8.0"
 
 // Use existing resource group
 const resourceGroup = "geretain-test-mysql"
@@ -333,7 +333,7 @@ func TestRunExistingInstance(t *testing.T) {
 		Vars: map[string]interface{}{
 			"prefix":            prefix,
 			"region":            region,
-			"redis_version":     latestVersion,
+			"mysql_version":     latestVersion,
 			"service_endpoints": "public-and-private",
 		},
 		// Set Upgrade to true to ensure latest version of providers and modules are used by terratest.
@@ -358,7 +358,7 @@ func TestRunExistingInstance(t *testing.T) {
 			},
 			TemplateFolder:         standardSolutionTerraformDir,
 			BestRegionYAMLPath:     regionSelectionPath,
-			Prefix:                 "mysql-da",
+			Prefix:                 "mysql-t-da",
 			ResourceGroup:          resourceGroup,
 			DeleteWorkspaceOnFail:  false,
 			WaitJobCompleteMinutes: 60,
@@ -368,9 +368,11 @@ func TestRunExistingInstance(t *testing.T) {
 			{Name: "ibmcloud_api_key", Value: options.RequiredEnvironmentVars["TF_VAR_ibmcloud_api_key"], DataType: "string", Secure: true},
 			{Name: "existing_db_instance_crn", Value: terraform.Output(t, existingTerraformOptions, "mysql_crn"), DataType: "string"},
 			{Name: "resource_group_name", Value: fmt.Sprintf("%s-resource-group", prefix), DataType: "string"},
+			{Name: "existing_kms_instance_crn", Value: permanentResources["hpcs_south_crn"], DataType: "string"},
 			{Name: "region", Value: region, DataType: "string"},
 			{Name: "use_existing_resource_group", Value: true, DataType: "bool"},
 			{Name: "provider_visibility", Value: "public", DataType: "string"},
+			{Name: "admin_pass", Value: GetRandomAdminPassword(t), DataType: "string"},
 		}
 		err := options.RunSchematicTest()
 		assert.Nil(t, err, "This should not have errored")
