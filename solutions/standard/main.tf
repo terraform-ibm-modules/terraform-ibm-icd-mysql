@@ -321,8 +321,8 @@ locals {
   mysql_id       = var.existing_db_instance_crn != null ? data.ibm_database.existing_db_instance[0].id : module.mysql[0].id
   mysql_version  = var.existing_db_instance_crn != null ? data.ibm_database.existing_db_instance[0].version : module.mysql[0].version
   mysql_crn      = var.existing_db_instance_crn != null ? var.existing_db_instance_crn : module.mysql[0].crn
-  mysql_hostname = var.existing_db_instance_crn != null ? data.ibm_database_connection.existing_connection[0].https[0].hosts[0].hostname : module.mysql[0].hostname
-  mysql_port     = var.existing_db_instance_crn != null ? data.ibm_database_connection.existing_connection[0].https[0].hosts[0].port : module.mysql[0].port
+  mysql_hostname = var.existing_db_instance_crn != null ? data.ibm_database_connection.existing_connection[0].mysql[0].hosts[0].hostname : module.mysql[0].hostname
+  mysql_port     = var.existing_db_instance_crn != null ? data.ibm_database_connection.existing_connection[0].mysql[0].hosts[0].port : module.mysql[0].port
 }
 
 

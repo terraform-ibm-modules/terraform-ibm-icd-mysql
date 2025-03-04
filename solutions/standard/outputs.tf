@@ -45,7 +45,3 @@ output "secrets_manager_secrets" {
   description = "Service credential secrets"
   value       = length(local.service_credential_secrets) > 0 ? module.secrets_manager_service_credentials[0].secrets : null
 }
-output "test" {
-  value       = data.ibm_database.existing_db_instance[0]
-  description = "testing"
-}
