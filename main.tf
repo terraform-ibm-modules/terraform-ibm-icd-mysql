@@ -182,7 +182,7 @@ resource "ibm_database" "mysql_db" {
   backup_id         = var.backup_crn
   remote_leader_id  = var.remote_leader_crn
   version           = var.mysql_version
-  tags              = var.resource_tags
+  tags              = var.tags
   adminpassword     = var.admin_pass
   service_endpoints = var.service_endpoints
   # remove elements with null values: see https://github.com/terraform-ibm-modules/terraform-ibm-icd-postgresql/issues/273
