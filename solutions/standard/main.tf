@@ -28,7 +28,7 @@ locals {
 #######################################################################################################################
 
 locals {
-  create_new_kms_key  = var.existing_db_instance_crn == null && !var.use_ibm_owned_encryption_key && var.existing_kms_key_crn == null ? true : false # no need to create any KMS resources if passing an existing key, or using IBM owned keys
+  create_new_kms_key  = var.existing_mysql_instance_crn == null && !var.use_ibm_owned_encryption_key && var.existing_kms_key_crn == null ? true : false # no need to create any KMS resources if passing an existing key, or using IBM owned keys
   mysql_key_name      = var.prefix != null ? "${var.prefix}-${var.key_name}" : var.key_name
   mysql_key_ring_name = var.prefix != null ? "${var.prefix}-${var.key_ring_name}" : var.key_ring_name
 }
@@ -99,23 +99,23 @@ data "ibm_iam_account_settings" "iam_account_settings" {
 
 locals {
   account_id                                  = data.ibm_iam_account_settings.iam_account_settings.account_id
-  create_cross_account_kms_auth_policy        = var.existing_db_instance_crn == null && !var.skip_mysql_kms_auth_policy && var.ibmcloud_kms_api_key != null && !var.use_ibm_owned_encryption_key
-  create_cross_account_backup_kms_auth_policy = var.existing_db_instance_crn == null && !var.skip_mysql_kms_auth_policy && var.ibmcloud_kms_api_key != null && !var.use_ibm_owned_encryption_key && var.existing_backup_kms_key_crn != null
+  create_cross_account_kms_auth_policy        = var.existing_mysql_instance_crn == null && !var.skip_mysql_kms_auth_policy && var.ibmcloud_kms_api_key != null && !var.use_ibm_owned_encryption_key
+  create_cross_account_backup_kms_auth_policy = var.existing_mysql_instance_crn == null && !var.skip_mysql_kms_auth_policy && var.ibmcloud_kms_api_key != null && !var.use_ibm_owned_encryption_key && var.existing_backup_kms_key_crn != null
 
   # If KMS encryption enabled (and existing ES instance is not being passed), parse details from the existing key if being passed, otherwise get it from the key that the DA creates
-  kms_account_id    = var.existing_db_instance_crn != null || var.use_ibm_owned_encryption_key ? null : var.existing_kms_key_crn != null ? module.kms_key_crn_parser[0].account_id : module.kms_instance_crn_parser[0].account_id
-  kms_service       = var.existing_db_instance_crn != null || var.use_ibm_owned_encryption_key ? null : var.existing_kms_key_crn != null ? module.kms_key_crn_parser[0].service_name : module.kms_instance_crn_parser[0].service_name
-  kms_instance_guid = var.existing_db_instance_crn != null || var.use_ibm_owned_encryption_key ? null : var.existing_kms_key_crn != null ? module.kms_key_crn_parser[0].service_instance : module.kms_instance_crn_parser[0].service_instance
-  kms_key_crn       = var.existing_db_instance_crn != null || var.use_ibm_owned_encryption_key ? null : var.existing_kms_key_crn != null ? var.existing_kms_key_crn : module.kms[0].keys[format("%s.%s", local.mysql_key_ring_name, local.mysql_key_name)].crn
-  kms_key_id        = var.existing_db_instance_crn != null || var.use_ibm_owned_encryption_key ? null : var.existing_kms_key_crn != null ? module.kms_key_crn_parser[0].resource : module.kms[0].keys[format("%s.%s", local.mysql_key_ring_name, local.mysql_key_name)].key_id
-  kms_region        = var.existing_db_instance_crn != null || var.use_ibm_owned_encryption_key ? null : var.existing_kms_key_crn != null ? module.kms_key_crn_parser[0].region : module.kms_instance_crn_parser[0].region
+  kms_account_id    = var.existing_mysql_instance_crn != null || var.use_ibm_owned_encryption_key ? null : var.existing_kms_key_crn != null ? module.kms_key_crn_parser[0].account_id : module.kms_instance_crn_parser[0].account_id
+  kms_service       = var.existing_mysql_instance_crn != null || var.use_ibm_owned_encryption_key ? null : var.existing_kms_key_crn != null ? module.kms_key_crn_parser[0].service_name : module.kms_instance_crn_parser[0].service_name
+  kms_instance_guid = var.existing_mysql_instance_crn != null || var.use_ibm_owned_encryption_key ? null : var.existing_kms_key_crn != null ? module.kms_key_crn_parser[0].service_instance : module.kms_instance_crn_parser[0].service_instance
+  kms_key_crn       = var.existing_mysql_instance_crn != null || var.use_ibm_owned_encryption_key ? null : var.existing_kms_key_crn != null ? var.existing_kms_key_crn : module.kms[0].keys[format("%s.%s", local.mysql_key_ring_name, local.mysql_key_name)].crn
+  kms_key_id        = var.existing_mysql_instance_crn != null || var.use_ibm_owned_encryption_key ? null : var.existing_kms_key_crn != null ? module.kms_key_crn_parser[0].resource : module.kms[0].keys[format("%s.%s", local.mysql_key_ring_name, local.mysql_key_name)].key_id
+  kms_region        = var.existing_mysql_instance_crn != null || var.use_ibm_owned_encryption_key ? null : var.existing_kms_key_crn != null ? module.kms_key_crn_parser[0].region : module.kms_instance_crn_parser[0].region
 
   # If creating KMS cross account policy for backups, parse backup key details from passed in key CRN
   backup_kms_account_id    = local.create_cross_account_backup_kms_auth_policy ? module.kms_backup_key_crn_parser[0].account_id : local.kms_account_id
   backup_kms_service       = local.create_cross_account_backup_kms_auth_policy ? module.kms_backup_key_crn_parser[0].service_name : local.kms_service
   backup_kms_instance_guid = local.create_cross_account_backup_kms_auth_policy ? module.kms_backup_key_crn_parser[0].service_instance : local.kms_instance_guid
   backup_kms_key_id        = local.create_cross_account_backup_kms_auth_policy ? module.kms_backup_key_crn_parser[0].resource : local.kms_key_id
-  backup_kms_key_crn       = var.existing_db_instance_crn != null || var.use_ibm_owned_encryption_key ? null : var.existing_backup_kms_key_crn
+  backup_kms_key_crn       = var.existing_mysql_instance_crn != null || var.use_ibm_owned_encryption_key ? null : var.existing_backup_kms_key_crn
   # Always use same key for backups unless user explicially passed a value for 'existing_backup_kms_key_crn'
   use_same_kms_key_for_backups = var.existing_backup_kms_key_crn == null ? true : false
 }
@@ -244,31 +244,31 @@ locals {
 
 # Look up existing instance details if user passes one
 module "mysql_instance_crn_parser" {
-  count   = var.existing_db_instance_crn != null ? 1 : 0
+  count   = var.existing_mysql_instance_crn != null ? 1 : 0
   source  = "terraform-ibm-modules/common-utilities/ibm//modules/crn-parser"
   version = "1.1.0"
-  crn     = var.existing_db_instance_crn
+  crn     = var.existing_mysql_instance_crn
 }
 
 # Existing instance local vars
 locals {
-  existing_mysql_guid   = var.existing_db_instance_crn != null ? module.mysql_instance_crn_parser[0].service_instance : null
-  existing_mysql_region = var.existing_db_instance_crn != null ? module.mysql_instance_crn_parser[0].region : null
+  existing_mysql_guid   = var.existing_mysql_instance_crn != null ? module.mysql_instance_crn_parser[0].service_instance : null
+  existing_mysql_region = var.existing_mysql_instance_crn != null ? module.mysql_instance_crn_parser[0].region : null
 
   # Validate the region input matches region detected in existing instance CRN (approach based on https://github.com/hashicorp/terraform/issues/25609#issuecomment-1057614400)
   # tflint-ignore: terraform_unused_declarations
-  validate_existing_instance_region = var.existing_db_instance_crn != null && var.region != local.existing_mysql_region ? tobool("The region detected in the 'existing_db_instance_crn' value must match the value of the 'region' input variable when passing an existing instance.") : true
+  validate_existing_instance_region = var.existing_mysql_instance_crn != null && var.region != local.existing_mysql_region ? tobool("The region detected in the 'existing_mysql_instance_crn' value must match the value of the 'region' input variable when passing an existing instance.") : true
 }
 
 # Do a data lookup on the resource GUID to get more info that is needed for the 'ibm_database' data lookup below
 data "ibm_resource_instance" "existing_instance_resource" {
-  count      = var.existing_db_instance_crn != null ? 1 : 0
+  count      = var.existing_mysql_instance_crn != null ? 1 : 0
   identifier = local.existing_mysql_guid
 }
 
 # Lookup details of existing instance
 data "ibm_database" "existing_db_instance" {
-  count             = var.existing_db_instance_crn != null ? 1 : 0
+  count             = var.existing_mysql_instance_crn != null ? 1 : 0
   name              = data.ibm_resource_instance.existing_instance_resource[0].name
   resource_group_id = data.ibm_resource_instance.existing_instance_resource[0].resource_group_id
   location          = var.region
@@ -277,7 +277,7 @@ data "ibm_database" "existing_db_instance" {
 
 # Lookup existing instance connection details
 data "ibm_database_connection" "existing_connection" {
-  count         = var.existing_db_instance_crn != null ? 1 : 0
+  count         = var.existing_mysql_instance_crn != null ? 1 : 0
   endpoint_type = "private"
   deployment_id = data.ibm_database.existing_db_instance[0].id
   user_id       = data.ibm_database.existing_db_instance[0].adminuser
@@ -287,7 +287,7 @@ data "ibm_database_connection" "existing_connection" {
 
 # Create new instance
 module "mysql" {
-  count                             = var.existing_db_instance_crn != null ? 0 : 1
+  count                             = var.existing_mysql_instance_crn != null ? 0 : 1
   source                            = "../../modules/fscloud"
   depends_on                        = [time_sleep.wait_for_authorization_policy, time_sleep.wait_for_backup_kms_authorization_policy]
   resource_group_id                 = module.resource_group.resource_group_id
@@ -317,12 +317,12 @@ module "mysql" {
 }
 
 locals {
-  mysql_guid     = var.existing_db_instance_crn != null ? data.ibm_database.existing_db_instance[0].guid : module.mysql[0].guid
-  mysql_id       = var.existing_db_instance_crn != null ? data.ibm_database.existing_db_instance[0].id : module.mysql[0].id
-  mysql_version  = var.existing_db_instance_crn != null ? data.ibm_database.existing_db_instance[0].version : module.mysql[0].version
-  mysql_crn      = var.existing_db_instance_crn != null ? var.existing_db_instance_crn : module.mysql[0].crn
-  mysql_hostname = var.existing_db_instance_crn != null ? data.ibm_database_connection.existing_connection[0].mysql[0].hosts[0].hostname : module.mysql[0].hostname
-  mysql_port     = var.existing_db_instance_crn != null ? data.ibm_database_connection.existing_connection[0].mysql[0].hosts[0].port : module.mysql[0].port
+  mysql_guid     = var.existing_mysql_instance_crn != null ? data.ibm_database.existing_db_instance[0].guid : module.mysql[0].guid
+  mysql_id       = var.existing_mysql_instance_crn != null ? data.ibm_database.existing_db_instance[0].id : module.mysql[0].id
+  mysql_version  = var.existing_mysql_instance_crn != null ? data.ibm_database.existing_db_instance[0].version : module.mysql[0].version
+  mysql_crn      = var.existing_mysql_instance_crn != null ? var.existing_mysql_instance_crn : module.mysql[0].crn
+  mysql_hostname = var.existing_mysql_instance_crn != null ? data.ibm_database_connection.existing_connection[0].mysql[0].hosts[0].hostname : module.mysql[0].hostname
+  mysql_port     = var.existing_mysql_instance_crn != null ? data.ibm_database_connection.existing_connection[0].mysql[0].hosts[0].port : module.mysql[0].port
 }
 
 

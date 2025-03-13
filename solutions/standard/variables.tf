@@ -36,7 +36,7 @@ variable "region" {
   default     = "us-south"
 }
 
-variable "existing_db_instance_crn" {
+variable "existing_mysql_instance_crn" {
   type        = string
   default     = null
   description = "The CRN of an existing Databases for MySql instance. If no value is specified, a new instance is created."
