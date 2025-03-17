@@ -25,10 +25,10 @@ module "database" {
   tags               = var.resource_tags
   member_host_flavor = var.member_host_flavor
   service_credential_names = {
-    "redis_admin" : "Administrator",
-    "redis_operator" : "Operator",
-    "redis_viewer" : "Viewer",
-    "redis_editor" : "Editor",
+    "mysql_admin" : "Administrator",
+    "mysql_operator" : "Operator",
+    "mysql_viewer" : "Viewer",
+    "mysql_editor" : "Editor",
   }
 }
 
