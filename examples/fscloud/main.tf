@@ -78,7 +78,7 @@ module "mysql" {
     }
   }
   member_host_flavor = "b3c.4x16.encrypted"
-  resource_tags      = var.resource_tags
+  tags               = var.resource_tags
   access_tags        = var.access_tags
   cbr_rules = [
     {

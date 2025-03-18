@@ -217,7 +217,7 @@ resource "ibm_database" "mysql_db" {
         id = var.member_host_flavor
       }
       disk {
-        allocation_mb = var.member_disk_mb
+        allocation_mb = var.disk_mb
       }
       dynamic "members" {
         for_each = var.remote_leader_crn == null ? [1] : []
@@ -237,13 +237,13 @@ resource "ibm_database" "mysql_db" {
         id = var.member_host_flavor
       }
       disk {
-        allocation_mb = var.member_disk_mb
+        allocation_mb = var.disk_mb
       }
       memory {
-        allocation_mb = var.member_memory_mb
+        allocation_mb = var.memory_mb
       }
       cpu {
-        allocation_count = var.member_cpu_count
+        allocation_count = var.cpu_count
       }
       dynamic "members" {
         for_each = var.remote_leader_crn == null ? [1] : []
@@ -260,13 +260,13 @@ resource "ibm_database" "mysql_db" {
     content {
       group_id = "member" # Only member type is allowed for IBM Cloud Databases
       memory {
-        allocation_mb = var.member_memory_mb
+        allocation_mb = var.memory_mb
       }
       disk {
-        allocation_mb = var.member_disk_mb
+        allocation_mb = var.disk_mb
       }
       cpu {
-        allocation_count = var.member_cpu_count
+        allocation_count = var.cpu_count
       }
       dynamic "members" {
         for_each = var.remote_leader_crn == null ? [1] : []

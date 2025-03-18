@@ -40,13 +40,13 @@ variable "members" {
   default     = 3
 }
 
-variable "member_cpu_count" {
+variable "cpu_count" {
   type        = number
   description = "Allocated dedicated CPU per member. For shared CPU, set to 0. [Learn more](https://cloud.ibm.com/docs/databases-for-mysql?topic=databases-for-mysql-resources-scaling)"
   default     = 3
 }
 
-variable "member_disk_mb" {
+variable "disk_mb" {
   type        = number
   description = "Allocated disk per member. [Learn more](https://cloud.ibm.com/docs/databases-for-mysql?topic=databases-for-mysql-resources-scaling)"
   default     = 10240
@@ -58,7 +58,7 @@ variable "member_host_flavor" {
   default     = null
 }
 
-variable "member_memory_mb" {
+variable "memory_mb" {
   type        = number
   description = "Allocated memory per-member. [Learn more](https://cloud.ibm.com/docs/databases-for-mysql?topic=databases-for-mysql-resources-scaling)"
   default     = 4096
@@ -89,7 +89,7 @@ variable "service_credential_names" {
   default     = {}
 }
 
-variable "resource_tags" {
+variable "tags" {
   type        = list(string)
   description = "Optional list of tags to be added to the MySQL instance."
   default     = []
@@ -209,6 +209,15 @@ variable "cbr_rules" {
         value = string
     }))) }))
     enforcement_mode = string
+    tags = optional(list(object({
+      name  = string
+      value = string
+    })))
+    operations = optional(list(object({
+      api_types = list(object({
+        api_type_id = string
+      }))
+    })))
   }))
   description = "(Optional, list) List of CBR rules to create"
   default     = []

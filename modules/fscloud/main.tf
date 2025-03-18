@@ -13,13 +13,13 @@ module "mysql_db" {
   kms_key_crn                       = var.kms_key_crn
   backup_crn                        = var.backup_crn
   backup_encryption_key_crn         = var.backup_encryption_key_crn
-  tags                              = var.resource_tags
+  tags                              = var.tags
   access_tags                       = var.access_tags
   cbr_rules                         = var.cbr_rules
   configuration                     = var.configuration
-  member_memory_mb                  = var.member_memory_mb
-  member_disk_mb                    = var.member_disk_mb
-  member_cpu_count                  = var.member_cpu_count
+  memory_mb                         = var.memory_mb
+  disk_mb                           = var.disk_mb
+  cpu_count                         = var.cpu_count
   member_host_flavor                = var.member_host_flavor
   members                           = var.members
   admin_pass                        = var.admin_pass
