@@ -1,7 +1,7 @@
 module "mysql_db" {
   source                            = "../../"
   resource_group_id                 = var.resource_group_id
-  name                              = var.instance_name
+  name                              = var.name
   region                            = var.region
   remote_leader_crn                 = var.remote_leader_crn
   skip_iam_authorization_policy     = var.skip_iam_authorization_policy
@@ -13,13 +13,13 @@ module "mysql_db" {
   kms_key_crn                       = var.kms_key_crn
   backup_crn                        = var.backup_crn
   backup_encryption_key_crn         = var.backup_encryption_key_crn
-  resource_tags                     = var.resource_tags
+  tags                              = var.tags
   access_tags                       = var.access_tags
   cbr_rules                         = var.cbr_rules
   configuration                     = var.configuration
-  member_memory_mb                  = var.member_memory_mb
-  member_disk_mb                    = var.member_disk_mb
-  member_cpu_count                  = var.member_cpu_count
+  memory_mb                         = var.memory_mb
+  disk_mb                           = var.disk_mb
+  cpu_count                         = var.cpu_count
   member_host_flavor                = var.member_host_flavor
   members                           = var.members
   admin_pass                        = var.admin_pass

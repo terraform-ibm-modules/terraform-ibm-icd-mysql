@@ -53,10 +53,10 @@ module "cbr_zone" {
 # MySQL Instance
 ##############################################################################
 
-module "mysql_db" {
+module "mysql" {
   source                    = "../../modules/fscloud"
   resource_group_id         = module.resource_group.resource_group_id
-  instance_name             = "${var.prefix}-mysql"
+  name                      = "${var.prefix}-mysql"
   region                    = var.region
   mysql_version             = var.mysql_version
   kms_key_crn               = var.kms_key_crn
@@ -78,7 +78,7 @@ module "mysql_db" {
     }
   }
   member_host_flavor = "b3c.4x16.encrypted"
-  resource_tags      = var.resource_tags
+  tags               = var.resource_tags
   access_tags        = var.access_tags
   cbr_rules = [
     {
