@@ -120,7 +120,7 @@ module "mysql_db" {
     "mysql_viewer" : "Viewer",
     "mysql_editor" : "Editor",
   }
-  resource_tags      = var.resource_tags
+  tags               = var.resource_tags
   access_tags        = var.access_tags
   member_host_flavor = "multitenant"
   cbr_rules = [
