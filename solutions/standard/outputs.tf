@@ -4,62 +4,43 @@
 
 output "id" {
   description = "MySQL instance id"
-  value       = module.mysql.id
+  value       = local.mysql_id
 }
 
 output "version" {
   description = "MySQL instance version"
-  value       = module.mysql.version
+  value       = local.mysql_version
 }
 
 output "guid" {
   description = "MySQL instance guid"
-  value       = module.mysql.guid
+  value       = local.mysql_guid
 }
 
 output "crn" {
   description = "MySQL instance crn"
-  value       = module.mysql.crn
+  value       = local.mysql_crn
 }
-
-output "cbr_rule_ids" {
-  description = "CBR rule ids created to restrict MySQL"
-  value       = module.mysql.cbr_rule_ids
-}
-
 output "service_credentials_json" {
   description = "Service credentials json map"
-  value       = module.mysql.service_credentials_json
+  value       = var.existing_mysql_instance_crn != null ? null : module.mysql[0].service_credentials_json
   sensitive   = true
 }
 
 output "service_credentials_object" {
   description = "Service credentials object"
-  value       = module.mysql.service_credentials_object
+  value       = var.existing_mysql_instance_crn != null ? null : module.mysql[0].service_credentials_object
   sensitive   = true
 }
-
-output "adminuser" {
-  description = "Database admin user name"
-  value       = module.mysql.adminuser
-}
-
 output "hostname" {
   description = "Database connection hostname"
-  value       = module.mysql.hostname
+  value       = local.mysql_hostname
 }
 
 output "port" {
   description = "Database connection port"
-  value       = module.mysql.port
+  value       = local.mysql_port
 }
-
-output "certificate_base64" {
-  description = "Database connection certificate"
-  value       = module.mysql.certificate_base64
-  sensitive   = true
-}
-
 output "secrets_manager_secrets" {
   description = "Service credential secrets"
   value       = length(local.service_credential_secrets) > 0 ? module.secrets_manager_service_credentials[0].secrets : null
