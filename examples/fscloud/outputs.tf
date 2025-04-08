@@ -3,25 +3,25 @@
 ##############################################################################
 output "id" {
   description = "MySQL instance id"
-  value       = module.mysql_db.id
+  value       = module.mysql.id
 }
 
 output "guid" {
   description = "MySQL instance guid"
-  value       = module.mysql_db.guid
+  value       = module.mysql.guid
 }
 
 output "version" {
   description = "MySQL instance version"
-  value       = module.mysql_db.version
+  value       = module.mysql.version
 }
 
 output "hostname" {
   description = "MySQL instance hostname"
-  value       = module.mysql_db.hostname
+  value       = module.mysql.hostname
 }
 
 output "port" {
   description = "MySQL instance port"
-  value       = module.mysql_db.port
+  value       = module.mysql.port
 }

@@ -4,7 +4,7 @@
 
 module "resource_group" {
   source  = "terraform-ibm-modules/resource-group/ibm"
-  version = "1.1.6"
+  version = "1.2.0"
   # if an existing resource group is not set (null) create a new one using prefix
   resource_group_name          = var.resource_group == null ? "${var.prefix}-resource-group" : null
   existing_resource_group_name = var.resource_group
@@ -14,14 +14,22 @@ module "resource_group" {
 # ICD mysql database
 ##############################################################################
 
-module "mysql_db" {
-  source            = "../.."
-  resource_group_id = module.resource_group.resource_group_id
-  name              = "${var.prefix}-mysql"
-  mysql_version     = var.mysql_version
-  region            = var.region
-  resource_tags     = var.resource_tags
-  access_tags       = var.access_tags
+module "database" {
+  source             = "../.."
+  resource_group_id  = module.resource_group.resource_group_id
+  name               = "${var.prefix}-mysql"
+  mysql_version      = var.mysql_version
+  region             = var.region
+  access_tags        = var.access_tags
+  service_endpoints  = var.service_endpoints
+  tags               = var.resource_tags
+  member_host_flavor = var.member_host_flavor
+  service_credential_names = {
+    "mysql_admin" : "Administrator",
+    "mysql_operator" : "Operator",
+    "mysql_viewer" : "Viewer",
+    "mysql_editor" : "Editor",
+  }
 }
 
 # On destroy, we are seeing that even though the replica has been returned as
@@ -33,7 +41,7 @@ module "mysql_db" {
 # adding a time sleep here.
 
 resource "time_sleep" "wait_time" {
-  depends_on = [module.mysql_db]
+  depends_on = [module.database]
 
   destroy_duration = "5m"
 }
@@ -48,11 +56,11 @@ module "read_only_replica_mysql_db" {
   resource_group_id = module.resource_group.resource_group_id
   name              = "${var.prefix}-read-only-replica-${count.index}"
   region            = var.region
-  resource_tags     = var.resource_tags
+  tags              = var.resource_tags
   access_tags       = var.access_tags
   mysql_version     = var.mysql_version
-  remote_leader_crn = module.mysql_db.crn
-  member_memory_mb  = 12288 # Must be an increment of 384 megabytes. The minimum size of a read-only replica is 12 GB RAM
-  member_disk_mb    = 10240 # Must be an increment of 512 megabytes. The minimum size of a read-only replica is 10 GB of disk
+  remote_leader_crn = module.database.crn
+  memory_mb         = 12288 # Must be an increment of 384 megabytes. The minimum size of a read-only replica is 12 GB RAM
+  disk_mb           = 10240 # Must be an increment of 512 megabytes. The minimum size of a read-only replica is 10 GB of disk
   depends_on        = [time_sleep.wait_time]
 }
