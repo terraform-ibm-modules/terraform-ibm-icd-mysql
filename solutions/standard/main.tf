@@ -240,10 +240,6 @@ module "mysql_instance_crn_parser" {
 locals {
   existing_mysql_guid   = var.existing_mysql_instance_crn != null ? module.mysql_instance_crn_parser[0].service_instance : null
   existing_mysql_region = var.existing_mysql_instance_crn != null ? module.mysql_instance_crn_parser[0].region : null
-
-  # Validate the region input matches region detected in existing instance CRN (approach based on https://github.com/hashicorp/terraform/issues/25609#issuecomment-1057614400)
-  # tflint-ignore: terraform_unused_declarations
-  validate_existing_instance_region = var.existing_mysql_instance_crn != null && var.region != local.existing_mysql_region ? tobool("The region detected in the 'existing_mysql_instance_crn' value must match the value of the 'region' input variable when passing an existing instance.") : true
 }
 
 # Do a data lookup on the resource GUID to get more info that is needed for the 'ibm_database' data lookup below
@@ -318,13 +314,6 @@ locals {
 
 locals {
   ## Variable validation (approach based on https://github.com/hashicorp/terraform/issues/25609#issuecomment-1057614400)
-  # tflint-ignore: terraform_unused_declarations
-  validate_sm_crn = length(local.service_credential_secrets) > 0 && var.existing_secrets_manager_instance_crn == null ? tobool("`existing_secrets_manager_instance_crn` is required when adding service credentials to a secrets manager secret.") : false
-  # tflint-ignore: terraform_unused_declarations
-  validate_sm_sg = var.existing_secrets_manager_instance_crn != null && var.admin_pass_secret_manager_secret_group == null ? tobool("`admin_pass_secret_manager_secret_group` is required when `existing_secrets_manager_instance_crn` is set.") : false
-  # tflint-ignore: terraform_unused_declarations
-  validate_sm_sn = var.existing_secrets_manager_instance_crn != null && var.admin_pass_secret_manager_secret_name == null ? tobool("`admin_pass_secret_manager_secret_name` is required when `existing_secrets_manager_instance_crn` is set.") : false
-
   create_sm_auth_policy = var.skip_mysql_sm_auth_policy || var.existing_secrets_manager_instance_crn == null ? 0 : 1
 }
 
