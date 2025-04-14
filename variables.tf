@@ -276,7 +276,7 @@ variable "use_ibm_owned_encryption_key" {
   type        = bool
   description = "IBM Cloud Databases will secure your deployment's data at rest automatically with an encryption key that IBM hold. Alternatively, you may select your own Key Management System instance and encryption key (Key Protect or Hyper Protect Crypto Services) by setting this to false. If setting to false, a value must be passed for the `kms_key_crn` input."
   default     = true
-   validation {
+  validation {
     condition     = var.use_ibm_owned_encryption_key && (var.kms_key_crn != null || var.backup_encryption_key_crn != null) ? false : true
     error_message = "When passing values for 'kms_key_crn' or 'backup_encryption_key_crn', you must set 'use_ibm_owned_encryption_key' to false. Otherwise unset them to use default encryption."
   }
@@ -301,7 +301,7 @@ variable "use_default_backup_encryption_key" {
   type        = bool
   description = "When `use_ibm_owned_encryption_key` is set to false, backups will be encrypted with either the key specified in `kms_key_crn`, or in `backup_encryption_key_crn` if a value is passed. If you do not want to use your own key for backups encryption, you can set this to `true` to use the IBM Cloud Databases default encryption for backups. Alternatively set `use_ibm_owned_encryption_key` to true to use the default encryption for both backups and deployment data."
   default     = false
- 
+
 }
 
 variable "kms_key_crn" {

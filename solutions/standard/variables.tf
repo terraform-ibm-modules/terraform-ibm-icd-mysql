@@ -34,8 +34,8 @@ variable "region" {
   description = "The region where you want to deploy your instance."
   type        = string
   default     = "us-south"
-    validation {
-    condition     = var.existing_mysql_instance_crn != null && var.region != local.existing_mysql_region? false : true
+  validation {
+    condition     = var.existing_mysql_instance_crn != null && var.region != local.existing_mysql_region ? false : true
     error_message = "The region detected in the 'existing_rabbitmq_instance_crn' value must match the value of the 'region' input variable when passing an existing instance."
   }
 }
@@ -324,13 +324,13 @@ variable "existing_secrets_manager_instance_crn" {
   default     = null
   description = "The CRN of existing secrets manager to use to create service credential secrets for Databases for MySQL instance."
 
-    validation {
-    condition     = var.existing_secrets_manager_instance_crn != null && var.admin_pass_secrets_manager_secret_group == null ? false : true
-    error_message = "`admin_pass_secrets_manager_secret_group` is required when `existing_secrets_manager_instance_crn` is set."
+  validation {
+    condition     = var.existing_secrets_manager_instance_crn != null && var.admin_pass_secret_manager_secret_group == null ? false : true
+    error_message = "`admin_pass_secret_manager_secret_group` is required when `existing_secrets_manager_instance_crn` is set."
   }
 
   validation {
-    condition     = var.existing_secrets_manager_instance_crn != null && var.admin_pass_secrets_manager_secret_name == null ? false : true
+    condition     = var.existing_secrets_manager_instance_crn != null && var.admin_pass_secret_manager_secret_name == null ? false : true
     error_message = "`admin_pass_secrets_manager_secret_name` is required when `existing_secrets_manager_instance_crn` is set."
   }
 
