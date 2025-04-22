@@ -108,7 +108,16 @@ variable "users" {
   sensitive   = true
   description = "A list of users that you want to create on the database. Users block is supported by MySQL version >= 6.0. Multiple blocks are allowed. The user password must be in the range of 10-32 characters. Be warned that in most case using IAM service credentials (via the var.service_credential_names) is sufficient to control access to the MySQL instance. This blocks creates native MySQL database users. [Learn more](https://github.com/terraform-ibm-modules/terraform-ibm-icd-mysql/blob/main/solutions/standard/DA-types.md#users)"
 }
+variable "service_endpoints" {
+  type        = string
+  description = "The type of endpoint of the database instance. Possible values: `public`, `private`, `public-and-private`."
+  default     = "private"
 
+  validation {
+    condition     = can(regex("public|public-and-private|private", var.service_endpoints))
+    error_message = "Valid values for service_endpoints are 'public', 'public-and-private', and 'private'"
+  }
+}
 variable "tags" {
   type        = list(any)
   description = "The list of tags to be added to the Databases for MySQL instance."
@@ -183,6 +192,11 @@ variable "existing_kms_key_crn" {
   default     = null
 }
 
+variable "kms_encryption_enabled" {
+  type        = bool
+  description = "Set to true to enable Secrets Manager Secrets Encryption using customer managed keys. When set to true, a value must be passed for either `existing_kms_instance_crn` or `existing_secrets_manager_kms_key_crn`. Cannot be set to true if passing a value for `existing_secrets_manager_crn`."
+  default     = false
+}
 variable "kms_endpoint_type" {
   type        = string
   description = "The type of endpoint to use for communicating with the Key Protect or Hyper Protect Crypto Services instance. Possible values: `public`, `private`. Applies only if `existing_kms_key_crn` is not specified."

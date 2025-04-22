@@ -5,7 +5,7 @@ module "mysql_db" {
   region                            = var.region
   remote_leader_crn                 = var.remote_leader_crn
   skip_iam_authorization_policy     = var.skip_iam_authorization_policy
-  service_endpoints                 = "private"
+  service_endpoints                 = var.service_endpoints
   mysql_version                     = var.mysql_version
   use_ibm_owned_encryption_key      = var.use_ibm_owned_encryption_key
   use_same_kms_key_for_backups      = var.use_same_kms_key_for_backups
