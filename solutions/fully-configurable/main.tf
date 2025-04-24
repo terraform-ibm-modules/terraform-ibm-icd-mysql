@@ -287,7 +287,7 @@ data "ibm_database_connection" "existing_connection" {
 # Create new instance
 module "mysql" {
   count                             = var.existing_mysql_instance_crn != null ? 0 : 1
-  source                            = "../../modules/fscloud"
+  source                            = "../../"
   depends_on                        = [time_sleep.wait_for_authorization_policy, time_sleep.wait_for_backup_kms_authorization_policy]
   resource_group_id                 = module.resource_group.resource_group_id
   name                              = var.prefix != null ? "${var.prefix}-${var.name}" : var.name
