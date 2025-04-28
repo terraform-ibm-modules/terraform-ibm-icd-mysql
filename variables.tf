@@ -277,6 +277,11 @@ variable "use_ibm_owned_encryption_key" {
   description = "IBM Cloud Databases will secure your deployment's data at rest automatically with an encryption key that IBM hold. Alternatively, you may select your own Key Management System instance and encryption key (Key Protect or Hyper Protect Crypto Services) by setting this to false. If setting to false, a value must be passed for the `kms_key_crn` input."
   default     = true
 }
+variable "kms_encryption_enabled" {
+  type        = bool
+  description = "Set to true to enable KMS Encryption"
+  default     = true
+}
 
 variable "use_default_backup_encryption_key" {
   type        = bool

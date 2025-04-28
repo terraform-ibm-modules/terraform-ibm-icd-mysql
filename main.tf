@@ -7,7 +7,7 @@ locals {
   # tflint-ignore: terraform_unused_declarations
   validate_kms_values = var.use_ibm_owned_encryption_key && (var.kms_key_crn != null || var.backup_encryption_key_crn != null) ? tobool("When passing values for 'kms_key_crn' or 'backup_encryption_key_crn', you must set 'use_ibm_owned_encryption_key' to false. Otherwise unset them to use default encryption.") : true
   # tflint-ignore: terraform_unused_declarations
-  validate_kms_vars = !var.use_ibm_owned_encryption_key && var.kms_key_crn == null ? tobool("When setting 'use_ibm_owned_encryption_key' to false, a value must be passed for 'kms_key_crn'.") : true
+  validate_kms_vars = !var.use_ibm_owned_encryption_key && var.kms_encryption_enabled && var.kms_key_crn == null ? tobool("When setting 'use_ibm_owned_encryption_key' to false, 'kms_encryption_enabled' must be set to true and a value must be passed for 'kms_key_crn'.") : true
   # tflint-ignore: terraform_unused_declarations
   validate_backup_key = !var.use_ibm_owned_encryption_key && var.backup_encryption_key_crn != null && (var.use_default_backup_encryption_key || var.use_same_kms_key_for_backups) ? tobool("When passing a value for 'backup_encryption_key_crn' you cannot set 'use_default_backup_encryption_key' to true or 'use_ibm_owned_encryption_key' to false.") : true
   # tflint-ignore: terraform_unused_declarations
@@ -34,8 +34,8 @@ locals {
 ########################################################################################################################
 
 locals {
-  parse_kms_key        = !var.use_ibm_owned_encryption_key
-  parse_backup_kms_key = !var.use_ibm_owned_encryption_key && !var.use_default_backup_encryption_key
+  parse_kms_key        = !var.use_ibm_owned_encryption_key && var.kms_encryption_enabled
+  parse_backup_kms_key = !var.use_ibm_owned_encryption_key && !var.use_default_backup_encryption_key && var.kms_encryption_enabled
 }
 
 module "kms_key_crn_parser" {
@@ -69,10 +69,10 @@ locals {
 ########################################################################################################################
 
 locals {
-  # only create auth policy if 'use_ibm_owned_encryption_key' is false, and 'skip_iam_authorization_policy' is false
-  create_kms_auth_policy = !var.use_ibm_owned_encryption_key && !var.skip_iam_authorization_policy ? 1 : 0
-  # only create backup auth policy if 'use_ibm_owned_encryption_key' is false, 'skip_iam_authorization_policy' is false and 'use_same_kms_key_for_backups' is false
-  create_backup_kms_auth_policy = !var.use_ibm_owned_encryption_key && !var.skip_iam_authorization_policy && !var.use_same_kms_key_for_backups ? 1 : 0
+  # only create auth policy if 'use_ibm_owned_encryption_key' is false, and 'skip_iam_authorization_policy' is false and 'kms_encryption_enabled' is true
+  create_kms_auth_policy = !var.use_ibm_owned_encryption_key && var.kms_encryption_enabled && !var.skip_iam_authorization_policy ? 1 : 0
+  # only create backup auth policy if 'use_ibm_owned_encryption_key' is false, 'skip_iam_authorization_policy' is false and 'use_same_kms_key_for_backups' is false and 'kms_encryption_enabled' is true
+  create_backup_kms_auth_policy = !var.use_ibm_owned_encryption_key && var.kms_encryption_enabled && !var.skip_iam_authorization_policy && !var.use_same_kms_key_for_backups ? 1 : 0
 }
 
 # Create IAM Authorization Policies to allow MySQL to access KMS for the encryption key

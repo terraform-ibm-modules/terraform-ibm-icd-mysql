@@ -194,7 +194,7 @@ variable "existing_kms_key_crn" {
 
 variable "kms_encryption_enabled" {
   type        = bool
-  description = "Set to true to enable Secrets Manager Secrets Encryption using customer managed keys. When set to true, a value must be passed for either `existing_kms_instance_crn` or `existing_secrets_manager_kms_key_crn`. Cannot be set to true if passing a value for `existing_secrets_manager_crn`."
+  description = "Set to true to enable KMS Encryption"
   default     = false
 }
 variable "kms_endpoint_type" {

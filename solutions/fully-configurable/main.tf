@@ -19,7 +19,7 @@ locals {
   # tflint-ignore: terraform_unused_declarations
   validate_kms_1 = var.use_ibm_owned_encryption_key && (var.existing_kms_instance_crn != null || var.existing_kms_key_crn != null || var.existing_backup_kms_key_crn != null) ? tobool("When setting values for 'existing_kms_instance_crn', 'existing_kms_key_crn' or 'existing_backup_kms_key_crn', the 'use_ibm_owned_encryption_key' input must be set to false.") : true
   # tflint-ignore: terraform_unused_declarations
-  validate_kms_2 = !var.use_ibm_owned_encryption_key && (var.existing_kms_instance_crn == null && var.existing_kms_key_crn == null) ? tobool("When 'use_ibm_owned_encryption_key' is false, a value is required for either 'existing_kms_instance_crn' (to create a new key), or 'existing_kms_key_crn' to use an existing key.") : true
+  validate_kms_2 = !var.use_ibm_owned_encryption_key && var.kms_encryption_enabled && (var.existing_kms_instance_crn == null && var.existing_kms_key_crn == null) ? tobool("When 'use_ibm_owned_encryption_key' is false, kms_encryption_enabled' must be set to true and a value is required for either 'existing_kms_instance_crn' (to create a new key), or 'existing_kms_key_crn' to use an existing key.") : true
 }
 
 #######################################################################################################################
@@ -293,6 +293,7 @@ module "mysql" {
   name                              = var.prefix != null ? "${var.prefix}-${var.name}" : var.name
   region                            = var.region
   mysql_version                     = var.mysql_version
+  kms_encryption_enabled            = var.kms_encryption_enabled
   skip_iam_authorization_policy     = var.skip_mysql_kms_auth_policy
   use_ibm_owned_encryption_key      = var.use_ibm_owned_encryption_key
   kms_key_crn                       = local.kms_key_crn

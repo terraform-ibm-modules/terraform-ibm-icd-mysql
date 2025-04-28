@@ -1,7 +1,7 @@
 module "mysql" {
   source                                              = "../fully-configurable"
   ibmcloud_api_key                                    = var.ibmcloud_api_key
-  ibmcloud_kms_api_key                                = var.ibmcloud_kms_api_key #doubt
+  ibmcloud_kms_api_key                                = var.ibmcloud_kms_api_key
   existing_resource_group_name                        = var.existing_resource_group_name
   prefix                                              = var.prefix
   provider_visibility                                 = "private"
@@ -13,20 +13,20 @@ module "mysql" {
   use_ibm_owned_encryption_key                        = var.use_ibm_owned_encryption_key
   kms_encryption_enabled                              = true
   existing_kms_key_crn                                = var.existing_kms_key_crn
-  existing_kms_instance_crn                           = var.existing_kms_instance_crn #doubt
+  existing_kms_instance_crn                           = var.existing_kms_instance_crn
   existing_backup_kms_key_crn                         = var.existing_backup_kms_key_crn
-  kms_endpoint_type                                   = "private" #doubt
+  kms_endpoint_type                                   = "private"
   key_ring_name                                       = var.key_ring_name
   key_name                                            = var.key_name
   use_default_backup_encryption_key                   = var.use_default_backup_encryption_key
-  existing_secrets_manager_instance_crn               = var.existing_secrets_manager_instance_crn #doubt
-  existing_secrets_manager_endpoint_type              = "private"                                 #doubt
+  existing_secrets_manager_instance_crn               = var.existing_secrets_manager_instance_crn
+  existing_secrets_manager_endpoint_type              = "private"
   skip_mysql_sm_auth_policy                           = var.skip_mysql_sm_auth_policy
   access_tags                                         = var.access_tags
   tags                                                = var.tags
   users                                               = var.users
   admin_pass                                          = var.admin_pass
-  admin_pass_secret_manager_secret_group              = var.admin_pass_secret_manager_secret_group #doubt
+  admin_pass_secret_manager_secret_group              = var.admin_pass_secret_manager_secret_group
   use_existing_admin_pass_secret_manager_secret_group = var.use_existing_admin_pass_secret_manager_secret_group
   admin_pass_secret_manager_secret_name               = var.admin_pass_secret_manager_secret_name
   members                                             = var.members
