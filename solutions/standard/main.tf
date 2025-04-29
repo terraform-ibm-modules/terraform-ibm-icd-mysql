@@ -314,7 +314,7 @@ locals {
 
 locals {
   ## Variable validation (approach based on https://github.com/hashicorp/terraform/issues/25609#issuecomment-1057614400)
-  create_sm_auth_policy = var.skip_mysql_sm_auth_policy || var.existing_secrets_manager_instance_crn == null ? 0 : 1
+  create_sm_auth_policy = var.skip_mysql_secrets_manager_auth_policy || var.existing_secrets_manager_instance_crn == null ? 0 : 1
 }
 
 # Parse the Secrets Manager CRN

@@ -290,7 +290,7 @@
               "key": "service_credential_secrets"
             },
             {
-              "key": "skip_mysql_sm_auth_policy"
+              "key": "skip_mysql_secrets_manager_auth_policy"
             },
             {
               "key": "skip_mysql_kms_auth_policy"
