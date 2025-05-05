@@ -1,6 +1,1 @@
-
-provider "ibm" {
-  ibmcloud_api_key = var.ibmcloud_api_key
-  region           = var.region
-  visibility       = "private"
-}
+# Explicit provider config not required here as provider config in fully-configurable is used

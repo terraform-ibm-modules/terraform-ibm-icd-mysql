@@ -1,7 +1,9 @@
 #######################################################################################################################
 # Resource Group
 #######################################################################################################################
-
+locals {
+  prefix = var.prefix != null ? trimspace(var.prefix) != "" ? "${var.prefix}-" : "" : ""
+}
 module "resource_group" {
   source                       = "terraform-ibm-modules/resource-group/ibm"
   version                      = "1.2.0"
@@ -9,27 +11,18 @@ module "resource_group" {
 }
 
 #######################################################################################################################
-# KMS related variable validation
-# (approach based on https://github.com/hashicorp/terraform/issues/25609#issuecomment-1057614400)
-#
-# TODO: Replace with terraform cross variable validation: https://github.ibm.com/GoldenEye/issues/issues/10836
-#######################################################################################################################
-
-locals {
-  # tflint-ignore: terraform_unused_declarations
-  validate_kms_1 = var.use_ibm_owned_encryption_key && (var.existing_kms_instance_crn != null || var.existing_kms_key_crn != null || var.existing_backup_kms_key_crn != null) ? tobool("When setting values for 'existing_kms_instance_crn', 'existing_kms_key_crn' or 'existing_backup_kms_key_crn', the 'use_ibm_owned_encryption_key' input must be set to false.") : true
-  # tflint-ignore: terraform_unused_declarations
-  validate_kms_2 = !var.use_ibm_owned_encryption_key && var.kms_encryption_enabled && (var.existing_kms_instance_crn == null && var.existing_kms_key_crn == null) ? tobool("When 'use_ibm_owned_encryption_key' is false, kms_encryption_enabled' must be set to true and a value is required for either 'existing_kms_instance_crn' (to create a new key), or 'existing_kms_key_crn' to use an existing key.") : true
-}
-
-#######################################################################################################################
 # KMS encryption key
 #######################################################################################################################
 
 locals {
-  create_new_kms_key  = var.existing_mysql_instance_crn == null && var.kms_encryption_enabled && !var.use_ibm_owned_encryption_key && var.existing_kms_key_crn == null ? true : false # no need to create any KMS resources if passing an existing key, or using IBM owned keys
-  mysql_key_name      = var.prefix != null ? "${var.prefix}-${var.key_name}" : var.key_name
-  mysql_key_ring_name = var.prefix != null ? "${var.prefix}-${var.key_ring_name}" : var.key_ring_name
+  create_new_kms_key = (
+    var.kms_encryption_enabled &&
+    var.existing_mysql_instance_crn == null &&
+    !var.use_ibm_owned_encryption_key &&
+    var.existing_kms_key_crn == null
+  )
+  mysql_key_name      = "${local.prefix}${var.key_name}"
+  mysql_key_ring_name = "${local.prefix}${var.key_ring_name}"
 }
 
 module "kms" {
@@ -98,23 +91,23 @@ data "ibm_iam_account_settings" "iam_account_settings" {
 
 locals {
   account_id                                  = data.ibm_iam_account_settings.iam_account_settings.account_id
-  create_cross_account_kms_auth_policy        = var.existing_mysql_instance_crn == null && var.kms_encryption_enabled && !var.skip_mysql_kms_auth_policy && var.ibmcloud_kms_api_key != null && !var.use_ibm_owned_encryption_key
-  create_cross_account_backup_kms_auth_policy = var.existing_mysql_instance_crn == null && var.kms_encryption_enabled && !var.skip_mysql_kms_auth_policy && var.ibmcloud_kms_api_key != null && !var.use_ibm_owned_encryption_key && var.existing_backup_kms_key_crn != null
+  create_cross_account_kms_auth_policy        = var.kms_encryption_enabled && var.existing_mysql_instance_crn == null && !var.skip_mysql_kms_auth_policy && var.ibmcloud_kms_api_key != null && !var.use_ibm_owned_encryption_key
+  create_cross_account_backup_kms_auth_policy = var.kms_encryption_enabled && var.existing_mysql_instance_crn == null && !var.skip_mysql_kms_auth_policy && var.ibmcloud_kms_api_key != null && !var.use_ibm_owned_encryption_key && var.existing_backup_kms_key_crn != null
 
-  # If KMS encryption enabled (and existing ES instance is not being passed), parse details from the existing key if being passed, otherwise get it from the key that the DA creates
-  kms_account_id    = var.existing_mysql_instance_crn != null || var.use_ibm_owned_encryption_key || !var.kms_encryption_enabled ? null : var.existing_kms_key_crn != null ? module.kms_key_crn_parser[0].account_id : module.kms_instance_crn_parser[0].account_id
-  kms_service       = var.existing_mysql_instance_crn != null || var.use_ibm_owned_encryption_key || !var.kms_encryption_enabled ? null : var.existing_kms_key_crn != null ? module.kms_key_crn_parser[0].service_name : module.kms_instance_crn_parser[0].service_name
-  kms_instance_guid = var.existing_mysql_instance_crn != null || var.use_ibm_owned_encryption_key || !var.kms_encryption_enabled ? null : var.existing_kms_key_crn != null ? module.kms_key_crn_parser[0].service_instance : module.kms_instance_crn_parser[0].service_instance
-  kms_key_crn       = var.existing_mysql_instance_crn != null || var.use_ibm_owned_encryption_key || !var.kms_encryption_enabled ? null : var.existing_kms_key_crn != null ? var.existing_kms_key_crn : module.kms[0].keys[format("%s.%s", local.mysql_key_ring_name, local.mysql_key_name)].crn
-  kms_key_id        = var.existing_mysql_instance_crn != null || var.use_ibm_owned_encryption_key || !var.kms_encryption_enabled ? null : var.existing_kms_key_crn != null ? module.kms_key_crn_parser[0].resource : module.kms[0].keys[format("%s.%s", local.mysql_key_ring_name, local.mysql_key_name)].key_id
-  kms_region        = var.existing_mysql_instance_crn != null || var.use_ibm_owned_encryption_key || !var.kms_encryption_enabled ? null : var.existing_kms_key_crn != null ? module.kms_key_crn_parser[0].region : module.kms_instance_crn_parser[0].region
+  # If KMS encryption enabled (and existing MySql instance is not being passed), parse details from the existing key if being passed, otherwise get it from the key that the DA creates
+  kms_account_id    = !var.kms_encryption_enabled || var.existing_mysql_instance_crn != null || var.use_ibm_owned_encryption_key ? null : var.existing_kms_key_crn != null ? module.kms_key_crn_parser[0].account_id : module.kms_instance_crn_parser[0].account_id
+  kms_service       = !var.kms_encryption_enabled || var.existing_mysql_instance_crn != null || var.use_ibm_owned_encryption_key ? null : var.existing_kms_key_crn != null ? module.kms_key_crn_parser[0].service_name : module.kms_instance_crn_parser[0].service_name
+  kms_instance_guid = !var.kms_encryption_enabled || var.existing_mysql_instance_crn != null || var.use_ibm_owned_encryption_key ? null : var.existing_kms_key_crn != null ? module.kms_key_crn_parser[0].service_instance : module.kms_instance_crn_parser[0].service_instance
+  kms_key_crn       = !var.kms_encryption_enabled || var.existing_mysql_instance_crn != null || var.use_ibm_owned_encryption_key ? null : var.existing_kms_key_crn != null ? var.existing_kms_key_crn : module.kms[0].keys[format("%s.%s", local.mysql_key_ring_name, local.mysql_key_name)].crn
+  kms_key_id        = !var.kms_encryption_enabled || var.existing_mysql_instance_crn != null || var.use_ibm_owned_encryption_key ? null : var.existing_kms_key_crn != null ? module.kms_key_crn_parser[0].resource : module.kms[0].keys[format("%s.%s", local.mysql_key_ring_name, local.mysql_key_name)].key_id
+  kms_region        = !var.kms_encryption_enabled || var.existing_mysql_instance_crn != null || var.use_ibm_owned_encryption_key ? null : var.existing_kms_key_crn != null ? module.kms_key_crn_parser[0].region : module.kms_instance_crn_parser[0].region
 
   # If creating KMS cross account policy for backups, parse backup key details from passed in key CRN
   backup_kms_account_id    = local.create_cross_account_backup_kms_auth_policy ? module.kms_backup_key_crn_parser[0].account_id : local.kms_account_id
   backup_kms_service       = local.create_cross_account_backup_kms_auth_policy ? module.kms_backup_key_crn_parser[0].service_name : local.kms_service
   backup_kms_instance_guid = local.create_cross_account_backup_kms_auth_policy ? module.kms_backup_key_crn_parser[0].service_instance : local.kms_instance_guid
   backup_kms_key_id        = local.create_cross_account_backup_kms_auth_policy ? module.kms_backup_key_crn_parser[0].resource : local.kms_key_id
-  backup_kms_key_crn       = var.existing_mysql_instance_crn != null || var.use_ibm_owned_encryption_key || !var.kms_encryption_enabled ? null : var.existing_backup_kms_key_crn
+  backup_kms_key_crn       = var.existing_mysql_instance_crn != null || var.use_ibm_owned_encryption_key ? null : var.existing_backup_kms_key_crn
   # Always use same key for backups unless user explicially passed a value for 'existing_backup_kms_key_crn'
   use_same_kms_key_for_backups = var.existing_backup_kms_key_crn == null ? true : false
 }
@@ -253,10 +246,6 @@ module "mysql_instance_crn_parser" {
 locals {
   existing_mysql_guid   = var.existing_mysql_instance_crn != null ? module.mysql_instance_crn_parser[0].service_instance : null
   existing_mysql_region = var.existing_mysql_instance_crn != null ? module.mysql_instance_crn_parser[0].region : null
-
-  # Validate the region input matches region detected in existing instance CRN (approach based on https://github.com/hashicorp/terraform/issues/25609#issuecomment-1057614400)
-  # tflint-ignore: terraform_unused_declarations
-  validate_existing_instance_region = var.existing_mysql_instance_crn != null && var.region != local.existing_mysql_region ? tobool("The region detected in the 'existing_mysql_instance_crn' value must match the value of the 'region' input variable when passing an existing instance.") : true
 }
 
 # Do a data lookup on the resource GUID to get more info that is needed for the 'ibm_database' data lookup below
@@ -290,11 +279,10 @@ module "mysql" {
   source                            = "../../"
   depends_on                        = [time_sleep.wait_for_authorization_policy, time_sleep.wait_for_backup_kms_authorization_policy]
   resource_group_id                 = module.resource_group.resource_group_id
-  name                              = var.prefix != null ? "${var.prefix}-${var.name}" : var.name
+  name                              = "${local.prefix}${var.name}"
   region                            = var.region
   mysql_version                     = var.mysql_version
-  kms_encryption_enabled            = var.kms_encryption_enabled
-  skip_iam_authorization_policy     = var.skip_mysql_kms_auth_policy
+  skip_iam_authorization_policy     = var.kms_encryption_enabled ? var.skip_mysql_kms_auth_policy : true
   use_ibm_owned_encryption_key      = var.use_ibm_owned_encryption_key
   kms_key_crn                       = local.kms_key_crn
   backup_encryption_key_crn         = local.backup_kms_key_crn
@@ -315,6 +303,7 @@ module "mysql" {
   service_endpoints                 = var.service_endpoints
   backup_crn                        = var.backup_crn
   remote_leader_crn                 = var.remote_leader_crn
+  kms_encryption_enabled            = var.kms_encryption_enabled
 }
 
 locals {
@@ -332,15 +321,7 @@ locals {
 #######################################################################################################################
 
 locals {
-  ## Variable validation (approach based on https://github.com/hashicorp/terraform/issues/25609#issuecomment-1057614400)
-  # tflint-ignore: terraform_unused_declarations
-  validate_sm_crn = length(local.service_credential_secrets) > 0 && var.existing_secrets_manager_instance_crn == null ? tobool("`existing_secrets_manager_instance_crn` is required when adding service credentials to a secrets manager secret.") : false
-  # tflint-ignore: terraform_unused_declarations
-  validate_sm_sg = var.existing_secrets_manager_instance_crn != null && var.admin_pass_secret_manager_secret_group == null ? tobool("`admin_pass_secret_manager_secret_group` is required when `existing_secrets_manager_instance_crn` is set.") : false
-  # tflint-ignore: terraform_unused_declarations
-  validate_sm_sn = var.existing_secrets_manager_instance_crn != null && var.admin_pass_secret_manager_secret_name == null ? tobool("`admin_pass_secret_manager_secret_name` is required when `existing_secrets_manager_instance_crn` is set.") : false
-
-  create_sm_auth_policy = var.skip_mysql_sm_auth_policy || var.existing_secrets_manager_instance_crn == null ? 0 : 1
+  create_sm_auth_policy = var.skip_mysql_secrets_manager_auth_policy || var.existing_secrets_manager_instance_crn == null ? 0 : 1
 }
 
 # Parse the Secrets Manager CRN
@@ -395,10 +376,10 @@ locals {
 
   # Build the structure of the arbitrary credential type secret for admin password
   admin_pass_secret = [{
-    secret_group_name     = (var.prefix != null && var.prefix != "") && var.admin_pass_secret_manager_secret_group != null ? "${var.prefix}-${var.admin_pass_secret_manager_secret_group}" : var.admin_pass_secret_manager_secret_group
-    existing_secret_group = var.use_existing_admin_pass_secret_manager_secret_group
+    secret_group_name     = "${local.prefix}${var.admin_pass_secrets_manager_secret_group}"
+    existing_secret_group = var.use_existing_admin_pass_secrets_manager_secret_group
     secrets = [{
-      secret_name             = (var.prefix != null && var.prefix != "") && var.admin_pass_secret_manager_secret_name != null ? "${var.prefix}-${var.admin_pass_secret_manager_secret_name}" : var.admin_pass_secret_manager_secret_name
+      secret_name             = "${local.prefix}${var.admin_pass_secrets_manager_secret_name}"
       secret_type             = "arbitrary"
       secret_payload_password = local.admin_pass
       }
