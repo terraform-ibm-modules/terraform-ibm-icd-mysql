@@ -290,21 +290,21 @@ func TestRunUpgradeCompleteExample(t *testing.T) {
 
 func TestPlanValidation(t *testing.T) {
 	options := testhelper.TestOptionsDefault(&testhelper.TestOptions{
-		Testing:       t,
-		TerraformDir:  fullyConfigurableSolutionTerraformDir,
-		Prefix:        "validate-plan",
-		ResourceGroup: resourceGroup,
-		Region:        "us-south", // skip VPC region picker
+		Testing:      t,
+		TerraformDir: fullyConfigurableSolutionTerraformDir,
+		Prefix:       "validate-plan",
+		// ResourceGroup: resourceGroup,
+		Region: "us-south", // skip VPC region picker
 	})
 	options.TestSetup()
 	options.TerraformOptions.NoColor = true
 	options.TerraformOptions.Logger = logger.Discard
 	options.TerraformOptions.Vars = map[string]interface{}{
-		"prefix":              options.Prefix,
-		"region":              "us-south",
-		"mysql_version":       "8.0",
-		"provider_visibility": "public",
-		"resource_group_name": options.Prefix,
+		"prefix":                       options.Prefix,
+		"region":                       "us-south",
+		"mysql_version":                "8.0",
+		"provider_visibility":          "public",
+		"existing_resource_group_name": resourceGroup,
 	}
 
 	// Test the DA when using an existing KMS instance
