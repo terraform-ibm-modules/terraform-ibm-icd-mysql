@@ -7,7 +7,7 @@ module "mysql" {
   provider_visibility                                  = "public"
   region                                               = var.region
   mysql_version                                        = var.mysql_version
-  name                                                 = var.prefix != null ? "${var.prefix}-${var.name}" : var.name
+  name                                                 = var.name
   existing_mysql_instance_crn                          = var.existing_mysql_instance_crn
   skip_mysql_kms_auth_policy                           = var.skip_mysql_kms_auth_policy
   use_ibm_owned_encryption_key                         = var.use_ibm_owned_encryption_key
