@@ -18,7 +18,21 @@ variable "existing_resource_group_name" {
 variable "prefix" {
   type        = string
   description = "Prefix to add to all resources created by this solution."
-  default     = null
+  nullable    = true
+  validation {
+    # - null and empty string is allowed
+    # - Must not contain consecutive hyphens (--): length(regexall("--", var.prefix)) == 0
+    # - Starts with a lowercase letter: [a-z]
+    # - Contains only lowercase letters (a–z), digits (0–9), and hyphens (-) and must not exceed 16 characters in length: [a-z0-9-]{0,14}
+    # - Must not end with a hyphen (-): [a-z0-9]
+    condition = (var.prefix == null || var.prefix == "" ? true :
+      alltrue([
+        can(regex("^[a-z][-a-z0-9]{0,14}[a-z0-9]$", var.prefix)),
+        length(regexall("--", var.prefix)) == 0
+      ])
+    )
+    error_message = "Prefix must begin with a lowercase letter and may contain only lowercase letters, digits, and hyphens '-'. It should not exceed 16 characters, must not end with a hyphen('-'), and cannot contain consecutive hyphens ('--')."
+  }
 }
 
 variable "name" {
@@ -113,6 +127,7 @@ variable "users" {
   sensitive   = true
   description = "A list of users that you want to create on the database. Users block is supported by MySQL version >= 6.0. Multiple blocks are allowed. The user password must be in the range of 10-32 characters. Be warned that in most case using IAM service credentials (via the var.service_credential_names) is sufficient to control access to the MySQL instance. This blocks creates native MySQL database users. [Learn more](https://github.com/terraform-ibm-modules/terraform-ibm-icd-mysql/blob/main/solutions/fully-configurable/DA-types.md#users)"
 }
+
 variable "service_endpoints" {
   type        = string
   description = "The type of endpoint of the database instance. Possible values: `public`, `private`, `public-and-private`."
@@ -194,7 +209,7 @@ variable "use_ibm_owned_encryption_key" {
         var.existing_backup_kms_key_crn != null
       ))
     )
-    error_message = "When 'kms_encryption_enabled' is true and setting values for 'existing_kms_instance_crn', 'existing_kms_key_crn' or 'existing_backup_kms_key_crn', the 'use_ibm_owned_encryption_key' input must be set to false."
+    error_message = "If 'kms_encryption_enabled' is true and you're setting any of 'existing_kms_instance_crn', 'existing_kms_key_crn', or 'existing_backup_kms_key_crn', then 'use_ibm_owned_encryption_key' must be set to false."
   }
 
   # this validation ensures key info is provided when IBM-owned key is disabled and no MySQL instance is given
@@ -226,6 +241,7 @@ variable "kms_encryption_enabled" {
   description = "Set to true to enable KMS Encryption using customer managed keys. When set to true, a value must be passed for either 'existing_kms_instance_crn', 'existing_kms_key_crn' or 'existing_backup_kms_key_crn'."
   default     = false
 }
+
 variable "kms_endpoint_type" {
   type        = string
   description = "The type of endpoint to use for communicating with the Key Protect or Hyper Protect Crypto Services instance. Possible values: `public`, `private`. Applies only if `existing_kms_key_crn` is not specified."
@@ -286,6 +302,7 @@ variable "backup_crn" {
     error_message = "backup_crn must be null OR starts with 'crn:' and contains ':backup:'"
   }
 }
+
 variable "provider_visibility" {
   description = "Set the visibility value for the IBM terraform provider. Supported values are `public`, `private`, `public-and-private`. [Learn more](https://registry.terraform.io/providers/IBM-Cloud/ibm/latest/docs/guides/custom-service-endpoints)."
   type        = string

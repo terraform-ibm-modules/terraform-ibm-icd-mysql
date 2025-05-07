@@ -29,7 +29,7 @@ This architecture creates an instance of IBM Cloud Databases for MySQL and suppo
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_kms"></a> [kms](#module\_kms) | terraform-ibm-modules/kms-all-inclusive/ibm | 5.0.1 |
+| <a name="module_kms"></a> [kms](#module\_kms) | terraform-ibm-modules/kms-all-inclusive/ibm | 5.0.2 |
 | <a name="module_kms_backup_key_crn_parser"></a> [kms\_backup\_key\_crn\_parser](#module\_kms\_backup\_key\_crn\_parser) | terraform-ibm-modules/common-utilities/ibm//modules/crn-parser | 1.1.0 |
 | <a name="module_kms_instance_crn_parser"></a> [kms\_instance\_crn\_parser](#module\_kms\_instance\_crn\_parser) | terraform-ibm-modules/common-utilities/ibm//modules/crn-parser | 1.1.0 |
 | <a name="module_kms_key_crn_parser"></a> [kms\_key\_crn\_parser](#module\_kms\_key\_crn\_parser) | terraform-ibm-modules/common-utilities/ibm//modules/crn-parser | 1.1.0 |
@@ -86,7 +86,7 @@ This architecture creates an instance of IBM Cloud Databases for MySQL and suppo
 | <a name="input_members"></a> [members](#input\_members) | The number of members that are allocated. [Learn more](https://cloud.ibm.com/docs/databases-for-mysql?topic=databases-for-mysql-resources-scaling). | `number` | `3` | no |
 | <a name="input_mysql_version"></a> [mysql\_version](#input\_mysql\_version) | The version of the Databases for MySQL instance. If no value is specified, the current preferred version of Databases for MySQL is used. | `string` | `null` | no |
 | <a name="input_name"></a> [name](#input\_name) | The name of the Databases for MySQL instance. If a prefix input variable is specified, the prefix is added to the name in the `<prefix>-<name>` format. | `string` | `"mysql"` | no |
-| <a name="input_prefix"></a> [prefix](#input\_prefix) | Prefix to add to all resources created by this solution. | `string` | `null` | no |
+| <a name="input_prefix"></a> [prefix](#input\_prefix) | Prefix to add to all resources created by this solution. | `string` | n/a | yes |
 | <a name="input_provider_visibility"></a> [provider\_visibility](#input\_provider\_visibility) | Set the visibility value for the IBM terraform provider. Supported values are `public`, `private`, `public-and-private`. [Learn more](https://registry.terraform.io/providers/IBM-Cloud/ibm/latest/docs/guides/custom-service-endpoints). | `string` | `"private"` | no |
 | <a name="input_region"></a> [region](#input\_region) | The region where you want to deploy your instance. | `string` | `"us-south"` | no |
 | <a name="input_remote_leader_crn"></a> [remote\_leader\_crn](#input\_remote\_leader\_crn) | A CRN of the leader database to make the replica(read-only) deployment. The leader database is created by a database deployment with the same service ID. A read-only replica is set up to replicate all of your data from the leader deployment to the replica deployment by using asynchronous replication. [Learn more](https://cloud.ibm.com/docs/databases-for-mysql?topic=databases-for-mysql-read-replicas) | `string` | `null` | no |

@@ -4,7 +4,7 @@ module "mysql" {
   ibmcloud_kms_api_key                                 = var.ibmcloud_kms_api_key
   existing_resource_group_name                         = var.existing_resource_group_name
   prefix                                               = var.prefix
-  provider_visibility                                  = "public"
+  provider_visibility                                  = "private"
   region                                               = var.region
   mysql_version                                        = var.mysql_version
   name                                                 = var.name
