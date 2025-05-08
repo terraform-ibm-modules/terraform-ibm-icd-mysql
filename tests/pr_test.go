@@ -6,6 +6,14 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"io/fs"
+	"log"
+	mathrand "math/rand"
+	"os"
+	"path/filepath"
+	"strings"
+	"testing"
+
 	"github.com/gruntwork-io/terratest/modules/files"
 	"github.com/gruntwork-io/terratest/modules/logger"
 	"github.com/gruntwork-io/terratest/modules/random"
@@ -16,11 +24,6 @@ import (
 	"github.com/terraform-ibm-modules/ibmcloud-terratest-wrapper/common"
 	"github.com/terraform-ibm-modules/ibmcloud-terratest-wrapper/testhelper"
 	"github.com/terraform-ibm-modules/ibmcloud-terratest-wrapper/testschematic"
-	"log"
-	mathrand "math/rand"
-	"os"
-	"strings"
-	"testing"
 )
 
 const fullyConfigurableSolutionTerraformDir = "solutions/fully-configurable"
@@ -183,6 +186,7 @@ func TestRunSecurityEnforcedSolutionSchematics(t *testing.T) {
 		{Name: "admin_pass_secrets_manager_secret_group", Value: options.Prefix, DataType: "string"},
 		{Name: "admin_pass_secrets_manager_secret_name", Value: options.Prefix, DataType: "string"},
 		{Name: "admin_pass", Value: GetRandomAdminPassword(t), DataType: "string"},
+		{Name: "admin_pass_secrets_manager_secret_group", Value: fmt.Sprintf("mysql-%s-admin-secrets", options.Prefix), DataType: "string"},
 	}
 	err = options.RunSchematicTest()
 	assert.Nil(t, err, "This should not have errored")
