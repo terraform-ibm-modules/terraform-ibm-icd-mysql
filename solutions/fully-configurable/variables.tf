@@ -17,7 +17,7 @@ variable "existing_resource_group_name" {
 
 variable "prefix" {
   type        = string
-  description = "Prefix to add to all resources created by this solution."
+  description = "The prefix to be added to all resources created by this solution. To skip using a prefix, set this value to null or an empty string. The prefix must begin with a lowercase letter and may contain only lowercase letters, digits, and hyphens '-'. It should not exceed 16 characters, must not end with a hyphen('-'), and can not contain consecutive hyphens ('--'). Example: prod-0205-cos"
   nullable    = true
   validation {
     # - null and empty string is allowed
@@ -32,6 +32,11 @@ variable "prefix" {
       ])
     )
     error_message = "Prefix must begin with a lowercase letter and may contain only lowercase letters, digits, and hyphens '-'. It should not exceed 16 characters, must not end with a hyphen('-'), and cannot contain consecutive hyphens ('--')."
+  }
+  validation {
+    # must not exceed 16 characters in length
+    condition     = length(var.prefix) <= 16
+    error_message = "Prefix must not exceed 16 characters."
   }
 }
 
@@ -209,7 +214,7 @@ variable "use_ibm_owned_encryption_key" {
         var.existing_backup_kms_key_crn != null
       ))
     )
-    error_message = "If 'kms_encryption_enabled' is true and you're setting any of 'existing_kms_instance_crn', 'existing_kms_key_crn', or 'existing_backup_kms_key_crn', then 'use_ibm_owned_encryption_key' must be set to false."
+    error_message = "When 'kms_encryption_enabled' is true and setting values for 'existing_kms_instance_crn', 'existing_kms_key_crn' or 'existing_backup_kms_key_crn', the 'use_ibm_owned_encryption_key' input must be set to false."
   }
 
   # this validation ensures key info is provided when IBM-owned key is disabled and no MySQL instance is given
@@ -221,6 +226,13 @@ variable "use_ibm_owned_encryption_key" {
       var.existing_kms_key_crn != null
     )
     error_message = "When 'kms_encryption_enabled' is true and 'use_ibm_owned_encryption_key' is false, you must provide either 'existing_kms_instance_crn' (to create a new key) or 'existing_kms_key_crn' (to use an existing key)."
+  }
+  validation {
+    condition = (
+      !var.kms_encryption_enabled || !var.use_ibm_owned_encryption_key ||
+      (var.existing_kms_key_crn == null && var.existing_backup_kms_key_crn == null && var.existing_kms_instance_crn == null)
+    )
+    error_message = "When 'kms_encryption_enabled' is true and 'use_ibm_owned_encryption_key' is true, 'existing_kms_key_crn', 'existing_kms_instance_crn' and 'existing_backup_kms_key_crn' must all be null."
   }
 }
 
