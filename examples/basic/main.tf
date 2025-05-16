@@ -15,7 +15,10 @@ module "resource_group" {
 ##############################################################################
 
 module "database" {
-  source             = "../.."
+  source = "../.."
+  # remove the above line and uncomment the below 2 lines to consume the module from the registry
+  # source            = "terraform-ibm-modules/icd-mysql/ibm"
+  # version           = "X.Y.Z" # Replace "X.Y.Z" with a release version to lock into a specific release
   resource_group_id  = module.resource_group.resource_group_id
   name               = "${var.prefix}-mysql"
   mysql_version      = var.mysql_version
@@ -51,8 +54,11 @@ resource "time_sleep" "wait_time" {
 ##############################################################################
 
 module "read_only_replica_mysql_db" {
-  count             = var.read_only_replicas_count
-  source            = "../.."
+  count  = var.read_only_replicas_count
+  source = "../.."
+  # remove the above line and uncomment the below 2 lines to consume the module from the registry
+  # source            = "terraform-ibm-modules/icd-mysql/ibm"
+  # version           = "X.Y.Z" # Replace "X.Y.Z" with a release version to lock into a specific release
   resource_group_id = module.resource_group.resource_group_id
   name              = "${var.prefix}-read-only-replica-${count.index}"
   region            = var.region
