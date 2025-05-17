@@ -407,6 +407,16 @@ variable "pitr_id" {
   type        = string
   description = "(Optional) The ID of the source deployment MySQL instance that you want to recover back to. The MySQL instance is expected to be in an up and in running state."
   default     = null
+
+  validation {
+    condition     = var.pitr_id != null ? true : var.pitr_time == null
+    error_message = "To use Point-In-Time Recovery (PITR), a value for var.pitr_id needs to be set when var.pitr_time is specified. Otherwise, unset var.pitr_time."
+  }
+
+  validation {
+    condition     = var.pitr_id == null ? true : var.pitr_time != null
+    error_message = "To use Point-In-Time Recovery (PITR), a value for var.pitr_time needs to be set when var.pitr_id is specified. Otherwise, unset var.pitr_id."
+  }
 }
 
 variable "pitr_time" {
