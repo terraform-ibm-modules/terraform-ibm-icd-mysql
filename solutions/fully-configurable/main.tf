@@ -4,6 +4,7 @@
 locals {
   prefix = var.prefix != null ? trimspace(var.prefix) != "" ? "${var.prefix}-" : "" : ""
 }
+
 module "resource_group" {
   source                       = "terraform-ibm-modules/resource-group/ibm"
   version                      = "1.2.0"
@@ -31,7 +32,7 @@ module "kms" {
   }
   count                       = local.create_new_kms_key ? 1 : 0
   source                      = "terraform-ibm-modules/kms-all-inclusive/ibm"
-  version                     = "5.1.7"
+  version                     = "5.0.2"
   create_key_protect_instance = false
   region                      = local.kms_region
   existing_kms_instance_crn   = var.existing_kms_instance_crn
@@ -272,7 +273,6 @@ data "ibm_database_connection" "existing_connection" {
   user_type     = "database"
 }
 
-
 # Create new instance
 module "mysql" {
   count                             = var.existing_mysql_instance_crn != null ? 0 : 1
@@ -289,7 +289,7 @@ module "mysql" {
   use_same_kms_key_for_backups      = local.use_same_kms_key_for_backups
   use_default_backup_encryption_key = var.use_default_backup_encryption_key
   access_tags                       = var.access_tags
-  tags                              = var.tags
+  tags                              = var.resource_tags
   admin_pass                        = local.admin_pass
   users                             = var.users
   members                           = var.members
@@ -300,10 +300,10 @@ module "mysql" {
   auto_scaling                      = var.auto_scaling
   configuration                     = var.configuration
   service_credential_names          = var.service_credential_names
-  service_endpoints                 = var.service_endpoints
   backup_crn                        = var.backup_crn
-  remote_leader_crn                 = var.remote_leader_crn
   kms_encryption_enabled            = var.kms_encryption_enabled
+  service_endpoints                 = var.service_endpoints
+  remote_leader_crn                 = var.remote_leader_crn
 }
 
 locals {
@@ -315,13 +315,12 @@ locals {
   mysql_port     = var.existing_mysql_instance_crn != null ? data.ibm_database_connection.existing_connection[0].mysql[0].hosts[0].port : module.mysql[0].port
 }
 
-
 #######################################################################################################################
 # Secrets management
 #######################################################################################################################
 
 locals {
-  create_sm_auth_policy = var.skip_mysql_secrets_manager_auth_policy || var.existing_secrets_manager_instance_crn == null ? 0 : 1
+  create_secrets_manager_auth_policy = var.skip_mysql_secrets_manager_auth_policy || var.existing_secrets_manager_instance_crn == null ? 0 : 1
 }
 
 # Parse the Secrets Manager CRN
@@ -332,10 +331,9 @@ module "sm_instance_crn_parser" {
   crn     = var.existing_secrets_manager_instance_crn
 }
 
-
 # create a service authorization between Secrets Manager and the target service (Databases for MySQL)
 resource "ibm_iam_authorization_policy" "secrets_manager_key_manager" {
-  count                       = local.create_sm_auth_policy
+  count                       = local.create_secrets_manager_auth_policy
   source_service_name         = "secrets-manager"
   source_resource_instance_id = local.existing_secrets_manager_instance_guid
   target_service_name         = "databases-for-mysql"
@@ -346,7 +344,7 @@ resource "ibm_iam_authorization_policy" "secrets_manager_key_manager" {
 
 # workaround for https://github.com/IBM-Cloud/terraform-provider-ibm/issues/4478
 resource "time_sleep" "wait_for_mysql_authorization_policy" {
-  count           = local.create_sm_auth_policy
+  count           = local.create_secrets_manager_auth_policy
   depends_on      = [ibm_iam_authorization_policy.secrets_manager_key_manager]
   create_duration = "30s"
 }
@@ -397,7 +395,7 @@ module "secrets_manager_service_credentials" {
   count                       = length(local.service_credential_secrets) > 0 ? 1 : 0
   depends_on                  = [time_sleep.wait_for_mysql_authorization_policy]
   source                      = "terraform-ibm-modules/secrets-manager/ibm//modules/secrets"
-  version                     = "2.3.1"
+  version                     = "2.1.1"
   existing_sm_instance_guid   = local.existing_secrets_manager_instance_guid
   existing_sm_instance_region = local.existing_secrets_manager_instance_region
   endpoint_type               = var.existing_secrets_manager_endpoint_type

@@ -9,6 +9,7 @@
         "target_terraform",
         "terraform",
         "data_management",
+        "database",
         "solution"
       ],
       "keywords": [
@@ -17,13 +18,11 @@
         "infrastructure as code",
         "terraform",
         "solution",
-        "mysql standard",
         "cache",
         "in memory"
       ],
       "short_description": "Creates and configures an instance of IBM Cloud Databases for MySQL.",
       "long_description": "This architecture supports creating and configuring an instance of [Databases for MySQL](https://www.ibm.com/products/databases-for-mysql), with optional KMS encryption. This Terraform-based automation is part of a broader suite of IBM-maintained Infrastructure as Code (IaC) asset collection, each following the naming pattern \"Cloud automation for *servicename*\" and focusing on single IBM Cloud service. These single-service deployable architectures can be used on their own to streamline and automate service deployments through an [IaC approach](https://cloud.ibm.com/docs/secure-enterprise?topic=secure-enterprise-understanding-projects), or assembled together into a broader [automated IaC stack](https://cloud.ibm.com/docs/secure-enterprise?topic=secure-enterprise-config-stack) to automate the deployment of an end-to-end solution architecture.",
-
       "offering_docs_url": "https://github.com/terraform-ibm-modules/terraform-ibm-icd-mysql/blob/main/README.md",
       "offering_icon_url": "https://raw.githubusercontent.com/terraform-ibm-modules/terraform-ibm-icd-mysql/main/images/mysql_icon.svg",
       "provider_name": "IBM",
@@ -75,16 +74,23 @@
             },
             {
               "role_crns": [
-                "crn:v1:bluemix:public:iam::::serviceRole:Manager",
                 "crn:v1:bluemix:public:iam::::role:Editor"
               ],
-              "service_name": "kms"
+              "service_name": "kms",
+              "notes": "[Optional] Manager and Editor access are required to create keys. They are required only if KMS encryption is enabled."
+            },
+            {
+              "role_crns": [
+                "crn:v1:bluemix:public:iam::::role:Editor"
+              ],
+              "service_name": "hs-crypto",
+              "notes": "[Optional] Manager and Editor access are required to create keys in HPCS. They are required only if KMS encryption is enabled."
             }
           ],
           "architecture": {
             "features": [
               {
-                "title": " Creates an instance of Databases for MySQL",
+                "title": "Creates an instance of Databases for MySQL",
                 "description": "This architecture creates an instance of IBM Cloud Databases for MySQL with KMS encryption. It accepts or creates a resource group, and provides autoscaling rules."
               }
             ],
@@ -137,12 +143,8 @@
               "key": "prefix"
             },
             {
-              "key": "name"
-            },
-            {
               "key": "region",
               "required": true,
-              "default_value": "us-south",
               "options": [
                 {
                   "displayname": "Chennai (che01)",
@@ -213,6 +215,31 @@
               ]
             },
             {
+              "key": "name"
+            },
+            {
+              "key": "resource_tags",
+              "type": "array",
+              "custom_config": {
+                  "grouping": "deployment",
+                  "original_grouping": "deployment",
+                  "config_constraints": {
+                      "type": "string"
+                  }
+              }
+            },
+            {
+              "key": "access_tags",
+              "type": "array",
+              "custom_config": {
+                  "grouping": "deployment",
+                  "original_grouping": "deployment",
+                  "config_constraints": {
+                      "type": "string"
+                  }
+              }
+            },
+            {
               "key": "members"
             },
             {
@@ -228,13 +255,10 @@
               "key": "member_host_flavor"
             },
             {
-              "key": "service_credential_names"
+              "key": "auto_scaling"
             },
             {
-              "key": "admin_pass"
-            },
-            {
-              "key": "users"
+              "key": "configuration"
             },
             {
               "key": "service_endpoints",
@@ -254,10 +278,44 @@
               ]
             },
             {
-              "key": "tags"
+              "key": "service_credential_names"
             },
             {
-              "key": "access_tags"
+              "key": "service_credential_secrets"
+            },
+            {
+              "key": "admin_pass"
+            },
+            {
+              "key": "existing_secrets_manager_instance_crn"
+            },
+            {
+              "key": "existing_secrets_manager_endpoint_type",
+              "options": [
+                {
+                  "displayname": "public",
+                  "value": "public"
+                },
+                {
+                  "displayname": "private",
+                  "value": "private"
+                }
+              ]
+            },
+            {
+              "key": "skip_mysql_secrets_manager_auth_policy"
+            },
+            {
+              "key": "admin_pass_secrets_manager_secret_group"
+            },
+            {
+              "key": "admin_pass_secrets_manager_secret_name"
+            },
+            {
+              "key": "use_existing_admin_pass_secrets_manager_secret_group"
+            },
+            {
+              "key": "users"
             },
             {
               "key": "use_ibm_owned_encryption_key"
@@ -295,47 +353,7 @@
               "key": "key_name"
             },
             {
-              "key": "auto_scaling"
-            },
-            {
-              "key": "existing_secrets_manager_instance_crn"
-            },
-            {
-              "key": "existing_secrets_manager_endpoint_type",
-              "options": [
-                {
-                  "displayname": "public",
-                  "value": "public"
-                },
-                {
-                  "displayname": "private",
-                  "value": "private"
-                }
-              ]
-            },
-            {
-              "key": "service_credential_secrets"
-            },
-            {
-              "key": "skip_mysql_secrets_manager_auth_policy"
-            },
-            {
-              "key": "skip_mysql_kms_auth_policy"
-            },
-            {
               "key": "backup_crn"
-            },
-            {
-              "key": "admin_pass_secrets_manager_secret_group"
-            },
-            {
-              "key": "admin_pass_secrets_manager_secret_name"
-            },
-            {
-              "key": "use_existing_admin_pass_secrets_manager_secret_group"
-            },
-            {
-              "key": "existing_mysql_instance_crn"
             },
             {
               "key": "existing_backup_kms_key_crn"
@@ -344,10 +362,13 @@
               "key": "use_default_backup_encryption_key"
             },
             {
-              "key": "remote_leader_crn"
+              "key": "skip_mysql_kms_auth_policy"
             },
             {
-              "key": "configuration"
+              "key": "existing_mysql_instance_crn"
+            },
+            {
+              "key": "remote_leader_crn"
             }
           ]
         },
@@ -380,17 +401,23 @@
             },
             {
               "role_crns": [
-                "crn:v1:bluemix:public:iam::::serviceRole:Manager",
                 "crn:v1:bluemix:public:iam::::role:Editor"
               ],
-              "service_name": "kms"
+              "service_name": "kms",
+              "notes": "[Optional] Manager and Editor access are required to create keys. They are required only if KMS encryption is enabled."
+            },
+            {
+              "role_crns": [
+                "crn:v1:bluemix:public:iam::::role:Editor"
+              ],
+              "service_name": "hs-crypto",
+              "notes": "[Optional] Manager and Editor access are required to create keys in HPCS. They are required only if KMS encryption is enabled."
             }
           ],
           "architecture": {
-            "descriptions": "This architecture creates an instance of IBM CLoud Databases for MySQL instance with KMS encryption. Supports autoscaling.",
             "features": [
               {
-                "title": " Creates an instance of Databases for MySQL",
+                "title": "Creates an instance of Databases for MySQL",
                 "description": "This architecture creates an instance of IBM Cloud Databases for MySQL with KMS encryption. It accepts or creates a resource group, and provides autoscaling rules."
               }
             ],
@@ -425,12 +452,8 @@
               "key": "prefix"
             },
             {
-              "key": "name"
-            },
-            {
               "key": "region",
               "required": true,
-              "default_value": "us-south",
               "options": [
                 {
                   "displayname": "Chennai (che01)",
@@ -501,6 +524,31 @@
               ]
             },
             {
+              "key": "name"
+            },
+            {
+              "key": "resource_tags",
+              "type": "array",
+              "custom_config": {
+                  "grouping": "deployment",
+                  "original_grouping": "deployment",
+                  "config_constraints": {
+                      "type": "string"
+                  }
+              }
+            },
+            {
+              "key": "access_tags",
+              "type": "array",
+              "custom_config": {
+                  "grouping": "deployment",
+                  "original_grouping": "deployment",
+                  "config_constraints": {
+                      "type": "string"
+                  }
+              }
+            },
+            {
               "key": "members"
             },
             {
@@ -516,56 +564,25 @@
               "key": "member_host_flavor"
             },
             {
-              "key": "service_credential_names"
-            },
-            {
-              "key": "admin_pass"
-            },
-            {
-              "key": "users"
-            },
-            {
-              "key": "tags"
-            },
-            {
-              "key": "access_tags"
-            },
-            {
-              "key": "use_ibm_owned_encryption_key"
-            },
-            {
-              "key": "ibmcloud_kms_api_key"
-            },
-            {
-              "key": "existing_kms_instance_crn",
-              "required": true
-            },
-            {
-              "key": "existing_kms_key_crn"
-            },
-            {
-              "key": "key_ring_name"
-            },
-            {
-              "key": "key_name"
-            },
-            {
               "key": "auto_scaling"
             },
             {
-              "key": "existing_secrets_manager_instance_crn"
+              "key": "configuration"
+            },
+            {
+              "key": "service_credential_names"
             },
             {
               "key": "service_credential_secrets"
             },
             {
+              "key": "admin_pass"
+            },
+            {
+              "key": "existing_secrets_manager_instance_crn"
+            },
+            {
               "key": "skip_mysql_secrets_manager_auth_policy"
-            },
-            {
-              "key": "skip_mysql_kms_auth_policy"
-            },
-            {
-              "key": "backup_crn"
             },
             {
               "key": "admin_pass_secrets_manager_secret_group"
@@ -577,19 +594,37 @@
               "key": "use_existing_admin_pass_secrets_manager_secret_group"
             },
             {
-              "key": "existing_mysql_instance_crn"
+              "key": "users"
+            },
+            {
+              "key": "ibmcloud_kms_api_key"
+            },
+            {
+              "key": "existing_kms_instance_crn"
+            },
+            {
+              "key": "existing_kms_key_crn"
+            },
+            {
+              "key": "key_ring_name"
+            },
+            {
+              "key": "key_name"
+            },
+            {
+              "key": "backup_crn"
             },
             {
               "key": "existing_backup_kms_key_crn"
             },
+                        {
+              "key": "skip_mysql_kms_auth_policy"
+            },
             {
-              "key": "use_default_backup_encryption_key"
+              "key": "existing_mysql_instance_crn"
             },
             {
               "key": "remote_leader_crn"
-            },
-            {
-              "key": "configuration"
             }
           ]
         }
