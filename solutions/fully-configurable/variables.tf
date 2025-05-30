@@ -7,21 +7,37 @@ variable "ibmcloud_api_key" {
   description = "The IBM Cloud API key to deploy resources."
   sensitive   = true
 }
-variable "use_existing_resource_group" {
-  type        = bool
-  description = "Whether to use an existing resource group."
-  default     = false
-}
 
-variable "resource_group_name" {
+variable "existing_resource_group_name" {
   type        = string
-  description = "The name of a new or an existing resource group to provision the Databases for MySQL in. If a prefix input variable is specified, the prefix is added to the name in the `<prefix>-<name>` format."
+  description = "The name of an existing resource group to provision resource in."
+  default     = "Default"
+  nullable    = false
 }
 
 variable "prefix" {
   type        = string
-  description = "Prefix to add to all resources created by this solution."
-  default     = null
+  description = "The prefix to be added to all resources created by this solution. To skip using a prefix, set this value to null or an empty string. The prefix must begin with a lowercase letter and may contain only lowercase letters, digits, and hyphens '-'. It should not exceed 16 characters, must not end with a hyphen('-'), and can not contain consecutive hyphens ('--'). Example: prod-0205-cos"
+  nullable    = true
+  validation {
+    # - null and empty string is allowed
+    # - Must not contain consecutive hyphens (--): length(regexall("--", var.prefix)) == 0
+    # - Starts with a lowercase letter: [a-z]
+    # - Contains only lowercase letters (a–z), digits (0–9), and hyphens (-) and must not exceed 16 characters in length: [a-z0-9-]{0,14}
+    # - Must not end with a hyphen (-): [a-z0-9]
+    condition = (var.prefix == null || var.prefix == "" ? true :
+      alltrue([
+        can(regex("^[a-z][-a-z0-9]{0,14}[a-z0-9]$", var.prefix)),
+        length(regexall("--", var.prefix)) == 0
+      ])
+    )
+    error_message = "Prefix must begin with a lowercase letter and may contain only lowercase letters, digits, and hyphens '-'. It should not exceed 16 characters, must not end with a hyphen('-'), and cannot contain consecutive hyphens ('--')."
+  }
+  validation {
+    # must not exceed 16 characters in length
+    condition     = length(var.prefix) <= 16
+    error_message = "Prefix must not exceed 16 characters."
+  }
 }
 
 variable "name" {
@@ -34,6 +50,7 @@ variable "region" {
   description = "The region where you want to deploy your instance."
   type        = string
   default     = "us-south"
+
   validation {
     condition     = var.existing_mysql_instance_crn != null && var.region != local.existing_mysql_region ? false : true
     error_message = "The region detected in the 'existing_mysql_instance_crn' value must match the value of the 'region' input variable when passing an existing instance."
@@ -44,13 +61,6 @@ variable "existing_mysql_instance_crn" {
   type        = string
   default     = null
   description = "The CRN of an existing Databases for MySql instance. If no value is specified, a new instance is created."
-
-}
-
-variable "remote_leader_crn" {
-  type        = string
-  description = "A CRN of the leader database to make the replica(read-only) deployment. The leader database is created by a database deployment with the same service ID. A read-only replica is set up to replicate all of your data from the leader deployment to the replica deployment by using asynchronous replication. [Learn more](https://cloud.ibm.com/docs/databases-for-mysql?topic=databases-for-mysql-read-replicas)"
-  default     = null
 }
 
 variable "mysql_version" {
@@ -59,9 +69,26 @@ variable "mysql_version" {
   default     = null
 }
 
+variable "remote_leader_crn" {
+  type        = string
+  description = "A CRN of the leader database to make the replica(read-only) deployment. The leader database is created by a database deployment with the same service ID. A read-only replica is set up to replicate all of your data from the leader deployment to the replica deployment by using asynchronous replication. [Learn more](https://cloud.ibm.com/docs/databases-for-mysql?topic=databases-for-mysql-read-replicas)"
+  default     = null
+}
+
 ##############################################################################
 # ICD hosting model properties
 ##############################################################################
+
+variable "service_endpoints" {
+  type        = string
+  description = "The type of endpoint of the database instance. Possible values: `public`, `private`, `public-and-private`."
+  default     = "public"
+
+  validation {
+    condition     = can(regex("public|public-and-private|private", var.service_endpoints))
+    error_message = "Valid values for service_endpoints are 'public', 'public-and-private', and 'private'"
+  }
+}
 
 variable "members" {
   type        = number
@@ -78,7 +105,7 @@ variable "member_memory_mb" {
 variable "member_cpu_count" {
   type        = number
   description = "The dedicated CPU per member that is allocated. For shared CPU, set to 0. [Learn more](https://cloud.ibm.com/docs/databases-for-mysql?topic=databases-for-mysql-resources-scaling)."
-  default     = 3
+  default     = 0
 }
 
 variable "member_disk_mb" {
@@ -93,45 +120,8 @@ variable "member_host_flavor" {
   default     = "multitenant"
 }
 
-variable "service_credential_names" {
-  description = "Map of name, role for service credentials that you want to create for the database. [Learn more](https://github.com/terraform-ibm-modules/terraform-ibm-icd-mysql/blob/main/solutions/standard/DA-types.md#svc-credential-name)"
-  type        = map(string)
-  default     = {}
-}
-
-variable "admin_pass" {
-  type        = string
-  description = "The password for the database administrator. If the admin password is null then the admin user ID cannot be accessed. More users can be specified in a user block."
-  default     = null
-  sensitive   = true
-}
-
-variable "users" {
-  type = list(object({
-    name     = string
-    password = string # pragma: allowlist secret
-    type     = string # "type" is required to generate the connection string for the outputs.
-    role     = optional(string)
-  }))
-  default     = []
-  sensitive   = true
-  description = "A list of users that you want to create on the database. Users block is supported by MySQL version >= 6.0. Multiple blocks are allowed. The user password must be in the range of 10-32 characters. Be warned that in most case using IAM service credentials (via the var.service_credential_names) is sufficient to control access to the MySQL instance. This blocks creates native MySQL database users. [Learn more](https://github.com/terraform-ibm-modules/terraform-ibm-icd-mysql/blob/main/solutions/standard/DA-types.md#users)"
-}
-
-variable "tags" {
-  type        = list(any)
-  description = "The list of tags to be added to the Databases for MySQL instance."
-  default     = []
-}
-
-variable "access_tags" {
-  type        = list(string)
-  description = "A list of access tags to apply to the Databases for MySQL instance created by the solution. [Learn more](https://cloud.ibm.com/docs/account?topic=account-access-tags-tutorial)."
-  default     = []
-}
-
 variable "configuration" {
-  description = "Database Configuration for MySQL instance. [Learn more](https://github.com/terraform-ibm-modules/terraform-ibm-icd-mysql/tree/main/solutions/standard/DA-types.md)"
+  description = "Database Configuration for MySQL instance. [Learn more](https://github.com/terraform-ibm-modules/terraform-ibm-icd-mysql/tree/main/solutions/fully-configurable/DA-types.md)"
   type = object({
     default_authentication_plugin      = optional(string) # sha256_password,caching_sha2_password,mysql_native_password
     innodb_buffer_pool_size_percentage = optional(number) # 10 ≤ value ≤ 100
@@ -170,16 +160,62 @@ variable "configuration" {
   }
 }
 
+variable "service_credential_names" {
+  description = "Map of name, role for service credentials that you want to create for the database. [Learn more](https://github.com/terraform-ibm-modules/terraform-ibm-icd-mysql/blob/main/solutions/fully-configurable/DA-types.md#svc-credential-name)"
+  type        = map(string)
+  default     = {}
+}
+
+variable "admin_pass" {
+  type        = string
+  description = "The password for the database administrator. If the admin password is null then the admin user ID cannot be accessed. More users can be specified in a user block."
+  default     = null
+  sensitive   = true
+}
+
+variable "users" {
+  type = list(object({
+    name     = string
+    password = string # pragma: allowlist secret
+    type     = string # "type" is required to generate the connection string for the outputs.
+    role     = optional(string)
+  }))
+  default     = []
+  sensitive   = true
+  description = "A list of users that you want to create on the database. Users block is supported by MySQL version >= 6.0. Multiple blocks are allowed. The user password must be in the range of 10-32 characters. Be warned that in most case using IAM service credentials (via the var.service_credential_names) is sufficient to control access to the MySQL instance. This blocks creates native MySQL database users. [Learn more](https://github.com/terraform-ibm-modules/terraform-ibm-icd-mysql/blob/main/solutions/fully-configurable/DA-types.md#users)"
+}
+
+variable "resource_tags" {
+  type        = list(string)
+  description = "The list of resource tags to be added to the Databases for MySQL instance."
+  default     = []
+}
+
+variable "access_tags" {
+  type        = list(string)
+  description = "A list of access tags to apply to the Databases for MySQL instance created by the solution. [Learn more](https://cloud.ibm.com/docs/account?topic=account-access-tags-tutorial)."
+  default     = []
+}
+
 ##############################################################
 # Encryption
 ##############################################################
+
+variable "kms_encryption_enabled" {
+  type        = bool
+  description = "Set to true to enable KMS Encryption using customer managed keys. When set to true, a value must be passed for either 'existing_kms_instance_crn', 'existing_kms_key_crn' or 'existing_backup_kms_key_crn'."
+  default     = false
+}
 
 variable "use_ibm_owned_encryption_key" {
   type        = bool
   description = "IBM Cloud Databases will secure your deployment's data at rest automatically with an encryption key that IBM hold. Alternatively, you may select your own Key Management System instance and encryption key (Key Protect or Hyper Protect Crypto Services) by setting this to false. If setting to false, a value must be passed for `existing_kms_instance_crn` to create a new key, or `existing_kms_key_crn` and/or `existing_backup_kms_key_crn` to use an existing key."
   default     = false
+
+  # this validation ensures IBM-owned key is not used when KMS details are provided
   validation {
     condition = (
+      !var.kms_encryption_enabled ||
       var.existing_mysql_instance_crn != null ||
       !(var.use_ibm_owned_encryption_key && (
         var.existing_kms_instance_crn != null ||
@@ -187,18 +223,26 @@ variable "use_ibm_owned_encryption_key" {
         var.existing_backup_kms_key_crn != null
       ))
     )
-    error_message = "When setting values for 'existing_kms_instance_crn', 'existing_kms_key_crn' or 'existing_backup_kms_key_crn', the 'use_ibm_owned_encryption_key' input must be set to false."
+    error_message = "When 'kms_encryption_enabled' is true and setting values for 'existing_kms_instance_crn', 'existing_kms_key_crn' or 'existing_backup_kms_key_crn', the 'use_ibm_owned_encryption_key' input must be set to false."
   }
 
-  # this validation ensures key info is provided when IBM-owned key is disabled and no Redis instance is given
+  # this validation ensures key info is provided when IBM-owned key is disabled and no MySQL instance is given
   validation {
-    condition = !(
-      var.existing_mysql_instance_crn == null &&
-      var.use_ibm_owned_encryption_key == false &&
-      var.existing_kms_instance_crn == null &&
-      var.existing_kms_key_crn == null
+    condition = (!var.kms_encryption_enabled ||
+      var.existing_mysql_instance_crn != null ||
+      var.use_ibm_owned_encryption_key ||
+      var.existing_kms_instance_crn != null ||
+      var.existing_kms_key_crn != null
     )
-    error_message = "When 'use_ibm_owned_encryption_key' is false, you must provide either 'existing_kms_instance_crn' (to create a new key) or 'existing_kms_key_crn' (to use an existing key)."
+    error_message = "When 'kms_encryption_enabled' is true and 'use_ibm_owned_encryption_key' is false, you must provide either 'existing_kms_instance_crn' (to create a new key) or 'existing_kms_key_crn' (to use an existing key)."
+  }
+
+  validation {
+    condition = (
+      !var.kms_encryption_enabled || !var.use_ibm_owned_encryption_key ||
+      (var.existing_kms_key_crn == null && var.existing_backup_kms_key_crn == null && var.existing_kms_instance_crn == null)
+    )
+    error_message = "When 'kms_encryption_enabled' is true and 'use_ibm_owned_encryption_key' is true, 'existing_kms_key_crn', 'existing_kms_instance_crn' and 'existing_backup_kms_key_crn' must all be null."
   }
 }
 
@@ -274,6 +318,7 @@ variable "backup_crn" {
     error_message = "backup_crn must be null OR starts with 'crn:' and contains ':backup:'"
   }
 }
+
 variable "provider_visibility" {
   description = "Set the visibility value for the IBM terraform provider. Supported values are `public`, `private`, `public-and-private`. [Learn more](https://registry.terraform.io/providers/IBM-Cloud/ibm/latest/docs/guides/custom-service-endpoints)."
   type        = string
@@ -312,19 +357,18 @@ variable "auto_scaling" {
       rate_units               = optional(string, "mb")
     })
   })
-  description = "Optional rules to allow the database to increase resources in response to usage. Only a single autoscaling block is allowed. Make sure you understand the effects of autoscaling, especially for production environments. [Learn more](https://github.com/terraform-ibm-modules/terraform-ibm-icd-mysql/blob/main/solutions/standard/DA-types.md#autoscaling)"
+  description = "Optional rules to allow the database to increase resources in response to usage. Only a single autoscaling block is allowed. Make sure you understand the effects of autoscaling, especially for production environments. [Learn more](https://github.com/terraform-ibm-modules/terraform-ibm-icd-mysql/blob/main/solutions/fully-configurable/DA-types.md#autoscaling)"
   default     = null
 }
 
-##############################################################################
-## Secrets Manager Service Credentials
-##############################################################################
+#############################################################################
+# Secrets Manager Service Credentials
+#############################################################################
 
 variable "existing_secrets_manager_instance_crn" {
   type        = string
   default     = null
   description = "The CRN of existing secrets manager to use to create service credential secrets for Databases for MySQL instance."
-
 }
 
 variable "existing_secrets_manager_endpoint_type" {
@@ -342,7 +386,7 @@ variable "service_credential_secrets" {
     secret_group_name        = string
     secret_group_description = optional(string)
     existing_secret_group    = optional(bool)
-    service_credentials = list(object({
+    service_credentials = list(object({ # pragma: allowlist secret
       secret_name                                 = string
       service_credentials_source_service_role_crn = string
       secret_labels                               = optional(list(string))
@@ -355,7 +399,7 @@ variable "service_credential_secrets" {
     }))
   }))
   default     = []
-  description = "Service credential secrets configuration for Databases for MySQL. [Learn more](https://github.com/terraform-ibm-modules/terraform-ibm-icd-mysql/tree/main/solutions/standard/DA-types.md#service-credential-secrets)."
+  description = "Service credential secrets configuration for Databases for MySQL. [Learn more](https://github.com/terraform-ibm-modules/terraform-ibm-icd-mysql/tree/main/solutions/fully-configurable/DA-types.md#service-credential-secrets)."
 
   validation {
     # Service roles CRNs can be found at https://cloud.ibm.com/iam/roles, select the IBM Cloud Database and select the role
@@ -367,6 +411,7 @@ variable "service_credential_secrets" {
     ])
     error_message = "service_credentials_source_service_role_crn must be a serviceRole CRN. See https://cloud.ibm.com/iam/roles"
   }
+
   validation {
     condition = (
       length(var.service_credential_secrets) == 0 ||
@@ -400,7 +445,6 @@ variable "use_existing_admin_pass_secrets_manager_secret_group" {
   type        = bool
   description = "Whether to use an existing secrets manager secret group for admin password."
   default     = false
-
 }
 
 variable "admin_pass_secrets_manager_secret_name" {
