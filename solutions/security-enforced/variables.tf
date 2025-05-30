@@ -189,41 +189,6 @@ variable "existing_kms_instance_crn" {
   type        = string
   description = "The CRN of a Key Protect or Hyper Protect Crypto Services instance. Required to create a new encryption key and key ring which will be used to encrypt both deployment data and backups. Applies only if `use_ibm_owned_encryption_key` is false. To use an existing key, pass values for `existing_kms_key_crn` and/or `existing_backup_kms_key_crn`. Bare in mind that backups encryption is only available in certain regions. See [Bring your own key for backups](https://cloud.ibm.com/docs/cloud-databases?topic=cloud-databases-key-protect&interface=ui#key-byok) and [Using the HPCS Key for Backup encryption](https://cloud.ibm.com/docs/cloud-databases?topic=cloud-databases-hpcs#use-hpcs-backups)."
   default     = null
-
-
-  #double check these validation when ibm_owned is not even an option
-
-  # validations are different than in fully-configurable because security-enforced has `kms_encryption_enabled` set to true by default, and therefore the message can not be the same
-  validation {
-    condition = (
-      var.existing_mysql_instance_crn != null ||
-      (
-        var.existing_kms_instance_crn != null ||
-        var.existing_kms_key_crn != null ||
-        var.existing_backup_kms_key_crn != null
-    ))
-
-    error_message = "When setting values for 'existing_kms_instance_crn', 'existing_kms_key_crn' or 'existing_backup_kms_key_crn'"
-  }
-
-  # this validation ensures key info is provided when IBM-owned key is disabled and no MySQL instance is given
-  validation {
-    condition = (
-      var.existing_mysql_instance_crn != null ||
-      var.existing_kms_instance_crn != null ||
-      var.existing_kms_key_crn != null
-    )
-    error_message = "When ?? is false, you must provide either 'existing_kms_instance_crn' (to create a new key) or 'existing_kms_key_crn' (to use an existing key)."
-  }
-
-  validation {
-    condition = (
-      var.existing_kms_key_crn == null &&
-      var.existing_backup_kms_key_crn == null &&
-      var.existing_kms_instance_crn == null
-    )
-    error_message = "When ?? 'existing_kms_key_crn', 'existing_kms_instance_crn' and 'existing_backup_kms_key_crn' must all be null."
-  }
 }
 
 variable "existing_kms_key_crn" {
