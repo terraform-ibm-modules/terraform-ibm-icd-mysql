@@ -10,7 +10,7 @@ variable "ibmcloud_api_key" {
 
 variable "existing_resource_group_name" {
   type        = string
-  description = "The name of an existing resource group to provision resource in."
+  description = "The name of an existing resource group to provision resources in."
   default     = "Default"
   nullable    = false
 }
@@ -449,7 +449,7 @@ variable "use_existing_admin_pass_secrets_manager_secret_group" {
 
 variable "admin_pass_secrets_manager_secret_name" {
   type        = string
-  description = "The name of a new redis administrator secret. If a prefix input variable is specified, the prefix is added to the name in the `<prefix>-<name>` format."
+  description = "The name of a new MySQL administrator secret. If a prefix input variable is specified, the prefix is added to the name in the `<prefix>-<name>` format."
   default     = "mysql-admin-password"
 
   validation {

@@ -21,6 +21,7 @@ output "crn" {
   description = "MySQL instance crn"
   value       = local.mysql_crn
 }
+
 output "service_credentials_json" {
   description = "Service credentials json map"
   value       = var.existing_mysql_instance_crn != null ? null : module.mysql[0].service_credentials_json
@@ -32,6 +33,7 @@ output "service_credentials_object" {
   value       = var.existing_mysql_instance_crn != null ? null : module.mysql[0].service_credentials_object
   sensitive   = true
 }
+
 output "hostname" {
   description = "Database connection hostname"
   value       = local.mysql_hostname
@@ -41,6 +43,7 @@ output "port" {
   description = "Database connection port"
   value       = local.mysql_port
 }
+
 output "secrets_manager_secrets" {
   description = "Service credential secrets"
   value       = length(local.service_credential_secrets) > 0 ? module.secrets_manager_service_credentials[0].secrets : null
