@@ -169,6 +169,14 @@ variable "kms_key_crn" {
   type        = string
   description = "The CRN of a Key Protect or Hyper Protect Crypto Services encryption key to encrypt your data. Applies only if `use_ibm_owned_encryption_key` is false. By default this key is used for both deployment data and backups, but this behaviour can be altered using the `use_same_kms_key_for_backups` and `backup_encryption_key_crn` inputs. Bare in mind that backups encryption is only available in certain regions. See [Bring your own key for backups](https://cloud.ibm.com/docs/cloud-databases?topic=cloud-databases-key-protect&interface=ui#key-byok) and [Using the HPCS Key for Backup encryption](https://cloud.ibm.com/docs/cloud-databases?topic=cloud-databases-hpcs#use-hpcs-backups)."
   default     = null
+  validation {
+    condition = anytrue([
+      var.kms_key_crn == null,
+      can(regex(".*kms.*", var.kms_key_crn)),
+      can(regex(".*hs-crypto.*", var.kms_key_crn)),
+    ])
+    error_message = "Value must be the KMS key CRN from a Key Protect or Hyper Protect Crypto Services instance."
+  }
 }
 
 variable "use_same_kms_key_for_backups" {
@@ -181,6 +189,14 @@ variable "backup_encryption_key_crn" {
   type        = string
   description = "The CRN of a Key Protect or Hyper Protect Crypto Services encryption key that you want to use for encrypting the disk that holds deployment backups. Applies only if `use_ibm_owned_encryption_key` is false and `use_same_kms_key_for_backups` is false. If no value is passed, and `use_same_kms_key_for_backups` is true, the value of `kms_key_crn` is used. Alternatively set `use_default_backup_encryption_key` to true to use the IBM Cloud Databases default encryption. Bare in mind that backups encryption is only available in certain regions. See [Bring your own key for backups](https://cloud.ibm.com/docs/cloud-databases?topic=cloud-databases-key-protect&interface=ui#key-byok) and [Using the HPCS Key for Backup encryption](https://cloud.ibm.com/docs/cloud-databases?topic=cloud-databases-hpcs#use-hpcs-backups)."
   default     = null
+  validation {
+    condition = anytrue([
+      var.backup_encryption_key_crn == null,
+      can(regex(".*kms.*", var.backup_encryption_key_crn)),
+      can(regex(".*hs-crypto.*", var.backup_encryption_key_crn)),
+    ])
+    error_message = "Value must be the KMS key CRN from a Key Protect or Hyper Protect Crypto Services instance in one of the supported backup regions."
+  }
 }
 
 variable "use_default_backup_encryption_key" {
@@ -219,7 +235,7 @@ variable "cbr_rules" {
       }))
     })))
   }))
-  description = "(Optional, list) List of CBR rules to create"
+  description = "(Optional, list) List of CBR rules to create, if operations is not set it will default to api-type:data-plane"
   default     = []
   # Validation happens in the rule module
 }
