@@ -28,7 +28,7 @@ variable "mysql_version" {
 
 variable "region" {
   type        = string
-  description = "The region where you want to deploy your instance."
+  description = "The region to provision all resources in. [Learn more](https://terraform-ibm-modules.github.io/documentation/#/region) about how to select different regions for different services."
   default     = "us-south"
 }
 
