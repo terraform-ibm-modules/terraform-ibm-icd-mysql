@@ -124,7 +124,7 @@ func TestRunFullyConfigurableSolutionSchematics(t *testing.T) {
 }
 
 // Test the security-enforced DA with defaults (KMS encryption enabled)
-func TestRunSecurityEnforcedSolutionSchematic(t *testing.T) {
+func TestRunSecurityEnforcedSolutionSchematics(t *testing.T) {
 	t.Parallel()
 	prefix := "mysqlse"
 	options := testschematic.TestSchematicOptionsDefault(&testschematic.TestSchematicOptions{
