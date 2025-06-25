@@ -322,11 +322,12 @@ func TestPlanValidation(t *testing.T) {
 	var standardSolutionWithExistingKms = map[string]interface{}{
 		"access_tags":               permanentResources["accessTags"],
 		"existing_kms_instance_crn": permanentResources["hpcs_south_crn"],
+		"kms_encryption_enabled":    true,
 	}
 
 	// Test the DA when using IBM owned encryption key
 	var standardSolutionWithUseIbmOwnedEncKey = map[string]interface{}{
-		"use_ibm_owned_encryption_key": true,
+		"kms_encryption_enabled": false,
 	}
 
 	// Create a map of the variables
