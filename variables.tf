@@ -113,7 +113,7 @@ variable "service_endpoints" {
   default     = "private"
 
   validation {
-    condition     = contains(["public", "private", "public-and-private"], var.service_endpoints)
+    condition     = can(regex("public|public-and-private|private", var.service_endpoints))
     error_message = "Valid values for service_endpoints are 'public', 'public-and-private', and 'private'"
   }
 }
@@ -271,12 +271,6 @@ variable "auto_scaling" {
 ##############################################################
 # Encryption
 ##############################################################
-
-variable "kms_encryption_enabled" {
-  type        = bool
-  description = "Set to true to enable KMS Encryption using customer managed keys. When set to true, a value must be passed for either 'existing_kms_instance_crn', 'existing_kms_key_crn' or 'existing_backup_kms_key_crn'."
-  default     = false
-}
 
 variable "use_ibm_owned_encryption_key" {
   type        = bool
