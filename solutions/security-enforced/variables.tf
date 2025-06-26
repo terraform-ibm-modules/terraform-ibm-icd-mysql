@@ -10,7 +10,7 @@ variable "ibmcloud_api_key" {
 
 variable "existing_resource_group_name" {
   type        = string
-  description = "The name of an existing resource group to provision resources in."
+  description = "The name of an existing resource group to provision resource in."
   default     = "Default"
   nullable    = false
 }
@@ -49,7 +49,7 @@ variable "name" {
 }
 
 variable "region" {
-  description = "The region to provision all resources in. [Learn more](https://terraform-ibm-modules.github.io/documentation/#/region) about how to select different regions for different services."
+  description = "The region where you want to deploy your instance."
   type        = string
   default     = "us-south"
 }
@@ -107,7 +107,7 @@ variable "member_host_flavor" {
 }
 
 variable "configuration" {
-  description = "Database Configuration for MySQL instance. [Learn more](https://github.com/terraform-ibm-modules/terraform-ibm-icd-mysql/tree/main/solutions/fully-configurable/DA-types.md)"
+  description = "Database Configuration for MySQL instance. [Learn more](https://github.com/terraform-ibm-modules/terraform-ibm-icd-mysql/tree/main/solutions/fully-configurable/DA-types.md#configuration)"
   type = object({
     default_authentication_plugin      = optional(string) # sha256_password,caching_sha2_password,mysql_native_password
     innodb_buffer_pool_size_percentage = optional(number) # 10 ≤ value ≤ 100
