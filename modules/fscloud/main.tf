@@ -1,5 +1,5 @@
 module "mysql_db" {
-  source                            = "../../"
+  source                            = "../.."
   resource_group_id                 = var.resource_group_id
   mysql_version                     = var.mysql_version
   region                            = var.region

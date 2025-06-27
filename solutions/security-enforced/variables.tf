@@ -61,7 +61,7 @@ variable "existing_mysql_instance_crn" {
 }
 
 variable "mysql_version" {
-  description = "The version of the Databases for MySQL instance. If no value is specified, the current preferred version of Databases for MySQL is used."
+  description = "The version of the Databases for MySQL instance."
   type        = string
   default     = null
 }

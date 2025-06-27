@@ -1,6 +1,6 @@
-##############################################################################
-# ICD MySQL module
-##############################################################################
+########################################################################################################################
+# Locals
+########################################################################################################################
 
 locals {
   # If no value passed for 'backup_encryption_key_crn' use the value of 'kms_key_crn' and perform validation of 'kms_key_crn' to check if region is supported by backup encryption key.
@@ -161,24 +161,24 @@ resource "time_sleep" "wait_for_backup_kms_authorization_policy" {
 # MySQL instance
 ########################################################################################################################
 
-# Create MySQL database
 resource "ibm_database" "mysql_db" {
-  depends_on        = [time_sleep.wait_for_authorization_policy]
-  resource_group_id = var.resource_group_id
-  name              = var.name
-  service           = "databases-for-mysql"
-  location          = var.region
-  plan              = "standard" # Only standard plan is available for mysql
-  backup_id         = var.backup_crn
-  remote_leader_id  = var.remote_leader_crn
-  version           = var.mysql_version
-  tags              = var.tags
-  adminpassword     = var.admin_pass
-  service_endpoints = var.service_endpoints
+  depends_on                = [time_sleep.wait_for_authorization_policy]
+  name                      = var.name
+  plan                      = "standard" # Only standard plan is available for mysql
+  location                  = var.region
+  service                   = "databases-for-mysql"
+  version                   = var.mysql_version
+  resource_group_id         = var.resource_group_id
+  service_endpoints         = var.service_endpoints
+  tags                      = var.tags
+  adminpassword             = var.admin_pass
+  key_protect_key           = var.kms_key_crn
+  backup_encryption_key_crn = local.backup_encryption_key_crn
+  backup_id                 = var.backup_crn
+  remote_leader_id          = var.remote_leader_crn
+
   # remove elements with null values: see https://github.com/terraform-ibm-modules/terraform-ibm-icd-postgresql/issues/273
   configuration                        = var.configuration != null ? jsonencode({ for k, v in var.configuration : k => v if v != null }) : null
-  key_protect_key                      = var.kms_key_crn
-  backup_encryption_key_crn            = local.backup_encryption_key_crn
   point_in_time_recovery_deployment_id = var.pitr_id
   point_in_time_recovery_time          = var.pitr_time
 
@@ -311,7 +311,7 @@ resource "ibm_database" "mysql_db" {
   }
 }
 
-resource "ibm_resource_tag" "mysql_tag" {
+resource "ibm_resource_tag" "access_tag" {
   count       = length(var.access_tags) == 0 ? 0 : 1
   resource_id = ibm_database.mysql_db.resource_crn
   tags        = var.access_tags
@@ -348,6 +348,7 @@ module "cbr_rule" {
       }
     ]
   }]
+  #  There is only 1 operation type for Redis so it is not exposed as a configuration
   operations = [{
     api_types = [
       {

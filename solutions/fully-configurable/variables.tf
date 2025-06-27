@@ -66,7 +66,7 @@ variable "existing_mysql_instance_crn" {
 }
 
 variable "mysql_version" {
-  description = "The version of the Databases for MySQL instance. If no value is specified, the current preferred version of Databases for MySQL is used."
+  description = "The version of the Databases for MySQL instance."
   type        = string
   default     = null
 }
@@ -84,7 +84,7 @@ variable "remote_leader_crn" {
 variable "service_endpoints" {
   type        = string
   description = "The type of endpoint of the database instance. Possible values: `public`, `private`, `public-and-private`."
-  default     = "public"
+  default     = "private"
 
   validation {
     condition     = can(regex("public|public-and-private|private", var.service_endpoints))
@@ -248,7 +248,7 @@ variable "kms_endpoint_type" {
 
 variable "skip_mysql_kms_auth_policy" {
   type        = bool
-  description = "Whether to create an IAM authorization policy that permits all Databases for MySQL instances in the resource group to read the encryption key from the Hyper Protect Crypto Services instance specified in the `existing_kms_instance_crn` variable."
+  description = "Set to true to skip the creation of IAM authorization policies that permits all Databases for MySQL instances in the given resource group 'Reader' access to the Key Protect or Hyper Protect Crypto Services key. This policy is required in order to enable KMS encryption, so only skip creation if there is one already present in your account. No policy is created if `kms_encryption_enabled` is false."
   default     = false
 }
 

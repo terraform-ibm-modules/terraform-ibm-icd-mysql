@@ -7,14 +7,14 @@ output "id" {
   value       = module.mysql_db.id
 }
 
-output "guid" {
-  description = "MySQL instance guid"
-  value       = module.mysql_db.guid
-}
-
 output "version" {
   description = "MySQL instance version"
   value       = module.mysql_db.version
+}
+
+output "guid" {
+  description = "MySQL instance guid"
+  value       = module.mysql_db.guid
 }
 
 output "crn" {

@@ -28,7 +28,7 @@ variable "mysql_version" {
 
 variable "region" {
   type        = string
-  description = "The region to provision all resources in. [Learn more](https://terraform-ibm-modules.github.io/documentation/#/region) about how to select different regions for different services."
+  description = "The region where you want to deploy your instance."
   default     = "us-south"
 }
 
@@ -46,7 +46,7 @@ variable "members" {
   type        = number
   description = "Allocated number of members. Members can be scaled up but not down."
   default     = 3
-  # Validation is done in the Terraform plan phase by the IBM provider, so no need to add extra validation here.
+  # Validation is done in terraform plan phase by IBM provider, so no need to add any extra validation here
 }
 
 variable "cpu_count" {
@@ -72,7 +72,7 @@ variable "member_host_flavor" {
 
 variable "memory_mb" {
   type        = number
-  description = "Allocated memory per-member. [Learn more](https://cloud.ibm.com/docs/databases-for-mysql?topic=databases-for-mysql-resources-scaling)"
+  description = "Allocated memory per member. [Learn more](https://cloud.ibm.com/docs/databases-for-mysql?topic=databases-for-mysql-resources-scaling)"
   default     = 4096
   # Validation is done in the Terraform plan phase by the IBM provider, so no need to add extra validation here.
 }
@@ -264,7 +264,7 @@ variable "auto_scaling" {
       rate_units               = optional(string, "mb")
     })
   })
-  description = "Optional rules to allow the database to increase resources in response to usage. Only a single autoscaling block is allowed. Make sure you understand the effects of autoscaling, especially for production environments. See https://ibm.biz/autoscaling-considerations in the IBM Cloud Docs."
+  description = "Optional rules to allow the database to increase resources in response to usage. Only a single autoscaling block is allowed. Make sure you understand the effects of autoscaling, especially for production environments. See https://cloud.ibm.com/docs/databases-for-mysql?topic=databases-for-mysql-autoscaling-mysql&interface=ui in the IBM Cloud Docs."
   default     = null
 }
 
@@ -353,7 +353,7 @@ variable "backup_encryption_key_crn" {
 
 variable "skip_iam_authorization_policy" {
   type        = bool
-  description = "Set to true to skip the creation of an IAM authorization policy that permits all MySQL database instances in the resource group to read the encryption key from the KMS instance. If set to false, pass in a value for the KMS instance in the existing_kms_instance_guid variable. In addition, no policy is created if var.kms_encryption_enabled is set to false."
+  description = "Set to true to skip the creation of IAM authorization policies that permits all Databases for MySQL instances in the given resource group 'Reader' access to the Key Protect or Hyper Protect Crypto Services key that was provided in the `kms_key_crn` and `backup_encryption_key_crn` inputs. This policy is required in order to enable KMS encryption, so only skip creation if there is one already present in your account. No policy is created if `use_ibm_owned_encryption_key` is true."
   default     = false
 }
 

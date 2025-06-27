@@ -14,7 +14,7 @@ variable "name" {
 
 variable "mysql_version" {
   type        = string
-  description = "Version of the MySQL instance. If no value is passed, the current preferred version of IBM Cloud Databases is used."
+  description = "The version of MySQL. If null, the current default ICD MySQl version is used."
   default     = null
 }
 
@@ -42,13 +42,13 @@ variable "members" {
 
 variable "cpu_count" {
   type        = number
-  description = "Allocated dedicated CPU per member. For shared CPU, set to 0. [Learn more](https://cloud.ibm.com/docs/databases-for-mysql?topic=databases-for-mysql-resources-scaling)"
+  description = "Allocated dedicated CPU per member. For shared CPU, set to 0. For more information, see https://cloud.ibm.com/docs/databases-for-mysql?topic=databases-for-mysql-resources-scaling"
   default     = 3
 }
 
 variable "disk_mb" {
   type        = number
-  description = "Allocated disk per member. [Learn more](https://cloud.ibm.com/docs/databases-for-mysql?topic=databases-for-mysql-resources-scaling)"
+  description = "Allocated disk per member. For more information, see https://cloud.ibm.com/docs/databases-for-mysql?topic=databases-for-mysql-resources-scaling"
   default     = 10240
 }
 
@@ -60,7 +60,7 @@ variable "member_host_flavor" {
 
 variable "memory_mb" {
   type        = number
-  description = "Allocated memory per-member. [Learn more](https://cloud.ibm.com/docs/databases-for-mysql?topic=databases-for-mysql-resources-scaling)"
+  description = "Allocated memory per member. For more information, see https://cloud.ibm.com/docs/databases-for-mysql?topic=databases-for-mysql-resources-scaling"
   default     = 4096
 }
 
@@ -89,15 +89,15 @@ variable "service_credential_names" {
   default     = {}
 }
 
-variable "tags" {
-  type        = list(string)
-  description = "Optional list of tags to be added to the MySQL instance."
-  default     = []
-}
-
 variable "access_tags" {
   type        = list(string)
   description = "A list of access tags to apply to the MySQL instance created by the module, see https://cloud.ibm.com/docs/account?topic=account-access-tags-tutorial for more details"
+  default     = []
+}
+
+variable "tags" {
+  type        = list(string)
+  description = "Optional list of tags to be added to the MySQL instance."
   default     = []
 }
 
@@ -151,7 +151,7 @@ variable "auto_scaling" {
       rate_units               = optional(string, "mb")
     })
   })
-  description = "Optional rules to allow the database to increase resources in response to usage. Only a single autoscaling block is allowed. Make sure you understand the effects of autoscaling, especially for production environments. See https://ibm.biz/autoscaling-considerations in the IBM Cloud Docs."
+  description = "Optional rules to allow the database to increase resources in response to usage. Only a single autoscaling block is allowed. Make sure you understand the effects of autoscaling, especially for production environments. See https://cloud.ibm.com/docs/databases-for-mysql?topic=databases-for-mysql-autoscaling-mysql&interface=ui in the IBM Cloud Docs."
   default     = null
 }
 
