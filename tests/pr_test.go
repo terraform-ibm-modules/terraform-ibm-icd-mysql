@@ -25,7 +25,7 @@ import (
 )
 
 const fullyConfigurableSolutionTerraformDir = "solutions/fully-configurable"
-const securityEnforcedTerraformDir = "solutions/security-enforced"
+const securityEnforcedSolutionTerraformDir = "solutions/security-enforced"
 const latestVersion = "8.0"
 
 // Use existing resource group
@@ -66,8 +66,8 @@ func TestRunFullyConfigurableSolutionSchematics(t *testing.T) {
 		Testing: t,
 		TarIncludePatterns: []string{
 			"*.tf",
-			fmt.Sprintf("%s/*.tf", fullyConfigurableSolutionTerraformDir),
-			fmt.Sprintf("%s/*.sh", "scripts"),
+			fullyConfigurableSolutionTerraformDir + "/*.tf",
+			"scripts/*.sh",
 		},
 		TemplateFolder:     fullyConfigurableSolutionTerraformDir,
 		BestRegionYAMLPath: regionSelectionPath,
@@ -131,11 +131,11 @@ func TestRunSecurityEnforcedSolutionSchematics(t *testing.T) {
 		Testing: t,
 		TarIncludePatterns: []string{
 			"*.tf",
-			fmt.Sprintf("%s/*.tf", securityEnforcedTerraformDir),
-			fmt.Sprintf("%s/*.tf", fullyConfigurableSolutionTerraformDir),
-			fmt.Sprintf("%s/*.sh", "scripts"),
+			fullyConfigurableSolutionTerraformDir + "/*.tf",
+			securityEnforcedSolutionTerraformDir + "/*.tf",
+			"scripts/*.sh",
 		},
-		TemplateFolder:     securityEnforcedTerraformDir,
+		TemplateFolder:     securityEnforcedSolutionTerraformDir,
 		BestRegionYAMLPath: regionSelectionPath,
 		Prefix:             prefix,
 		// ResourceGroup:              resourceGroup,
@@ -199,10 +199,11 @@ func TestRunSecurityEnforcedUpgradeSolution(t *testing.T) {
 		Testing: t,
 		TarIncludePatterns: []string{
 			"*.tf",
-			fmt.Sprintf("%s/*.tf", securityEnforcedTerraformDir),
-			fmt.Sprintf("%s/*.sh", "scripts"),
+			fullyConfigurableSolutionTerraformDir + "/*.tf",
+			securityEnforcedSolutionTerraformDir + "/*.tf",
+			"scripts/*.sh",
 		},
-		TemplateFolder:     securityEnforcedTerraformDir,
+		TemplateFolder:     securityEnforcedSolutionTerraformDir,
 		BestRegionYAMLPath: regionSelectionPath,
 		Prefix:             "mysql-upg",
 		// ResourceGroup:          resourceGroup,
@@ -399,8 +400,8 @@ func TestRunExistingInstance(t *testing.T) {
 			Testing: t,
 			TarIncludePatterns: []string{
 				"*.tf",
-				fmt.Sprintf("%s/*.tf", fullyConfigurableSolutionTerraformDir),
-				fmt.Sprintf("%s/*.sh", "scripts"),
+				fullyConfigurableSolutionTerraformDir + "/*.tf",
+				"scripts/*.sh",
 			},
 			TemplateFolder:         fullyConfigurableSolutionTerraformDir,
 			BestRegionYAMLPath:     regionSelectionPath,
