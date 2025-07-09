@@ -12,6 +12,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/IBM/go-sdk-core/v5/core"
 	"github.com/gruntwork-io/terratest/modules/files"
 	"github.com/gruntwork-io/terratest/modules/logger"
 	"github.com/gruntwork-io/terratest/modules/random"
@@ -22,6 +23,7 @@ import (
 	"github.com/terraform-ibm-modules/ibmcloud-terratest-wrapper/common"
 	"github.com/terraform-ibm-modules/ibmcloud-terratest-wrapper/testhelper"
 	"github.com/terraform-ibm-modules/ibmcloud-terratest-wrapper/testschematic"
+	"github.com/terraform-ibm-modules/ibmcloud-terratest-wrapper/testaddons"
 )
 
 const fullyConfigurableSolutionTerraformDir = "solutions/fully-configurable"
@@ -441,4 +443,70 @@ func GetRandomAdminPassword(t *testing.T) string {
 	require.Nil(t, randErr) // do not proceed if we can't gen a random password
 	randomPass := "A1" + base64.URLEncoding.EncodeToString(randomBytes)[:13]
 	return randomPass
+}
+
+
+// TestRunAddonTests runs addon tests in parallel using a matrix approach
+// This can be used as an example of how to run multiple addon tests in parallel
+func TestRunAddonTests(t *testing.T) {
+	testCases := []testaddons.AddonTestCase{
+		// {
+		// 	Name:   "Mysql-Default-Configuration",
+		// 	Prefix: "mysqladdon",
+		// },
+		{
+			Name:   "Mysql-With-Resource-Group-Only",
+			Prefix: "mysqlrgonl",
+			Dependencies: []cloudinfo.AddonConfig{
+				{
+					OfferingName:   "deploy-arch-ibm-account-infra-base",
+					OfferingFlavor: "resource-group-only",
+					Enabled:        core.BoolPtr(true),
+				},
+			},
+			SkipInfrastructureDeployment: true, // Skip infrastructure deployment for this test case
+		},
+		// {
+		// 	Name:   "Mysql-With-Resource-Group-And-Account-Settings",
+		// 	Prefix: "mysqlrgwaccs",
+		// 	Dependencies: []cloudinfo.AddonConfig{
+		// 		{
+		// 			OfferingName:   "deploy-arch-ibm-account-infra-base",
+		// 			OfferingFlavor: "resource-groups-with-account-settings",
+		// 			Enabled:        core.BoolPtr(true),
+		// 		},
+		// 	},
+		// 	SkipInfrastructureDeployment: true, // Skip infrastructure deployment for this test case
+		// },
+	}
+	// Define common options that apply to all test cases
+	baseOptions := testaddons.TestAddonsOptionsDefault(&testaddons.TestAddonOptions{
+		Testing:              t,
+		Prefix:               "mysql-matrix", // Test cases will override with their own prefixes
+		ResourceGroup:        resourceGroup,
+		//SkipLocalChangeCheck: true, // Skip local change check for addon tests
+	})
+
+	matrix := testaddons.AddonTestMatrix{
+		TestCases:   testCases,
+		BaseOptions: baseOptions,
+		BaseSetupFunc: func(baseOptions *testaddons.TestAddonOptions, testCase testaddons.AddonTestCase) *testaddons.TestAddonOptions {
+			// The framework automatically handles prefix assignment from testCase.Prefix
+			// You can add any custom logic here if needed
+			return baseOptions
+		},
+		AddonConfigFunc: func(options *testaddons.TestAddonOptions, testCase testaddons.AddonTestCase) cloudinfo.AddonConfig {
+			return cloudinfo.NewAddonConfigTerraform(
+				options.Prefix,
+				"deploy-arch-ibm-icd-mysql",
+				"fully-configurable",
+				map[string]interface{}{
+					"prefix": options.Prefix,
+					"region": "us-south",
+				},
+			)
+		},
+	}
+
+	baseOptions.RunAddonTestMatrix(matrix)
 }
