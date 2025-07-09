@@ -27,7 +27,7 @@ import (
 )
 
 const fullyConfigurableSolutionTerraformDir = "solutions/fully-configurable"
-const securityEnforcedTerraformDir = "solutions/security-enforced"
+const securityEnforcedSolutionTerraformDir = "solutions/security-enforced"
 const latestVersion = "8.0"
 
 // Use existing resource group
@@ -68,8 +68,8 @@ func TestRunFullyConfigurableSolutionSchematics(t *testing.T) {
 		Testing: t,
 		TarIncludePatterns: []string{
 			"*.tf",
-			fmt.Sprintf("%s/*.tf", fullyConfigurableSolutionTerraformDir),
-			fmt.Sprintf("%s/*.sh", "scripts"),
+			fullyConfigurableSolutionTerraformDir + "/*.tf",
+			"scripts/*.sh",
 		},
 		TemplateFolder:     fullyConfigurableSolutionTerraformDir,
 		BestRegionYAMLPath: regionSelectionPath,
@@ -133,11 +133,11 @@ func TestRunSecurityEnforcedSolutionSchematics(t *testing.T) {
 		Testing: t,
 		TarIncludePatterns: []string{
 			"*.tf",
-			fmt.Sprintf("%s/*.tf", securityEnforcedTerraformDir),
-			fmt.Sprintf("%s/*.tf", fullyConfigurableSolutionTerraformDir),
-			fmt.Sprintf("%s/*.sh", "scripts"),
+			fullyConfigurableSolutionTerraformDir + "/*.tf",
+			securityEnforcedSolutionTerraformDir + "/*.tf",
+			"scripts/*.sh",
 		},
-		TemplateFolder:     securityEnforcedTerraformDir,
+		TemplateFolder:     securityEnforcedSolutionTerraformDir,
 		BestRegionYAMLPath: regionSelectionPath,
 		Prefix:             prefix,
 		// ResourceGroup:              resourceGroup,
@@ -201,10 +201,11 @@ func TestRunSecurityEnforcedUpgradeSolution(t *testing.T) {
 		Testing: t,
 		TarIncludePatterns: []string{
 			"*.tf",
-			fmt.Sprintf("%s/*.tf", securityEnforcedTerraformDir),
-			fmt.Sprintf("%s/*.sh", "scripts"),
+			fullyConfigurableSolutionTerraformDir + "/*.tf",
+			securityEnforcedSolutionTerraformDir + "/*.tf",
+			"scripts/*.sh",
 		},
-		TemplateFolder:     securityEnforcedTerraformDir,
+		TemplateFolder:     securityEnforcedSolutionTerraformDir,
 		BestRegionYAMLPath: regionSelectionPath,
 		Prefix:             "mysql-upg",
 		// ResourceGroup:          resourceGroup,
@@ -244,7 +245,6 @@ func TestRunSecurityEnforcedUpgradeSolution(t *testing.T) {
 		{Name: "prefix", Value: options.Prefix, DataType: "string"},
 		{Name: "access_tags", Value: permanentResources["accessTags"], DataType: "list(string)"},
 		{Name: "existing_kms_instance_crn", Value: permanentResources["hpcs_south_crn"], DataType: "string"},
-		{Name: "existing_backup_kms_key_crn", Value: permanentResources["hpcs_south_root_key_crn"], DataType: "string"},
 		{Name: "existing_resource_group_name", Value: resourceGroup, DataType: "string"},
 		{Name: "mysql_version", Value: "8.0", DataType: "string"}, // Always lock this test into the latest supported MySQL version
 		{Name: "existing_secrets_manager_instance_crn", Value: permanentResources["secretsManagerCRN"], DataType: "string"},
@@ -401,8 +401,8 @@ func TestRunExistingInstance(t *testing.T) {
 			Testing: t,
 			TarIncludePatterns: []string{
 				"*.tf",
-				fmt.Sprintf("%s/*.tf", fullyConfigurableSolutionTerraformDir),
-				fmt.Sprintf("%s/*.sh", "scripts"),
+				fullyConfigurableSolutionTerraformDir + "/*.tf",
+				"scripts/*.sh",
 			},
 			TemplateFolder:         fullyConfigurableSolutionTerraformDir,
 			BestRegionYAMLPath:     regionSelectionPath,
