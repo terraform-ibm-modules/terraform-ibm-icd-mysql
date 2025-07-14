@@ -401,6 +401,54 @@
               "optional": true,
               "on_by_default": false,
               "version": "v3.0.7"
+            },
+            {
+              "name": "deploy-arch-ibm-kms",
+              "id": "2cad4789-fa90-4886-9c9e-857081c273ee-global",
+              "description": "Enable Cloud Automation for Key Protect to use customer-managed encryption keys (CMKs) for encrypting both deployment data and backups. If disabled, IBM Cloud's default service-managed encryption will be used instead.",
+              "flavors": ["fully-configurable"],
+              "catalog_id": "7a4d68b4-cf8b-40cd-a3d1-f49aff526eb3",
+              "input_mapping": [
+                {
+                  "dependency_output": "kms_instance_crn",
+                  "version_input": "existing_kms_instance_crn"
+                },
+                {
+                  "dependency_input": "prefix",
+                  "version_input": "prefix",
+                  "reference_version": true
+                },
+                {
+                  "dependency_input": "region",
+                  "version_input": "region",
+                  "reference_version": true
+                }
+              ],
+              "optional": true,
+              "on_by_default": true,
+              "version": "v5.1.4"
+            },
+            {
+              "name": "deploy-arch-ibm-secrets-manager",
+              "description": "Enable to provisions and configures IBM Cloud Secrets Manager for securely storing service credentials.",
+              "id": "6d6ebc76-7bbd-42f5-8bc7-78f4fabd5944-global",
+              "flavors": ["fully-configurable"],
+              "catalog_id": "7a4d68b4-cf8b-40cd-a3d1-f49aff526eb3",
+              "default_flavor": "fully-configurable",
+              "input_mapping": [
+                {
+                  "reference_version": true,
+                  "dependency_input": "prefix",
+                  "version_input": "prefix"
+                },
+                {
+                  "dependency_output": "secrets_manager_crn",
+                  "version_input": "existing_secrets_manager_instance_crn"
+                }
+              ],
+              "optional": true,
+              "on_by_default": true,
+              "version": "v2.6.1"
             }
           ],
           "dependency_version_2": true,
