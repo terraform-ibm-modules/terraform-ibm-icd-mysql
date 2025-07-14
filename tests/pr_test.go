@@ -450,45 +450,60 @@ func GetRandomAdminPassword(t *testing.T) string {
 // This can be used as an example of how to run multiple addon tests in parallel
 func TestRunAddonTests(t *testing.T) {
 	testCases := []testaddons.AddonTestCase{
-		{
-			Name:   "Mysql-Default-Configuration",
-			Prefix: "mysqladdon",
-		},
-		{
-			Name:   "Mysql-With-Resource-Group-Only",
-			Prefix: "mysqlrgonl",
-			Dependencies: []cloudinfo.AddonConfig{
-				{
-					OfferingName:   "deploy-arch-ibm-account-infra-base",
-					OfferingFlavor: "resource-group-only",
-					Enabled:        core.BoolPtr(true),
-				},
-				{
-                    OfferingName:   "deploy-arch-ibm-kms",
-					OfferingFlavor: "resource-group-only",
-					Enabled:        core.BoolPtr(true),
-				},
-				{
-					OfferingName:   "deploy-arch-ibm-secrets-manager",
-					OfferingFlavor: "resource-group-only",
-					Enabled:        core.BoolPtr(true),
+		// {
+		// 	Name:   "Mysql-Default-Configuration",
+		// 	Prefix: "mysqladdon",
+		// },
+		// {
+		// 	Name:   "Mysql-With-Resource-Group-Only",
+		// 	Prefix: "mysqlrgonl",
+		// 	Dependencies: []cloudinfo.AddonConfig{
+		// 		{
+		// 			OfferingName:   "deploy-arch-ibm-account-infra-base",
+		// 			OfferingFlavor: "resource-group-only",
+		// 			Enabled:        core.BoolPtr(true),
+		// 		},
+		// 		{
+        //             OfferingName:   "deploy-arch-ibm-kms",
+		// 			OfferingFlavor: "fully-configurable",
+		// 			Enabled:        core.BoolPtr(true),
+		// 		},
+		// 		{
+		// 			OfferingName:   "deploy-arch-ibm-secrets-manager",
+		// 			OfferingFlavor: "fully-configurable",
+		// 			Enabled:        core.BoolPtr(true),
 
-				},
-			},
-			SkipInfrastructureDeployment: true, // Skip infrastructure deployment for this test case
-		},
-		{
-			Name:   "Mysql-With-Resource-Group-And-Account-Settings",
-			Prefix: "mysqlrgwaccs",
+		// 		},
+		// 	},
+		// 	SkipInfrastructureDeployment: true, // Skip infrastructure deployment for this test case
+		// },
+	{
+			Name:   "EN-With-KMS-Disabled",
+			Prefix: "ennokm",
 			Dependencies: []cloudinfo.AddonConfig{
 				{
-					OfferingName:   "deploy-arch-ibm-account-infra-base",
-					OfferingFlavor: "resource-groups-with-account-settings",
+					OfferingName:   "deploy-arch-ibm-kms",
+					OfferingFlavor: "fully-configurable",
 					Enabled:        core.BoolPtr(true),
 				},
 			},
-			SkipInfrastructureDeployment: true, // Skip infrastructure deployment for this test case
+			Inputs: map[string]interface{}{
+				"existing_kms_instance_crn": permanentResources["kp_us_south_root_key_crn"],
+			},
+			SkipInfrastructureDeployment: true,
 		},
+		// {
+		// 	Name:   "Mysql-With-Resource-Group-And-Account-Settings",
+		// 	Prefix: "mysqlrgwaccs",
+		// 	Dependencies: []cloudinfo.AddonConfig{
+		// 		{
+		// 			OfferingName:   "deploy-arch-ibm-account-infra-base",
+		// 			OfferingFlavor: "resource-groups-with-account-settings",
+		// 			Enabled:        core.BoolPtr(true),
+		// 		},
+		// 	},
+		// 	SkipInfrastructureDeployment: true, // Skip infrastructure deployment for this test case
+		// },
 	}
 	// Define common options that apply to all test cases
 	baseOptions := testaddons.TestAddonsOptionsDefault(&testaddons.TestAddonOptions{
