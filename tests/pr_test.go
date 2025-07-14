@@ -478,11 +478,21 @@ func TestRunAddonTests(t *testing.T) {
 		// 	SkipInfrastructureDeployment: true, // Skip infrastructure deployment for this test case
 		// },
 	{
-			Name:   "EN-With-KMS-Disabled",
+			Name:   "mysql-With-KMS-Enabled",
 			Prefix: "ennokm",
 			Dependencies: []cloudinfo.AddonConfig{
 				{
+					OfferingName:   "deploy-arch-ibm-account-infra-base",
+					OfferingFlavor: "resource-group-only",
+					Enabled:        core.BoolPtr(true),
+				},
+				{
 					OfferingName:   "deploy-arch-ibm-kms",
+					OfferingFlavor: "fully-configurable",
+					Enabled:        core.BoolPtr(true),
+				},
+				{
+					OfferingName:   "deploy-arch-ibm-secrets-manager",
 					OfferingFlavor: "fully-configurable",
 					Enabled:        core.BoolPtr(true),
 				},
