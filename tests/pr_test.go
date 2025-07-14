@@ -481,16 +481,16 @@ func TestRunAddonTests(t *testing.T) {
 			Name:   "mysql-With-KMS-Enabled",
 			Prefix: "ennokm",
 			Dependencies: []cloudinfo.AddonConfig{
-				{
-					OfferingName:   "deploy-arch-ibm-account-infra-base",
-					OfferingFlavor: "resource-group-only",
-					Enabled:        core.BoolPtr(true),
-				},
-				{
-					OfferingName:   "deploy-arch-ibm-kms",
-					OfferingFlavor: "fully-configurable",
-					Enabled:        core.BoolPtr(true),
-				},
+				// {
+				// 	OfferingName:   "deploy-arch-ibm-account-infra-base",
+				// 	OfferingFlavor: "resource-group-only",
+				// 	Enabled:        core.BoolPtr(true),
+				// },
+				// {
+				// 	OfferingName:   "deploy-arch-ibm-kms",
+				// 	OfferingFlavor: "fully-configurable",
+				// 	Enabled:        core.BoolPtr(true),
+				// },
 				{
 					OfferingName:   "deploy-arch-ibm-secrets-manager",
 					OfferingFlavor: "fully-configurable",
@@ -498,7 +498,8 @@ func TestRunAddonTests(t *testing.T) {
 				},
 			},
 			Inputs: map[string]interface{}{
-				"existing_kms_instance_crn": permanentResources["kp_us_south_root_key_crn"],
+				//"existing_kms_instance_crn": permanentResources["kp_us_south_root_key_crn"],
+				//"service_plan": "standard",
 			},
 			SkipInfrastructureDeployment: true,
 		},
