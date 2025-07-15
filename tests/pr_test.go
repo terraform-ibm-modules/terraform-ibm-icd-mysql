@@ -21,9 +21,9 @@ import (
 	"github.com/stretchr/testify/require"
 	"github.com/terraform-ibm-modules/ibmcloud-terratest-wrapper/cloudinfo"
 	"github.com/terraform-ibm-modules/ibmcloud-terratest-wrapper/common"
+	"github.com/terraform-ibm-modules/ibmcloud-terratest-wrapper/testaddons"
 	"github.com/terraform-ibm-modules/ibmcloud-terratest-wrapper/testhelper"
 	"github.com/terraform-ibm-modules/ibmcloud-terratest-wrapper/testschematic"
-	"github.com/terraform-ibm-modules/ibmcloud-terratest-wrapper/testaddons"
 )
 
 const fullyConfigurableSolutionTerraformDir = "solutions/fully-configurable"
@@ -445,82 +445,130 @@ func GetRandomAdminPassword(t *testing.T) string {
 	return randomPass
 }
 
-
 // TestRunAddonTests runs addon tests in parallel using a matrix approach
 // This can be used as an example of how to run multiple addon tests in parallel
 func TestRunAddonTests(t *testing.T) {
 	testCases := []testaddons.AddonTestCase{
-		// {
-		// 	Name:   "Mysql-Default-Configuration",
-		// 	Prefix: "mysqladdon",
-		// },
-		// {
-		// 	Name:   "Mysql-With-Resource-Group-Only",
-		// 	Prefix: "mysqlrgonl",
-		// 	Dependencies: []cloudinfo.AddonConfig{
-		// 		{
-		// 			OfferingName:   "deploy-arch-ibm-account-infra-base",
-		// 			OfferingFlavor: "resource-group-only",
-		// 			Enabled:        core.BoolPtr(true),
-		// 		},
-		// 		{
-        //             OfferingName:   "deploy-arch-ibm-kms",
-		// 			OfferingFlavor: "fully-configurable",
-		// 			Enabled:        core.BoolPtr(true),
-		// 		},
-		// 		{
-		// 			OfferingName:   "deploy-arch-ibm-secrets-manager",
-		// 			OfferingFlavor: "fully-configurable",
-		// 			Enabled:        core.BoolPtr(true),
-
-		// 		},
-		// 	},
-		// 	SkipInfrastructureDeployment: true, // Skip infrastructure deployment for this test case
-		// },
-	{
-			Name:   "mysql-With-KMS-Enabled",
-			Prefix: "ennokm",
+		{
+			Name:   "MySQL-With-Resource-Group-And-Account-Settings",
+			Prefix: "mysqlrgwaccs",
 			Dependencies: []cloudinfo.AddonConfig{
-				// {
-				// 	OfferingName:   "deploy-arch-ibm-account-infra-base",
-				// 	OfferingFlavor: "resource-group-only",
-				// 	Enabled:        core.BoolPtr(true),
-				// },
-				// {
-				// 	OfferingName:   "deploy-arch-ibm-kms",
-				// 	OfferingFlavor: "fully-configurable",
-				// 	Enabled:        core.BoolPtr(true),
-				// },
+				{
+					OfferingName:   "deploy-arch-ibm-account-infra-base",
+					OfferingFlavor: "resource-groups-with-account-settings",
+					Enabled:        core.BoolPtr(true),
+				},
+			},
+			SkipInfrastructureDeployment: true, // Skip infrastructure deployment for this test case
+		},
+		{
+			Name:   "MySQL-With-Resource-Group-Only",
+			Prefix: "mysqlwrgly",
+			Dependencies: []cloudinfo.AddonConfig{
+				{
+					OfferingName:   "deploy-arch-ibm-account-infra-base",
+					OfferingFlavor: "resource-group-only",
+					Enabled:        core.BoolPtr(true),
+				},
+			},
+			SkipInfrastructureDeployment: true, // Skip infrastructure deployment for this test case
+		},
+
+		{
+			Name:   "MySQL-With-KMS-Enabled",
+			Prefix: "mysqlwkm",
+			Dependencies: []cloudinfo.AddonConfig{
+				{
+					OfferingName:   "deploy-arch-ibm-account-infra-base",
+					OfferingFlavor: "resource-group-only",
+					Enabled:        core.BoolPtr(true),
+				},
+				{
+					OfferingName:   "deploy-arch-ibm-kms",
+					OfferingFlavor: "fully-configurable",
+					Enabled:        core.BoolPtr(true),
+				},
+			},
+			Inputs: map[string]interface{}{
+				"existing_kms_instance_crn": permanentResources["kp_us_south_root_key_crn"],
+			},
+			SkipInfrastructureDeployment: true, // Skip infrastructure deployment for this test case
+		},
+
+		{
+			Name:   "MySQL-With-Secret-Manager-Enabled",
+			Prefix: "mysqlwsm",
+			Dependencies: []cloudinfo.AddonConfig{
+				{
+					OfferingName:   "deploy-arch-ibm-account-infra-base",
+					OfferingFlavor: "resource-group-only",
+					Enabled:        core.BoolPtr(true),
+				},
 				{
 					OfferingName:   "deploy-arch-ibm-secrets-manager",
 					OfferingFlavor: "fully-configurable",
 					Enabled:        core.BoolPtr(true),
 				},
 			},
+			SkipInfrastructureDeployment: true, // Skip infrastructure deployment for this test case
+		},
+
+		{
+			Name:   "MySQL-With-KMS-And-Secret-Manager-Enabled",
+			Prefix: "mysqlwkmsm",
+			Dependencies: []cloudinfo.AddonConfig{
+				{
+					OfferingName:   "deploy-arch-ibm-account-infra-base",
+					OfferingFlavor: "resource-group-only",
+					Enabled:        core.BoolPtr(true),
+				},
+				{
+					OfferingName:   "deploy-arch-ibm-secrets-manager",
+					OfferingFlavor: "fully-configurable",
+					Enabled:        core.BoolPtr(true),
+				},
+				{
+					OfferingName:   "deploy-arch-ibm-kms",
+					OfferingFlavor: "fully-configurable",
+					Enabled:        core.BoolPtr(true),
+				},
+			},
 			Inputs: map[string]interface{}{
-				//"existing_kms_instance_crn": permanentResources["kp_us_south_root_key_crn"],
-				//"service_plan": "standard",
+				"existing_kms_instance_crn": permanentResources["kp_us_south_root_key_crn"],
+			},
+			SkipInfrastructureDeployment: true, // Skip infrastructure deployment for this test case
+		},
+		{
+			Name:   "MySQL-With-All-Optional-Services-Disabled",
+			Prefix: "mysqlallno",
+			Dependencies: []cloudinfo.AddonConfig{
+				{
+					OfferingName:   "deploy-arch-ibm-account-infra-base",
+					OfferingFlavor: "resource-group-only",
+					Enabled:        core.BoolPtr(false),
+				},
+				{
+					OfferingName:   "deploy-arch-ibm-secrets-manager",
+					OfferingFlavor: "fully-configurable",
+					Enabled:        core.BoolPtr(false),
+				},
+				{
+					OfferingName:   "deploy-arch-ibm-kms",
+					OfferingFlavor: "fully-configurable",
+					Enabled:        core.BoolPtr(false),
+				},
+			},
+			Inputs: map[string]interface{}{
+				"existing_kms_instance_crn": permanentResources["kp_us_south_root_key_crn"],
 			},
 			SkipInfrastructureDeployment: true,
 		},
-		// {
-		// 	Name:   "Mysql-With-Resource-Group-And-Account-Settings",
-		// 	Prefix: "mysqlrgwaccs",
-		// 	Dependencies: []cloudinfo.AddonConfig{
-		// 		{
-		// 			OfferingName:   "deploy-arch-ibm-account-infra-base",
-		// 			OfferingFlavor: "resource-groups-with-account-settings",
-		// 			Enabled:        core.BoolPtr(true),
-		// 		},
-		// 	},
-		// 	SkipInfrastructureDeployment: true, // Skip infrastructure deployment for this test case
-		// },
 	}
 	// Define common options that apply to all test cases
 	baseOptions := testaddons.TestAddonsOptionsDefault(&testaddons.TestAddonOptions{
-		Testing:              t,
-		Prefix:               "mysql-matrix", // Test cases will override with their own prefixes
-		ResourceGroup:        resourceGroup,
+		Testing:       t,
+		Prefix:        "mysql-matrix", // Test cases will override with their own prefixes
+		ResourceGroup: resourceGroup,
 		//SkipLocalChangeCheck: true, // Skip local change check for addon tests
 	})
 
