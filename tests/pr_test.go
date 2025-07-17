@@ -450,6 +450,10 @@ func GetRandomAdminPassword(t *testing.T) string {
 func TestRunAddonTests(t *testing.T) {
 	testCases := []testaddons.AddonTestCase{
 		{
+			Name:   "MySQL-Default-Config",
+			Prefix: "mysqldef",
+		},
+		{
 			Name:   "MySQL-With-Resource-Group-And-Account-Settings",
 			Prefix: "mysqlrgwaccs",
 			Dependencies: []cloudinfo.AddonConfig{
@@ -473,20 +477,14 @@ func TestRunAddonTests(t *testing.T) {
 			},
 			SkipInfrastructureDeployment: true, // Skip infrastructure deployment for this test case
 		},
-
 		{
-			Name:   "MySQL-With-KMS-Enabled",
-			Prefix: "mysqlwkm",
+			Name:   "MySQL-With-KMS-Disabled",
+			Prefix: "mysqlnokm",
 			Dependencies: []cloudinfo.AddonConfig{
-				{
-					OfferingName:   "deploy-arch-ibm-account-infra-base",
-					OfferingFlavor: "resource-group-only",
-					Enabled:        core.BoolPtr(true),
-				},
 				{
 					OfferingName:   "deploy-arch-ibm-kms",
 					OfferingFlavor: "fully-configurable",
-					Enabled:        core.BoolPtr(true),
+					Enabled:        core.BoolPtr(false),
 				},
 			},
 			Inputs: map[string]interface{}{
@@ -494,41 +492,29 @@ func TestRunAddonTests(t *testing.T) {
 			},
 			SkipInfrastructureDeployment: true, // Skip infrastructure deployment for this test case
 		},
-
 		{
-			Name:   "MySQL-With-Secret-Manager-Enabled",
-			Prefix: "mysqlwsm",
+			Name:   "MySQL-With-Secret-Manager-Disabled",
+			Prefix: "mysqlnosm",
 			Dependencies: []cloudinfo.AddonConfig{
-				{
-					OfferingName:   "deploy-arch-ibm-account-infra-base",
-					OfferingFlavor: "resource-group-only",
-					Enabled:        core.BoolPtr(true),
-				},
 				{
 					OfferingName:   "deploy-arch-ibm-secrets-manager",
 					OfferingFlavor: "fully-configurable",
-					Enabled:        core.BoolPtr(true),
+					Enabled:        core.BoolPtr(false),
 				},
 			},
 			SkipInfrastructureDeployment: true, // Skip infrastructure deployment for this test case
 		},
-
 		{
-			Name:   "MySQL-With-KMS-And-Secret-Manager-Enabled",
-			Prefix: "mysqlwkmsm",
+			Name:   "MySQL-With-KMS-And-Secret-Manager-Disabled",
+			Prefix: "mysqlnokmsm",
 			Dependencies: []cloudinfo.AddonConfig{
 				{
-					OfferingName:   "deploy-arch-ibm-account-infra-base",
-					OfferingFlavor: "resource-group-only",
-					Enabled:        core.BoolPtr(true),
+					OfferingName:   "deploy-arch-ibm-kms",
+					OfferingFlavor: "fully-configurable",
+					Enabled:        core.BoolPtr(false),
 				},
 				{
 					OfferingName:   "deploy-arch-ibm-secrets-manager",
-					OfferingFlavor: "fully-configurable",
-					Enabled:        core.BoolPtr(true),
-				},
-				{
-					OfferingName:   "deploy-arch-ibm-kms",
 					OfferingFlavor: "fully-configurable",
 					Enabled:        core.BoolPtr(true),
 				},
@@ -542,11 +528,6 @@ func TestRunAddonTests(t *testing.T) {
 			Name:   "MySQL-With-All-Optional-Services-Disabled",
 			Prefix: "mysqlallno",
 			Dependencies: []cloudinfo.AddonConfig{
-				{
-					OfferingName:   "deploy-arch-ibm-account-infra-base",
-					OfferingFlavor: "resource-group-only",
-					Enabled:        core.BoolPtr(false),
-				},
 				{
 					OfferingName:   "deploy-arch-ibm-secrets-manager",
 					OfferingFlavor: "fully-configurable",
@@ -564,6 +545,7 @@ func TestRunAddonTests(t *testing.T) {
 			SkipInfrastructureDeployment: true,
 		},
 	}
+
 	// Define common options that apply to all test cases
 	baseOptions := testaddons.TestAddonsOptionsDefault(&testaddons.TestAddonOptions{
 		Testing:       t,
@@ -592,6 +574,5 @@ func TestRunAddonTests(t *testing.T) {
 			)
 		},
 	}
-
 	baseOptions.RunAddonTestMatrix(matrix)
 }
