@@ -8,9 +8,10 @@
         "ibm_created",
         "target_terraform",
         "terraform",
+        "solution",
         "data_management",
         "database",
-        "solution"
+        "converged_infra"
       ],
       "keywords": [
         "mysql",
@@ -414,7 +415,7 @@
               ],
               "service_name": "databases-for-mysql"
             },
-           {
+            {
               "role_crns": [
                 "crn:v1:bluemix:public:iam::::role:Editor"
               ],
