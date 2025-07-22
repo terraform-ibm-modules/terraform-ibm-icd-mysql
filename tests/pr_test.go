@@ -12,6 +12,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/google/uuid"
 	"github.com/gruntwork-io/terratest/modules/files"
 	"github.com/gruntwork-io/terratest/modules/logger"
 	"github.com/gruntwork-io/terratest/modules/random"
@@ -117,7 +118,6 @@ func TestRunFullyConfigurableSolutionSchematics(t *testing.T) {
 		{Name: "admin_pass_secrets_manager_secret_name", Value: options.Prefix, DataType: "string"},
 		{Name: "prefix", Value: options.Prefix, DataType: "string"},
 		{Name: "admin_pass", Value: GetRandomAdminPassword(t), DataType: "string"},
-		{Name: "use_ibm_owned_encryption_key", Value: true, DataType: "bool"},
 	}
 	err = options.RunSchematicTest()
 	assert.Nil(t, err, "This should not have errored")
@@ -172,12 +172,14 @@ func TestRunSecurityEnforcedSolutionSchematics(t *testing.T) {
 		log.Fatalf("Error converting to JSON: %s", err)
 	}
 
+	uniqueResourceGroup := generateUniqueResourceGroupName(prefix)
+
 	options.TerraformVars = []testschematic.TestSchematicTerraformVar{
 		{Name: "ibmcloud_api_key", Value: options.RequiredEnvironmentVars["TF_VAR_ibmcloud_api_key"], DataType: "string", Secure: true},
 		{Name: "access_tags", Value: permanentResources["accessTags"], DataType: "list(string)"},
 		{Name: "existing_kms_instance_crn", Value: permanentResources["hpcs_south_crn"], DataType: "string"},
 		{Name: "existing_backup_kms_key_crn", Value: permanentResources["hpcs_south_root_key_crn"], DataType: "string"},
-		{Name: "existing_resource_group_name", Value: resourceGroup, DataType: "string"},
+		{Name: "existing_resource_group_name", Value: uniqueResourceGroup, DataType: "string"},
 		{Name: "mysql_version", Value: "8.0", DataType: "string"}, // Always lock this test into the latest supported MySQL version
 		{Name: "service_credential_names", Value: string(serviceCredentialNamesJSON), DataType: "map(string)"},
 		{Name: "existing_secrets_manager_instance_crn", Value: permanentResources["secretsManagerCRN"], DataType: "string"},
@@ -187,7 +189,9 @@ func TestRunSecurityEnforcedSolutionSchematics(t *testing.T) {
 		{Name: "admin_pass", Value: GetRandomAdminPassword(t), DataType: "string"},
 		{Name: "prefix", Value: options.Prefix, DataType: "string"},
 	}
-	err = options.RunSchematicTest()
+	err = sharedInfoSvc.WithNewResourceGroup(uniqueResourceGroup, func() error {
+		return options.RunSchematicTest()
+	})
 	assert.Nil(t, err, "This should not have errored")
 }
 
@@ -441,4 +445,9 @@ func GetRandomAdminPassword(t *testing.T) string {
 	require.Nil(t, randErr) // do not proceed if we can't gen a random password
 	randomPass := "A1" + base64.URLEncoding.EncodeToString(randomBytes)[:13]
 	return randomPass
+}
+
+func generateUniqueResourceGroupName(baseName string) string {
+	id := uuid.New().String()[:8] // Shorten UUID for readability
+	return fmt.Sprintf("%s-%s", baseName, id)
 }
