@@ -39,5 +39,8 @@ module "mysql" {
   use_existing_admin_pass_secrets_manager_secret_group = var.use_existing_admin_pass_secrets_manager_secret_group
   admin_pass_secrets_manager_secret_name               = var.admin_pass_secrets_manager_secret_name
   service_endpoints                                    = "private"
+  deletion_protection                                  = var.deletion_protection
+  version_upgrade_skip_backup                          = false
+  timeouts_update                                      = var.timeouts_update
   remote_leader_crn                                    = var.remote_leader_crn
 }

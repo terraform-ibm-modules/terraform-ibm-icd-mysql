@@ -302,6 +302,9 @@ module "mysql" {
   service_credential_names          = var.service_credential_names
   backup_crn                        = var.backup_crn
   service_endpoints                 = var.service_endpoints
+  deletion_protection               = var.deletion_protection
+  version_upgrade_skip_backup       = var.version_upgrade_skip_backup
+  timeouts_update                   = var.timeouts_update
   remote_leader_crn                 = var.remote_leader_crn
 }
 
@@ -323,7 +326,7 @@ locals {
 }
 
 # Parse the Secrets Manager CRN
-module "sm_instance_crn_parser" {
+module "secrets_manager_instance_crn_parser" {
   count   = var.existing_secrets_manager_instance_crn != null ? 1 : 0
   source  = "terraform-ibm-modules/common-utilities/ibm//modules/crn-parser"
   version = "1.2.0"
@@ -386,8 +389,8 @@ locals {
   # Concatinate into 1 secrets object
   secrets = concat(local.service_credential_secrets, local.admin_pass_secret)
   # Parse Secrets Manager details from the CRN
-  existing_secrets_manager_instance_guid   = var.existing_secrets_manager_instance_crn != null ? module.sm_instance_crn_parser[0].service_instance : null
-  existing_secrets_manager_instance_region = var.existing_secrets_manager_instance_crn != null ? module.sm_instance_crn_parser[0].region : null
+  existing_secrets_manager_instance_guid   = var.existing_secrets_manager_instance_crn != null ? module.secrets_manager_instance_crn_parser[0].service_instance : null
+  existing_secrets_manager_instance_region = var.existing_secrets_manager_instance_crn != null ? module.secrets_manager_instance_crn_parser[0].region : null
 }
 
 module "secrets_manager_service_credentials" {

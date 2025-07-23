@@ -282,6 +282,15 @@
               ]
             },
             {
+              "key": "deletion_protection"
+            },
+            {
+              "key": "timeouts_update"
+            },
+            {
+              "key": "version_upgrade_skip_backup"
+            },
+            {
               "key": "service_credential_names"
             },
             {
@@ -584,6 +593,12 @@
             },
             {
               "key": "configuration"
+            },
+            {
+              "key": "deletion_protection"
+            },
+            {
+              "key": "timeouts_update"
             },
             {
               "key": "service_credential_names"
