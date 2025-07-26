@@ -111,24 +111,23 @@ If you can't use the IAM-enabled `service_credential_names` input variable for a
 
 ### Options for users
 
- - `name` (required): The username for the user account.
- - `password` (required): The password for the user account in the range of 10-32 characters.
- - `type` (required): The user type. The "type" field is required to generate the connection string for the outputs.
- - `role`: The user role. The role determines the user's access level and permissions.
+- `name` (required): The username for the user account.
+- `password` (required): The password for the user account in the range of 10-32 characters.
+- `type` (required): The user type. The "type" field is required to generate the connection string for the outputs.
+- `role`: The user role. The role determines the user's access level and permissions.
 
 ### Example users
-
 
 ```hcl
 [
   {
     "name": "es_admin",
-    "password": "securepassword123",  # pragma: allowlist secret
+    "password": "securepassword123",
     "type": "database",
   },
   {
     "name": "es_reader",
-    "password": "readpassword123",  # pragma: allowlist secret
+    "password": "readpassword123",
     "type": "ops_manager"
   }
 ]

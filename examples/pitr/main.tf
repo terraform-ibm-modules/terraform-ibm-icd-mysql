@@ -16,13 +16,14 @@ module "mysql_db_pitr" {
   # remove the above line and uncomment the below 2 lines to consume the module from the registry
   # source            = "terraform-ibm-modules/icd-mysql/ibm"
   # version           = "X.Y.Z" # Replace "X.Y.Z" with a release version to lock into a specific release
-  resource_group_id  = module.resource_group.resource_group_id
-  name               = "${var.prefix}-mysql-pitr"
-  region             = var.region
-  tags               = var.resource_tags
-  access_tags        = var.access_tags
-  mysql_version      = var.mysql_version
-  pitr_id            = var.pitr_id
-  pitr_time          = var.pitr_time == "" ? " " : var.pitr_time
-  member_host_flavor = "multitenant"
+  resource_group_id   = module.resource_group.resource_group_id
+  name                = "${var.prefix}-mysql-pitr"
+  region              = var.region
+  tags                = var.resource_tags
+  access_tags         = var.access_tags
+  deletion_protection = false
+  mysql_version       = var.mysql_version
+  pitr_id             = var.pitr_id
+  pitr_time           = var.pitr_time == "" ? " " : var.pitr_time
+  member_host_flavor  = "multitenant"
 }

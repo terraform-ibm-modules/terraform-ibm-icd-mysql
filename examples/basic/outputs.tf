@@ -2,7 +2,7 @@
 # Outputs
 ##############################################################################
 output "id" {
-  description = "MySQL instance id"
+  description = "Database instance id"
   value       = module.database.id
 }
 

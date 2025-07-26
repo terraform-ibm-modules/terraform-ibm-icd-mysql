@@ -1,9 +1,15 @@
 ##############################################################################
 # Outputs
 ##############################################################################
+
 output "id" {
   description = "MySQL instance id"
   value       = module.mysql_db.id
+}
+
+output "version" {
+  description = "MySQL instance version"
+  value       = module.mysql_db.version
 }
 
 output "guid" {
@@ -11,9 +17,9 @@ output "guid" {
   value       = module.mysql_db.guid
 }
 
-output "version" {
-  description = "MySQL instance version"
-  value       = module.mysql_db.version
+output "crn" {
+  description = "MySQL instance crn"
+  value       = module.mysql_db.crn
 }
 
 output "service_credentials_json" {
@@ -28,11 +34,6 @@ output "service_credentials_object" {
   sensitive   = true
 }
 
-output "cbr_rule_ids" {
-  description = "CBR rule ids created to restrict MySQL"
-  value       = module.mysql_db.cbr_rule_ids
-}
-
 output "hostname" {
   description = "MySQL instance hostname"
   value       = module.mysql_db.hostname
@@ -41,4 +42,9 @@ output "hostname" {
 output "port" {
   description = "MySQL instance port"
   value       = module.mysql_db.port
+}
+
+output "cbr_rule_ids" {
+  description = "CBR rule ids created to restrict MySQL"
+  value       = module.mysql_db.cbr_rule_ids
 }
