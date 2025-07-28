@@ -349,7 +349,7 @@ module "cbr_rule" {
       }
     ]
   }]
-  #  There is only 1 operation type for Redis so it is not exposed as a configuration
+  #  There is only 1 operation type for MySQL so it is not exposed as a configuration
   operations = [{
     api_types = [
       {
