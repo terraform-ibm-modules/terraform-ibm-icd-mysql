@@ -42,8 +42,8 @@ func TestRunPointInTimeRecoveryDBExample(t *testing.T) {
 		Testing:       t,
 		TerraformDir:  "examples/pitr",
 		Prefix:        "mysql-pitr",
-		ResourceGroup: resourceGroup,
 		Region:        fmt.Sprint(permanentResources["mysqlPITRRegion"]),
+		ResourceGroup: resourceGroup,
 		TerraformVars: map[string]interface{}{
 			"pitr_id":       permanentResources["mysqlPITRCrn"],
 			"pitr_time":     " ",

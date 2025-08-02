@@ -7,14 +7,14 @@ output "id" {
   value       = ibm_database.mysql_db.id
 }
 
-output "guid" {
-  description = "MySQL instance guid"
-  value       = ibm_database.mysql_db.guid
-}
-
 output "version" {
   description = "MySQL instance version"
   value       = ibm_database.mysql_db.version
+}
+
+output "guid" {
+  description = "MySQL instance guid"
+  value       = ibm_database.mysql_db.guid
 }
 
 output "crn" {

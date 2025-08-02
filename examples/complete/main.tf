@@ -106,12 +106,15 @@ module "mysql_db" {
   # remove the above line and uncomment the below 2 lines to consume the module from the registry
   # source            = "terraform-ibm-modules/icd-mysql/ibm"
   # version           = "X.Y.Z" # Replace "X.Y.Z" with a release version to lock into a specific release
-  resource_group_id = module.resource_group.resource_group_id
-  name              = "${var.prefix}-mysql"
-  region            = var.region
-  mysql_version     = var.mysql_version
-  admin_pass        = var.admin_pass
-  users             = var.users
+  resource_group_id   = module.resource_group.resource_group_id
+  name                = "${var.prefix}-mysql"
+  region              = var.region
+  mysql_version       = var.mysql_version
+  admin_pass          = var.admin_pass
+  users               = var.users
+  access_tags         = var.access_tags
+  tags                = var.resource_tags
+  deletion_protection = false
   # Example of how to use different KMS keys for data and backups
   use_ibm_owned_encryption_key = false
   use_same_kms_key_for_backups = false
@@ -123,8 +126,7 @@ module "mysql_db" {
     "mysql_viewer" : "Viewer",
     "mysql_editor" : "Editor",
   }
-  tags               = var.resource_tags
-  access_tags        = var.access_tags
+
   member_host_flavor = "multitenant"
   cbr_rules = [
     {
