@@ -61,6 +61,9 @@ module "mysql" {
   resource_group_id         = module.resource_group.resource_group_id
   name                      = "${var.prefix}-mysql"
   region                    = var.region
+  tags                      = var.resource_tags
+  access_tags               = var.access_tags
+  deletion_protection       = false
   mysql_version             = var.mysql_version
   kms_key_crn               = var.kms_key_crn
   backup_encryption_key_crn = var.backup_encryption_key_crn
@@ -81,8 +84,6 @@ module "mysql" {
     }
   }
   member_host_flavor = "b3c.4x16.encrypted"
-  tags               = var.resource_tags
-  access_tags        = var.access_tags
   cbr_rules = [
     {
       description      = "${var.prefix}-mysql access only from vpc"
