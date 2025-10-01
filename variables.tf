@@ -20,9 +20,10 @@ variable "mysql_version" {
   validation {
     condition = anytrue([
       var.mysql_version == null,
-      var.mysql_version == "8.0"
+      var.mysql_version == "6.2",
+      var.mysql_version == "7.2"
     ])
-    error_message = "Version must be 8.0. If no value passed, the current ICD preferred version is used."
+    error_message = "Version must be 6.2 or 7.2. If no value passed, the current ICD preferred version is used."
   }
 }
 
