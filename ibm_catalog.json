@@ -102,7 +102,7 @@
               {
                 "diagram": {
                   "caption": "Databases for MySQL instance on IBM Cloud",
-                  "url": "https://raw.githubusercontent.com/terraform-ibm-modules/terraform-ibm-icd-mysql/main/reference-architecture/deployable-architecture-mysql.svg",
+                  "url": "https://raw.githubusercontent.com/terraform-ibm-modules/terraform-ibm-icd-mysql/main/reference-architectures/deployable-architecture-mysql.svg",
                   "type": "image/svg+xml"
                 },
                 "description": "This architecture supports creating and configuring an instance of Databases for MySQL instance with KMS encryption."
@@ -469,7 +469,7 @@
               {
                 "diagram": {
                   "caption": "Databases for MySQL instance on IBM Cloud",
-                  "url": "https://raw.githubusercontent.com/terraform-ibm-modules/terraform-ibm-icd-mysql/main/reference-architecture/deployable-architecture-mysql.svg",
+                  "url": "https://raw.githubusercontent.com/terraform-ibm-modules/terraform-ibm-icd-mysql/main/reference-architectures/deployable-architecture-mysql.svg",
                   "type": "image/svg+xml"
                 },
                 "description": "This architecture supports creating and configuring an instance of Databases for MySQL instance with KMS encryption."
