@@ -403,7 +403,8 @@
               "key": "remote_leader_crn"
             }
           ],
-          "terraform_version": "1.10.5"
+          "terraform_version": "1.10.5",
+          "ignore_readme": true
         },
         {
           "label": "Security-enforced",
@@ -690,7 +691,8 @@
               "key": "remote_leader_crn"
             }
           ],
-          "terraform_version": "1.10.5"
+          "terraform_version": "1.10.5",
+          "ignore_readme": true
         }
       ]
     }
