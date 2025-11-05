@@ -53,15 +53,6 @@
           "index": 1,
           "install_type": "fullstack",
           "working_directory": "solutions/fully-configurable",
-          "compliance": {
-            "authority": "scc-v3",
-            "profiles": [
-              {
-                "profile_name": "IBM Cloud Framework for Financial Services",
-                "profile_version": "1.7.0"
-              }
-            ]
-          },
           "iam_permissions": [
             {
               "role_crns": [
@@ -412,7 +403,8 @@
               "key": "remote_leader_crn"
             }
           ],
-          "terraform_version": "1.10.5"
+          "terraform_version": "1.12.2",
+          "ignore_readme": true
         },
         {
           "label": "Security-enforced",
@@ -420,15 +412,6 @@
           "index": 2,
           "install_type": "fullstack",
           "working_directory": "solutions/security-enforced",
-          "compliance": {
-            "authority": "scc-v3",
-            "profiles": [
-              {
-                "profile_name": "IBM Cloud Framework for Financial Services",
-                "profile_version": "1.7.0"
-              }
-            ]
-          },
           "iam_permissions": [
             {
               "role_crns": [
@@ -708,7 +691,8 @@
               "key": "remote_leader_crn"
             }
           ],
-          "terraform_version": "1.10.5"
+          "terraform_version": "1.12.2",
+          "ignore_readme": true
         }
       ]
     }
