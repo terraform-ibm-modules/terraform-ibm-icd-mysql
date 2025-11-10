@@ -410,3 +410,31 @@ variable "admin_pass_secrets_manager_secret_name" {
     error_message = "`admin_pass_secrets_manager_secret_name` is required when `existing_secrets_manager_instance_crn` is set."
   }
 }
+
+##############################################################
+# Context-based restriction (CBR)
+##############################################################
+
+variable "cbr_rules" {
+  type = list(object({
+    description = string
+    account_id  = string
+    rule_contexts = optional(list(object({
+      attributes = list(object({
+        name  = string
+        value = string
+    })) })))
+    enforcement_mode = string
+    tags = optional(list(object({
+      name  = string
+      value = string
+    })))
+    operations = optional(list(object({
+      api_types = list(object({
+        api_type_id = string
+      }))
+    })))
+  }))
+  description = "(Optional, list) List of context-based restrictions rules to create. [Learn more](https://github.com/terraform-ibm-modules/terraform-ibm-icd-mysql/tree/main/solutions/fully-configurable/DA-types.md)."
+  default     = []
+}
