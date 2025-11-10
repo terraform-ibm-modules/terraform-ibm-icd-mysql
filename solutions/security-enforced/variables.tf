@@ -419,11 +419,11 @@ variable "cbr_rules" {
   type = list(object({
     description = string
     account_id  = string
-    rule_contexts = optional(list(object({
-      attributes = list(object({
+    rule_contexts = list(object({
+      attributes = optional(list(object({
         name  = string
         value = string
-    })) })))
+    }))) }))
     enforcement_mode = string
     tags = optional(list(object({
       name  = string

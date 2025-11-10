@@ -15,13 +15,13 @@ The `cbr_rules` input variable allows you to provide a rule for the target servi
 
 ### Options for cbr_rules
 
-  - `description` (optional): The description of the rule to create.
+  - `description` (required): The description of the rule to create.
   - `account_id` (required): The IBM Cloud Account ID
-  - `rule_contexts` (optional): (List) The contexts the rule applies to
-      - `attributes` (required): (List) Individual context attributes
+  - `rule_contexts` (required): (List) The contexts the rule applies to
+      - `attributes` (optional): (List) Individual context attributes
         - `name` (required): The attribute name.
         - `value`(required): The attribute value.
-  - `enforcement_mode` (optional): The rule enforcement mode can have the following values:
+  - `enforcement_mode` (required): The rule enforcement mode can have the following values:
       - `enabled` - The restrictions are enforced and reported. This is the default.
       - `disabled` - The restrictions are disabled. Nothing is enforced or reported.
       - `report` - The restrictions are evaluated and reported, but not enforced.
@@ -38,8 +38,8 @@ The `cbr_rules` input variable allows you to provide a rule for the target servi
 ```hcl
 [
   {
-    "description"     : "SCC Instance can be accessed from xyz"
-    "account_id"      : "defc0df06b644a9cabc6e44f55b3880s."
+    "description"     : "MySQL instance can be accessed from xyz"
+    "account_id"      : "<REPLACE ME>"
     "rule_contexts"   : [{
       "attributes"  : [
         {
