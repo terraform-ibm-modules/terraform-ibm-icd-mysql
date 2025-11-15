@@ -306,6 +306,7 @@ module "mysql" {
   version_upgrade_skip_backup       = var.version_upgrade_skip_backup
   timeouts_update                   = var.timeouts_update
   remote_leader_crn                 = var.remote_leader_crn
+  cbr_rules                         = var.cbr_rules
 }
 
 locals {

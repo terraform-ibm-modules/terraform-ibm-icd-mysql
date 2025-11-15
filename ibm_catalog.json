@@ -411,6 +411,15 @@
             },
             {
               "key": "remote_leader_crn"
+            },
+            {
+              "key": "cbr_rules",
+              "type": "array",
+              "custom_config": {
+                "type": "code_editor",
+                "grouping": "deployment",
+                "original_grouping": "deployment"
+              }
             }
           ],
           "terraform_version": "1.12.2",
@@ -709,6 +718,15 @@
             },
             {
               "key": "remote_leader_crn"
+            },
+            {
+              "key": "cbr_rules",
+              "type": "array",
+              "custom_config": {
+                "type": "code_editor",
+                "grouping": "deployment",
+                "original_grouping": "deployment"
+              }
             }
           ],
           "terraform_version": "1.12.2",
