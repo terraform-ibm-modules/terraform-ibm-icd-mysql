@@ -20,7 +20,7 @@ func TestRunRestoredDBExample(t *testing.T) {
 		ResourceGroup:      resourceGroup,
 		Region:             fmt.Sprint(permanentResources["mysqlPITRRegion"]),
 		TerraformVars: map[string]interface{}{
-			"mysql_version":         "8.0",
+			"mysql_version":         latestVersion,
 			"existing_database_crn": permanentResources["mysqlPITRCrn"],
 		},
 		ImplicitDestroy: []string{
