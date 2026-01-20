@@ -323,7 +323,7 @@ func TestRunUpgradeCompleteExample(t *testing.T) {
 		BestRegionYAMLPath: regionSelectionPath,
 		ResourceGroup:      resourceGroup,
 		TerraformVars: map[string]interface{}{
-			"mysql_version": oldestVersion, // Always lock to the lowest supported MySQL version
+			"mysql_version": latestVersion,
 			"users": []map[string]interface{}{
 				{
 					"name":     "testuser",
@@ -427,7 +427,7 @@ func TestRunExistingInstance(t *testing.T) {
 		Vars: map[string]any{
 			"prefix":            prefix,
 			"region":            region,
-			"mysql_version":     latestVersion,
+			"mysql_version":     oldestVersion,
 			"service_endpoints": "public-and-private",
 		},
 		// Set Upgrade to true to ensure latest version of providers and modules are used by terratest.
