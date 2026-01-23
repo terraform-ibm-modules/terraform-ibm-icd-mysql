@@ -20,7 +20,6 @@ func TestRunRestoredDBExample(t *testing.T) {
 		ResourceGroup:      resourceGroup,
 		Region:             fmt.Sprint(permanentResources["mysqlPITRRegion"]),
 		TerraformVars: map[string]interface{}{
-			"mysql_version":         latestVersion,
 			"existing_database_crn": permanentResources["mysqlPITRCrn"],
 		},
 		ImplicitDestroy: []string{
@@ -29,6 +28,10 @@ func TestRunRestoredDBExample(t *testing.T) {
 		},
 		CloudInfoService: sharedInfoSvc,
 	})
+
+	region := options.Region
+	latestVersion, _ := GetRegionVersions(region)
+	options.TerraformVars["mysql_version"] = latestVersion
 
 	output, err := options.RunTestConsistency()
 	assert.Nil(t, err, "This should not have errored")
