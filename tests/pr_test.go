@@ -162,7 +162,7 @@ func TestRunFullyConfigurableSolutionSchematics(t *testing.T) {
 		log.Fatalf("Error converting to JSON: %s", err)
 	}
 
-	region := options.Region
+	region := "us-south"
 	latestVersion, _ := GetRegionVersions(region)
 	options.TerraformVars = []testschematic.TestSchematicTerraformVar{
 		{Name: "ibmcloud_api_key", Value: options.RequiredEnvironmentVars["TF_VAR_ibmcloud_api_key"], DataType: "string", Secure: true},
@@ -233,7 +233,7 @@ func TestRunSecurityEnforcedSolutionSchematics(t *testing.T) {
 
 	uniqueResourceGroup := generateUniqueResourceGroupName(prefix)
 
-	region := options.Region
+	region := "us-south"
 	latestVersion, _ := GetRegionVersions(region)
 	options.TerraformVars = []testschematic.TestSchematicTerraformVar{
 		{Name: "ibmcloud_api_key", Value: options.RequiredEnvironmentVars["TF_VAR_ibmcloud_api_key"], DataType: "string", Secure: true},
@@ -305,7 +305,7 @@ func TestRunSecurityEnforcedUpgradeSolution(t *testing.T) {
 		log.Fatalf("Error converting to JSON: %s", err)
 	}
 
-	region := options.Region
+	region := "us-south"
 	latestVersion, _ := GetRegionVersions(region)
 	options.TerraformVars = []testschematic.TestSchematicTerraformVar{
 		{Name: "ibmcloud_api_key", Value: options.RequiredEnvironmentVars["TF_VAR_ibmcloud_api_key"], DataType: "string", Secure: true},
