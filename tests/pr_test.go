@@ -444,7 +444,6 @@ func TestRunExistingInstance(t *testing.T) {
 	if err != nil {
 		log.Fatalf("Failed to generate a secure random index: %v", err)
 	}
-	region := validICDRegions[index.Int64()]
 
 	// Verify ibmcloud_api_key variable is set
 	checkVariable := "TF_VAR_ibmcloud_api_key"
@@ -454,6 +453,7 @@ func TestRunExistingInstance(t *testing.T) {
 
 	logger.Log(t, "Tempdir: ", tempTerraformDir)
 
+	region := validICDRegions[index.Int64()]
 	_, oldestVersion := GetRegionVersions(region)
 	existingTerraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: tempTerraformDir + "/examples/basic",
