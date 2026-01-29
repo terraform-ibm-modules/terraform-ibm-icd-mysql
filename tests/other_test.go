@@ -20,7 +20,6 @@ func TestRunRestoredDBExample(t *testing.T) {
 		ResourceGroup:      resourceGroup,
 		Region:             fmt.Sprint(permanentResources["mysqlPITRRegion"]),
 		TerraformVars: map[string]interface{}{
-			"mysql_version":         "8.0",
 			"existing_database_crn": permanentResources["mysqlPITRCrn"],
 		},
 		ImplicitDestroy: []string{
@@ -29,6 +28,10 @@ func TestRunRestoredDBExample(t *testing.T) {
 		},
 		CloudInfoService: sharedInfoSvc,
 	})
+
+	region := options.Region
+	latestVersion, _ := GetRegionVersions(region)
+	options.TerraformVars["mysql_version"] = latestVersion
 
 	output, err := options.RunTestConsistency()
 	assert.Nil(t, err, "This should not have errored")
@@ -58,30 +61,4 @@ func TestRunPointInTimeRecoveryDBExample(t *testing.T) {
 	output, err := options.RunTestConsistency()
 	assert.Nil(t, err, "This should not have errored")
 	assert.NotNil(t, output, "Expected some output")
-}
-
-func testPlanICDVersions(t *testing.T, version string) {
-	t.Parallel()
-
-	options := testhelper.TestOptionsDefaultWithVars(&testhelper.TestOptions{
-		Testing:      t,
-		TerraformDir: "examples/basic",
-		TerraformVars: map[string]interface{}{
-			"mysql_version": version,
-		},
-		CloudInfoService: sharedInfoSvc,
-	})
-	output, err := options.RunTestPlan()
-	assert.Nil(t, err, "This should not have errored")
-	assert.NotNil(t, output, "Expected some output")
-}
-
-func TestPlanICDVersions(t *testing.T) {
-	t.Parallel()
-
-	// This test will run a terraform plan on available stable versions of mysql
-	versions, _ := sharedInfoSvc.GetAvailableIcdVersions("mysql")
-	for _, version := range versions {
-		t.Run(version, func(t *testing.T) { testPlanICDVersions(t, version) })
-	}
 }

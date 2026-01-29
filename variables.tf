@@ -18,11 +18,8 @@ variable "mysql_version" {
   default     = null
 
   validation {
-    condition = anytrue([
-      var.mysql_version == null,
-      var.mysql_version == "8.0"
-    ])
-    error_message = "Version must be 8.0. If no value passed, the current ICD preferred version is used."
+    condition     = var.mysql_version == null ? true : contains(local.icd_supported_versions, var.mysql_version)
+    error_message = "Unsupported mysql_version '${var.mysql_version == null ? "null" : var.mysql_version}'. Supported versions: ${join(", ", local.icd_supported_versions)}"
   }
 }
 
