@@ -35,7 +35,7 @@ const icdType = "mysql"
 // Use existing resource group
 const resourceGroup = "geretain-test-mysql"
 
-// Set up tests to only use supported BYOK regions
+// Restricting due to limited availability of BYOK in certain regions
 const regionSelectionPath = "../common-dev-assets/common-go-assets/icd-region-prefs.yaml"
 
 // Define a struct with fields that match the structure of the YAML data
@@ -115,10 +115,10 @@ func TestMain(m *testing.M) {
 	os.Exit(m.Run())
 }
 
-// Test the fully-configurable DA with defaults (no KMS encryption)
+// Test the fully-configurable DA with defaults (IBM owned encryption keys)
 func TestRunFullyConfigurableSolutionSchematics(t *testing.T) {
 	t.Parallel()
-	prefix := "mysqlfc"
+
 	options := testschematic.TestSchematicOptionsDefault(&testschematic.TestSchematicOptions{
 		Testing: t,
 		TarIncludePatterns: []string{
@@ -126,14 +126,16 @@ func TestRunFullyConfigurableSolutionSchematics(t *testing.T) {
 			fullyConfigurableSolutionTerraformDir + "/*.tf",
 			"scripts/*.sh",
 		},
-		TemplateFolder:     fullyConfigurableSolutionTerraformDir,
-		BestRegionYAMLPath: regionSelectionPath,
-		Prefix:             prefix,
-		// ResourceGroup:              resourceGroup,
+		TemplateFolder:             fullyConfigurableSolutionTerraformDir,
+		BestRegionYAMLPath:         regionSelectionPath,
+		Prefix:                     "mysql-fc-da",
+		ResourceGroup:              resourceGroup,
 		DeleteWorkspaceOnFail:      false,
-		CheckApplyResultForUpgrade: true,
 		WaitJobCompleteMinutes:     60,
+		CheckApplyResultForUpgrade: true,
 	})
+
+	uniqueResourceGroup := generateUniqueResourceGroupName(options.Prefix)
 
 	serviceCredentialSecrets := []map[string]interface{}{
 		{
@@ -165,46 +167,48 @@ func TestRunFullyConfigurableSolutionSchematics(t *testing.T) {
 	region := "us-south"
 	latestVersion, _ := GetRegionVersions(region)
 	options.TerraformVars = []testschematic.TestSchematicTerraformVar{
+		{Name: "prefix", Value: options.Prefix, DataType: "string"},
 		{Name: "ibmcloud_api_key", Value: options.RequiredEnvironmentVars["TF_VAR_ibmcloud_api_key"], DataType: "string", Secure: true},
 		{Name: "access_tags", Value: permanentResources["accessTags"], DataType: "list(string)"},
 		{Name: "deletion_protection", Value: false, DataType: "bool"},
-		{Name: "existing_resource_group_name", Value: resourceGroup, DataType: "string"},
+		{Name: "existing_resource_group_name", Value: uniqueResourceGroup, DataType: "string"},
 		{Name: "region", Value: region, DataType: "string"},
-		{Name: "mysql_version", Value: latestVersion, DataType: "string"}, // Always lock this test into the latest supported MySQL version
 		{Name: "service_credential_names", Value: string(serviceCredentialNamesJSON), DataType: "map(string)"},
-		{Name: "existing_secrets_manager_instance_crn", Value: permanentResources["secretsManagerCRN"], DataType: "string"},
 		{Name: "service_credential_secrets", Value: serviceCredentialSecrets, DataType: "list(object)"},
+		{Name: "existing_secrets_manager_instance_crn", Value: permanentResources["secretsManagerCRN"], DataType: "string"},
 		{Name: "admin_pass_secrets_manager_secret_group", Value: fmt.Sprintf("mysql-%s-admin-secrets", options.Prefix), DataType: "string"},
 		{Name: "admin_pass_secrets_manager_secret_name", Value: options.Prefix, DataType: "string"},
-		{Name: "prefix", Value: options.Prefix, DataType: "string"},
 		{Name: "admin_pass", Value: GetRandomAdminPassword(t), DataType: "string"},
+		{Name: "mysql_version", Value: latestVersion, DataType: "string"}, // Always lock this test into the latest supported MySQL version
 	}
-	err = options.RunSchematicTest()
+
+	err = sharedInfoSvc.WithNewResourceGroup(uniqueResourceGroup, func() error {
+		return options.RunSchematicTest()
+	})
 	assert.Nil(t, err, "This should not have errored")
 }
 
-// Test the security-enforced DA with defaults (KMS encryption enabled)
+// Test the security-enforced DA with defaults (KMS encryption enabled, BYOK)
 func TestRunSecurityEnforcedSolutionSchematics(t *testing.T) {
 	t.Parallel()
-	prefix := "mysqlse"
+
 	options := testschematic.TestSchematicOptionsDefault(&testschematic.TestSchematicOptions{
 		Testing: t,
 		TarIncludePatterns: []string{
 			"*.tf",
 			fullyConfigurableSolutionTerraformDir + "/*.tf",
 			securityEnforcedSolutionTerraformDir + "/*.tf",
-			"scripts/*.sh",
 		},
 		TemplateFolder:     securityEnforcedSolutionTerraformDir,
 		BestRegionYAMLPath: regionSelectionPath,
-		Prefix:             prefix,
+		Prefix:             "mysqlse",
 		// ResourceGroup:              resourceGroup,
 		DeleteWorkspaceOnFail:      false,
-		CheckApplyResultForUpgrade: true,
 		WaitJobCompleteMinutes:     60,
+		CheckApplyResultForUpgrade: true,
 	})
 
-	serviceCredentialSecrets := []map[string]any{
+	serviceCredentialSecrets := []map[string]interface{}{
 		{
 			"secret_group_name": fmt.Sprintf("%s-secret-group", options.Prefix),
 			"service_credentials": []map[string]string{
@@ -231,26 +235,26 @@ func TestRunSecurityEnforcedSolutionSchematics(t *testing.T) {
 		log.Fatalf("Error converting to JSON: %s", err)
 	}
 
-	uniqueResourceGroup := generateUniqueResourceGroupName(prefix)
+	uniqueResourceGroup := generateUniqueResourceGroupName(options.Prefix)
 
 	region := "us-south"
 	latestVersion, _ := GetRegionVersions(region)
 	options.TerraformVars = []testschematic.TestSchematicTerraformVar{
+		{Name: "prefix", Value: options.Prefix, DataType: "string"},
 		{Name: "ibmcloud_api_key", Value: options.RequiredEnvironmentVars["TF_VAR_ibmcloud_api_key"], DataType: "string", Secure: true},
 		{Name: "access_tags", Value: permanentResources["accessTags"], DataType: "list(string)"},
 		{Name: "deletion_protection", Value: false, DataType: "bool"},
-		{Name: "existing_kms_instance_crn", Value: permanentResources["hpcs_south_crn"], DataType: "string"},
-		{Name: "existing_backup_kms_key_crn", Value: permanentResources["hpcs_south_root_key_crn"], DataType: "string"},
-		{Name: "existing_resource_group_name", Value: uniqueResourceGroup, DataType: "string"},
 		{Name: "region", Value: region, DataType: "string"},
-		{Name: "mysql_version", Value: latestVersion, DataType: "string"}, // Always lock this test into the latest supported MySQL version
+		{Name: "existing_resource_group_name", Value: uniqueResourceGroup, DataType: "string"},
 		{Name: "service_credential_names", Value: string(serviceCredentialNamesJSON), DataType: "map(string)"},
-		{Name: "existing_secrets_manager_instance_crn", Value: permanentResources["secretsManagerCRN"], DataType: "string"},
 		{Name: "service_credential_secrets", Value: serviceCredentialSecrets, DataType: "list(object)"},
+		{Name: "existing_secrets_manager_instance_crn", Value: permanentResources["secretsManagerCRN"], DataType: "string"},
 		{Name: "admin_pass_secrets_manager_secret_group", Value: fmt.Sprintf("mysql-%s-admin-secrets", options.Prefix), DataType: "string"},
 		{Name: "admin_pass_secrets_manager_secret_name", Value: options.Prefix, DataType: "string"},
 		{Name: "admin_pass", Value: GetRandomAdminPassword(t), DataType: "string"},
-		{Name: "prefix", Value: options.Prefix, DataType: "string"},
+		{Name: "existing_kms_instance_crn", Value: permanentResources["hpcs_south_crn"], DataType: "string"},
+		{Name: "existing_backup_kms_key_crn", Value: permanentResources["hpcs_south_root_key_crn"], DataType: "string"},
+		{Name: "mysql_version", Value: latestVersion, DataType: "string"}, // Always lock this test into the latest supported MySQL version
 	}
 	err = sharedInfoSvc.WithNewResourceGroup(uniqueResourceGroup, func() error {
 		return options.RunSchematicTest()
@@ -258,7 +262,7 @@ func TestRunSecurityEnforcedSolutionSchematics(t *testing.T) {
 	assert.Nil(t, err, "This should not have errored")
 }
 
-// Run upgrade test on security-enforced variation
+// Upgrade test the security-enforced DA with defaults (KMS encryption enabled, KYOK)
 func TestRunSecurityEnforcedUpgradeSolution(t *testing.T) {
 	t.Parallel()
 
@@ -268,17 +272,15 @@ func TestRunSecurityEnforcedUpgradeSolution(t *testing.T) {
 			"*.tf",
 			fullyConfigurableSolutionTerraformDir + "/*.tf",
 			securityEnforcedSolutionTerraformDir + "/*.tf",
-			"scripts/*.sh",
 		},
-		TemplateFolder:     securityEnforcedSolutionTerraformDir,
-		BestRegionYAMLPath: regionSelectionPath,
-		Prefix:             "mysql-upg",
-		// ResourceGroup:          resourceGroup,
+		TemplateFolder:         securityEnforcedSolutionTerraformDir,
+		BestRegionYAMLPath:     regionSelectionPath,
+		Prefix:                 "mysql-upg",
 		DeleteWorkspaceOnFail:  false,
 		WaitJobCompleteMinutes: 60,
 	})
 
-	serviceCredentialSecrets := []map[string]any{
+	serviceCredentialSecrets := []map[string]interface{}{
 		{
 			"secret_group_name": fmt.Sprintf("%s-secret-group", options.Prefix),
 			"service_credentials": []map[string]string{
@@ -305,25 +307,26 @@ func TestRunSecurityEnforcedUpgradeSolution(t *testing.T) {
 		log.Fatalf("Error converting to JSON: %s", err)
 	}
 
+	uniqueResourceGroup := generateUniqueResourceGroupName(options.Prefix)
+
 	region := "us-south"
 	latestVersion, _ := GetRegionVersions(region)
 	options.TerraformVars = []testschematic.TestSchematicTerraformVar{
-		{Name: "ibmcloud_api_key", Value: options.RequiredEnvironmentVars["TF_VAR_ibmcloud_api_key"], DataType: "string", Secure: true},
 		{Name: "prefix", Value: options.Prefix, DataType: "string"},
+		{Name: "ibmcloud_api_key", Value: options.RequiredEnvironmentVars["TF_VAR_ibmcloud_api_key"], DataType: "string", Secure: true},
 		{Name: "access_tags", Value: permanentResources["accessTags"], DataType: "list(string)"},
 		{Name: "deletion_protection", Value: false, DataType: "bool"},
-		{Name: "existing_kms_instance_crn", Value: permanentResources["hpcs_south_crn"], DataType: "string"},
-		{Name: "existing_resource_group_name", Value: resourceGroup, DataType: "string"},
 		{Name: "region", Value: region, DataType: "string"},
-		{Name: "mysql_version", Value: latestVersion, DataType: "string"}, // Always lock this test into the latest supported MySQL version
-		{Name: "existing_secrets_manager_instance_crn", Value: permanentResources["secretsManagerCRN"], DataType: "string"},
-		{Name: "service_credential_secrets", Value: serviceCredentialSecrets, DataType: "list(object)"},
+		{Name: "existing_resource_group_name", Value: uniqueResourceGroup, DataType: "string"},
 		{Name: "service_credential_names", Value: string(serviceCredentialNamesJSON), DataType: "map(string)"},
+		{Name: "service_credential_secrets", Value: serviceCredentialSecrets, DataType: "list(object)"},
+		{Name: "existing_secrets_manager_instance_crn", Value: permanentResources["secretsManagerCRN"], DataType: "string"},
+		{Name: "admin_pass_secrets_manager_secret_group", Value: fmt.Sprintf("mysql-%s-admin-secrets", options.Prefix), DataType: "string"},
 		{Name: "admin_pass_secrets_manager_secret_name", Value: options.Prefix, DataType: "string"},
 		{Name: "admin_pass", Value: GetRandomAdminPassword(t), DataType: "string"},
-		{Name: "admin_pass_secrets_manager_secret_group", Value: fmt.Sprintf("mysql-%s-admin-secrets", options.Prefix), DataType: "string"},
+		{Name: "existing_kms_instance_crn", Value: permanentResources["hpcs_south_crn"], DataType: "string"},
+		{Name: "mysql_version", Value: latestVersion, DataType: "string"}, // Always lock this test into the latest supported MySQL version
 	}
-
 	err = options.RunSchematicUpgradeTest()
 	if !options.UpgradeTestSkipped {
 		assert.Nil(t, err, "This should not have errored")
@@ -456,7 +459,7 @@ func TestRunExistingInstance(t *testing.T) {
 	_, oldestVersion := GetRegionVersions(region)
 	existingTerraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: tempTerraformDir + "/examples/basic",
-		Vars: map[string]any{
+		Vars: map[string]interface{}{
 			"prefix":            prefix,
 			"region":            region,
 			"mysql_version":     oldestVersion,
@@ -478,7 +481,6 @@ func TestRunExistingInstance(t *testing.T) {
 			TarIncludePatterns: []string{
 				"*.tf",
 				fullyConfigurableSolutionTerraformDir + "/*.tf",
-				"scripts/*.sh",
 			},
 			TemplateFolder:         fullyConfigurableSolutionTerraformDir,
 			BestRegionYAMLPath:     regionSelectionPath,
@@ -489,12 +491,13 @@ func TestRunExistingInstance(t *testing.T) {
 		})
 
 		options.TerraformVars = []testschematic.TestSchematicTerraformVar{
+			{Name: "prefix", Value: options.Prefix, DataType: "string"},
 			{Name: "ibmcloud_api_key", Value: options.RequiredEnvironmentVars["TF_VAR_ibmcloud_api_key"], DataType: "string", Secure: true},
 			{Name: "existing_mysql_instance_crn", Value: terraform.Output(t, existingTerraformOptions, "mysql_crn"), DataType: "string"},
-			{Name: "region", Value: region, DataType: "string"},
 			{Name: "existing_resource_group_name", Value: fmt.Sprintf("%s-resource-group", prefix), DataType: "string"},
+			{Name: "deletion_protection", Value: false, DataType: "bool"},
+			{Name: "region", Value: region, DataType: "string"},
 			{Name: "provider_visibility", Value: "public", DataType: "string"},
-			{Name: "prefix", Value: options.Prefix, DataType: "string"},
 		}
 		err := options.RunSchematicTest()
 		assert.Nil(t, err, "This should not have errored")
