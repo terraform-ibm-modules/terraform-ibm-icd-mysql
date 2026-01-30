@@ -178,7 +178,7 @@ func TestRunFullyConfigurableSolutionSchematics(t *testing.T) {
 		{Name: "existing_secrets_manager_instance_crn", Value: permanentResources["secretsManagerCRN"], DataType: "string"},
 		{Name: "admin_pass_secrets_manager_secret_group", Value: fmt.Sprintf("mysql-%s-admin-secrets", options.Prefix), DataType: "string"},
 		{Name: "admin_pass_secrets_manager_secret_name", Value: options.Prefix, DataType: "string"},
-		{Name: "admin_pass", Value: GetRandomAdminPassword(t), DataType: "string"},
+		{Name: "admin_pass", Value: common.GetRandomPasswordWithPrefix(), DataType: "string"},
 		{Name: "mysql_version", Value: latestVersion, DataType: "string"}, // Always lock this test into the latest supported MySQL version
 	}
 
@@ -251,7 +251,7 @@ func TestRunSecurityEnforcedSolutionSchematics(t *testing.T) {
 		{Name: "existing_secrets_manager_instance_crn", Value: permanentResources["secretsManagerCRN"], DataType: "string"},
 		{Name: "admin_pass_secrets_manager_secret_group", Value: fmt.Sprintf("mysql-%s-admin-secrets", options.Prefix), DataType: "string"},
 		{Name: "admin_pass_secrets_manager_secret_name", Value: options.Prefix, DataType: "string"},
-		{Name: "admin_pass", Value: GetRandomAdminPassword(t), DataType: "string"},
+		{Name: "admin_pass", Value: common.GetRandomPasswordWithPrefix(), DataType: "string"},
 		{Name: "existing_kms_instance_crn", Value: permanentResources["hpcs_south_crn"], DataType: "string"},
 		{Name: "existing_backup_kms_key_crn", Value: permanentResources["hpcs_south_root_key_crn"], DataType: "string"},
 		{Name: "mysql_version", Value: latestVersion, DataType: "string"}, // Always lock this test into the latest supported MySQL version
@@ -323,7 +323,7 @@ func TestRunSecurityEnforcedUpgradeSolution(t *testing.T) {
 		{Name: "existing_secrets_manager_instance_crn", Value: permanentResources["secretsManagerCRN"], DataType: "string"},
 		{Name: "admin_pass_secrets_manager_secret_group", Value: fmt.Sprintf("mysql-%s-admin-secrets", options.Prefix), DataType: "string"},
 		{Name: "admin_pass_secrets_manager_secret_name", Value: options.Prefix, DataType: "string"},
-		{Name: "admin_pass", Value: GetRandomAdminPassword(t), DataType: "string"},
+		{Name: "admin_pass", Value: common.GetRandomPasswordWithPrefix(), DataType: "string"},
 		{Name: "existing_kms_instance_crn", Value: permanentResources["hpcs_south_crn"], DataType: "string"},
 		{Name: "mysql_version", Value: latestVersion, DataType: "string"}, // Always lock this test into the latest supported MySQL version
 	}
@@ -513,15 +513,6 @@ func TestRunExistingInstance(t *testing.T) {
 		terraform.WorkspaceDelete(t, existingTerraformOptions, prefix)
 		logger.Log(t, "END: Destroy (existing resources)")
 	}
-}
-
-func GetRandomAdminPassword(t *testing.T) string {
-	// Generate a 15 char long random string for the admin_pass
-	randomBytes := make([]byte, 13)
-	_, randErr := rand.Read(randomBytes)
-	require.Nil(t, randErr) // do not proceed if we can't gen a random password
-	randomPass := "A1" + base64.URLEncoding.EncodeToString(randomBytes)[:13]
-	return randomPass
 }
 
 func generateUniqueResourceGroupName(baseName string) string {
