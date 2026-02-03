@@ -323,6 +323,17 @@
             },
             {
               "key": "existing_secrets_manager_instance_crn",
+              "display_name": "existing_secrets_manager_instance",
+              "custom_config": {
+                "type": "platform_resource",
+                "grouping": "deployment",
+                "original_grouping": "deployment",
+                "config_constraints": {
+                  "resourceType": "secrets-manager",
+                  "selection": "single_select",
+                  "valueType": "crn"
+                }
+              },
               "value_constraints": [
                 {
                   "type": "regex",
@@ -445,6 +456,17 @@
             },
             {
               "key": "existing_mysql_instance_crn",
+              "display_name": "existing_mysql_instance",
+              "custom_config": {
+                "type": "platform_resource",
+                "grouping": "deployment",
+                "original_grouping": "deployment",
+                "config_constraints": {
+                  "resourceType": "databases-for-mysql",
+                  "selection": "single_select",
+                  "valueType": "crn"
+                }
+              },
               "value_constraints": [
                 {
                   "type": "regex",
@@ -701,6 +723,17 @@
             },
             {
               "key": "existing_secrets_manager_instance_crn",
+              "display_name": "existing_secrets_manager_instance",
+              "custom_config": {
+                "type": "platform_resource",
+                "grouping": "deployment",
+                "original_grouping": "deployment",
+                "config_constraints": {
+                  "resourceType": "secrets-manager",
+                  "selection": "single_select",
+                  "valueType": "crn"
+                }
+              },
               "value_constraints": [
                 {
                   "type": "regex",
@@ -790,6 +823,17 @@
             },
             {
               "key": "existing_mysql_instance_crn",
+              "display_name": "existing_mysql_instance",
+              "custom_config": {
+                "type": "platform_resource",
+                "grouping": "deployment",
+                "original_grouping": "deployment",
+                "config_constraints": {
+                  "resourceType": "databases-for-mysql",
+                  "selection": "single_select",
+                  "valueType": "crn"
+                }
+              },
               "value_constraints": [
                 {
                   "type": "regex",
