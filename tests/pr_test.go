@@ -123,7 +123,6 @@ func TestRunFullyConfigurableSolutionSchematics(t *testing.T) {
 		TarIncludePatterns: []string{
 			"*.tf",
 			fullyConfigurableSolutionTerraformDir + "/*.tf",
-			"scripts/*.sh",
 		},
 		TemplateFolder:             fullyConfigurableSolutionTerraformDir,
 		BestRegionYAMLPath:         regionSelectionPath,
@@ -330,7 +329,6 @@ func TestRunSecurityEnforcedUpgradeSolution(t *testing.T) {
 	if !options.UpgradeTestSkipped {
 		assert.Nil(t, err, "This should not have errored")
 	}
-
 }
 
 func TestRunUpgradeCompleteExample(t *testing.T) {
@@ -397,21 +395,28 @@ func TestPlanValidation(t *testing.T) {
 	}
 
 	// Test the DA when using an existing KMS instance
-	var standardSolutionWithExistingKms = map[string]interface{}{
+	var fullyConfigurableWithExistingKms = map[string]interface{}{
 		"access_tags":               permanentResources["accessTags"],
 		"existing_kms_instance_crn": permanentResources["hpcs_south_crn"],
 		"kms_encryption_enabled":    true,
 	}
 
 	// Test the DA when using IBM owned encryption key
-	var standardSolutionWithUseIbmOwnedEncKey = map[string]interface{}{
+	var fullyConfigurableWithIbmOwnedKey = map[string]interface{}{
 		"kms_encryption_enabled": false,
+	}
+
+	// Test the DA when using IBM owned encryption keys
+	var fullyConfigurableWithIbmOwnedBackupKey = map[string]interface{}{
+		"use_default_backup_encryption_key": false,
+		"kms_encryption_enabled":            false,
 	}
 
 	// Create a map of the variables
 	tfVarsMap := map[string]map[string]interface{}{
-		"standardSolutionWithExistingKms":       standardSolutionWithExistingKms,
-		"standardSolutionWithUseIbmOwnedEncKey": standardSolutionWithUseIbmOwnedEncKey,
+		"fullyConfigurableWithExistingKms":       fullyConfigurableWithExistingKms,
+		"fullyConfigurableWithIbmOwnedKey":       fullyConfigurableWithIbmOwnedKey,
+		"fullyConfigurableWithIbmOwnedBackupKey": fullyConfigurableWithIbmOwnedBackupKey,
 	}
 
 	_, initErr := terraform.InitE(t, options.TerraformOptions)
