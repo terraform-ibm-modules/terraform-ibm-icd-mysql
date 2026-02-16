@@ -30,6 +30,7 @@ const fullyConfigurableSolutionTerraformDir = "solutions/fully-configurable"
 const securityEnforcedSolutionTerraformDir = "solutions/security-enforced"
 
 const icdType = "mysql"
+const icdShortType = "mysql"
 
 // Use existing resource group
 const resourceGroup = "geretain-test-mysql"
@@ -126,7 +127,7 @@ func TestRunFullyConfigurableSolutionSchematics(t *testing.T) {
 		},
 		TemplateFolder:             fullyConfigurableSolutionTerraformDir,
 		BestRegionYAMLPath:         regionSelectionPath,
-		Prefix:                     "mysql-fc-da",
+		Prefix:                     fmt.Sprintf("%s-fc-da", icdShortType),
 		ResourceGroup:              resourceGroup,
 		DeleteWorkspaceOnFail:      false,
 		WaitJobCompleteMinutes:     60,
@@ -174,7 +175,7 @@ func TestRunFullyConfigurableSolutionSchematics(t *testing.T) {
 		{Name: "service_credential_names", Value: string(serviceCredentialNamesJSON), DataType: "map(string)"},
 		{Name: "service_credential_secrets", Value: serviceCredentialSecrets, DataType: "list(object)"},
 		{Name: "existing_secrets_manager_instance_crn", Value: permanentResources["secretsManagerCRN"], DataType: "string"},
-		{Name: "admin_pass_secrets_manager_secret_group", Value: fmt.Sprintf("mysql-%s-admin-secrets", options.Prefix), DataType: "string"},
+		{Name: "admin_pass_secrets_manager_secret_group", Value: fmt.Sprintf("%s-%s-admin-secrets", icdShortType, options.Prefix), DataType: "string"},
 		{Name: "admin_pass_secrets_manager_secret_name", Value: options.Prefix, DataType: "string"},
 		{Name: "admin_pass", Value: common.GetRandomPasswordWithPrefix(), DataType: "string"},
 		{Name: "mysql_version", Value: latestVersion, DataType: "string"}, // Always lock this test into the latest supported MySQL version
@@ -197,10 +198,10 @@ func TestRunSecurityEnforcedSolutionSchematics(t *testing.T) {
 			fullyConfigurableSolutionTerraformDir + "/*.tf",
 			securityEnforcedSolutionTerraformDir + "/*.tf",
 		},
-		TemplateFolder:     securityEnforcedSolutionTerraformDir,
-		BestRegionYAMLPath: regionSelectionPath,
-		Prefix:             "mysqlse",
-		// ResourceGroup:              resourceGroup,
+		TemplateFolder:             securityEnforcedSolutionTerraformDir,
+		BestRegionYAMLPath:         regionSelectionPath,
+		Prefix:                     fmt.Sprintf("%s-se-da", icdShortType),
+		ResourceGroup:              resourceGroup,
 		DeleteWorkspaceOnFail:      false,
 		WaitJobCompleteMinutes:     60,
 		CheckApplyResultForUpgrade: true,
@@ -247,7 +248,7 @@ func TestRunSecurityEnforcedSolutionSchematics(t *testing.T) {
 		{Name: "service_credential_names", Value: string(serviceCredentialNamesJSON), DataType: "map(string)"},
 		{Name: "service_credential_secrets", Value: serviceCredentialSecrets, DataType: "list(object)"},
 		{Name: "existing_secrets_manager_instance_crn", Value: permanentResources["secretsManagerCRN"], DataType: "string"},
-		{Name: "admin_pass_secrets_manager_secret_group", Value: fmt.Sprintf("mysql-%s-admin-secrets", options.Prefix), DataType: "string"},
+		{Name: "admin_pass_secrets_manager_secret_group", Value: fmt.Sprintf("%s-%s-admin-secrets", icdShortType, options.Prefix), DataType: "string"},
 		{Name: "admin_pass_secrets_manager_secret_name", Value: options.Prefix, DataType: "string"},
 		{Name: "admin_pass", Value: common.GetRandomPasswordWithPrefix(), DataType: "string"},
 		{Name: "existing_kms_instance_crn", Value: permanentResources["hpcs_south_crn"], DataType: "string"},
@@ -271,11 +272,12 @@ func TestRunSecurityEnforcedUpgradeSolution(t *testing.T) {
 			fullyConfigurableSolutionTerraformDir + "/*.tf",
 			securityEnforcedSolutionTerraformDir + "/*.tf",
 		},
-		TemplateFolder:         securityEnforcedSolutionTerraformDir,
-		BestRegionYAMLPath:     regionSelectionPath,
-		Prefix:                 "mysql-upg",
-		DeleteWorkspaceOnFail:  false,
-		WaitJobCompleteMinutes: 60,
+		TemplateFolder:             securityEnforcedSolutionTerraformDir,
+		Tags:                       []string{fmt.Sprintf("%s-se-upg", icdShortType)},
+		Prefix:                     fmt.Sprintf("%s-se-upg", icdShortType),
+		DeleteWorkspaceOnFail:      false,
+		WaitJobCompleteMinutes:     120,
+		CheckApplyResultForUpgrade: true,
 	})
 
 	serviceCredentialSecrets := []map[string]interface{}{
@@ -319,14 +321,14 @@ func TestRunSecurityEnforcedUpgradeSolution(t *testing.T) {
 		{Name: "service_credential_names", Value: string(serviceCredentialNamesJSON), DataType: "map(string)"},
 		{Name: "service_credential_secrets", Value: serviceCredentialSecrets, DataType: "list(object)"},
 		{Name: "existing_secrets_manager_instance_crn", Value: permanentResources["secretsManagerCRN"], DataType: "string"},
-		{Name: "admin_pass_secrets_manager_secret_group", Value: fmt.Sprintf("mysql-%s-admin-secrets", options.Prefix), DataType: "string"},
+		{Name: "admin_pass_secrets_manager_secret_group", Value: fmt.Sprintf("%s-%s-admin-secrets", icdShortType, options.Prefix), DataType: "string"},
 		{Name: "admin_pass_secrets_manager_secret_name", Value: options.Prefix, DataType: "string"},
 		{Name: "admin_pass", Value: common.GetRandomPasswordWithPrefix(), DataType: "string"},
 		{Name: "existing_kms_instance_crn", Value: permanentResources["hpcs_south_crn"], DataType: "string"},
 		{Name: "mysql_version", Value: latestVersion, DataType: "string"}, // Always lock this test into the latest supported MySQL version
 	}
 	err = sharedInfoSvc.WithNewResourceGroup(uniqueResourceGroup, func() error {
-		return options.RunSchematicTest()
+		return options.RunSchematicUpgradeTest()
 	})
 	if !options.UpgradeTestSkipped {
 		assert.Nil(t, err, "This should not have errored")
@@ -444,7 +446,7 @@ func TestPlanValidation(t *testing.T) {
 
 func TestRunExistingInstance(t *testing.T) {
 	t.Parallel()
-	prefix := fmt.Sprintf("mysql-t-%s", strings.ToLower(random.UniqueId()))
+	prefix := fmt.Sprintf("%s-t-%s", icdShortType, strings.ToLower(random.UniqueId()))
 	realTerraformDir := ".."
 	tempTerraformDir, _ := files.CopyTerraformFolderToTemp(realTerraformDir, fmt.Sprintf(prefix+"-%s", strings.ToLower(random.UniqueId())))
 
@@ -485,7 +487,7 @@ func TestRunExistingInstance(t *testing.T) {
 			},
 			TemplateFolder:         fullyConfigurableSolutionTerraformDir,
 			BestRegionYAMLPath:     regionSelectionPath,
-			Prefix:                 "mysql-ex",
+			Prefix:                 fmt.Sprintf("%s-ex", icdShortType),
 			ResourceGroup:          resourceGroup,
 			DeleteWorkspaceOnFail:  false,
 			WaitJobCompleteMinutes: 60,
