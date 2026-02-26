@@ -174,15 +174,11 @@
             {
               "key": "mysql_version",
               "required": true,
-              "default_value": "8.0",
+              "default_value": "8.4",
               "options": [
                 {
-                  "displayname": "6.2",
-                  "value": "6.2"
-                },
-                {
-                  "displayname": "7.2",
-                  "value": "7.2"
+                  "displayname": "8.4",
+                  "value": "8.4"
                 },
                 {
                   "displayname": "8.0",
@@ -594,15 +590,11 @@
             {
               "key": "mysql_version",
               "required": true,
-              "default_value": "8.0",
+              "default_value": "8.4",
               "options": [
                 {
-                  "displayname": "6.2",
-                  "value": "6.2"
-                },
-                {
-                  "displayname": "7.2",
-                  "value": "7.2"
+                  "displayname": "8.4",
+                  "value": "8.4"
                 },
                 {
                   "displayname": "8.0",
