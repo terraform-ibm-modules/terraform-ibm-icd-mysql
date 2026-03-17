@@ -68,12 +68,29 @@ module "mysql" {
   kms_key_crn               = var.kms_key_crn
   backup_encryption_key_crn = var.backup_encryption_key_crn
   backup_crn                = var.backup_crn
-  service_credential_names = {
-    "mysql_admin" : "Administrator",
-    "mysql_operator" : "Operator",
-    "mysql_viewer" : "Viewer",
-    "mysql_editor" : "Editor",
-  }
+  service_credential_names = [
+    {
+      name     = "mysql_admin"
+      role     = "Administrator"
+      endpoint = "private"
+    },
+    {
+      name     = "mysql_operator"
+      role     = "Operator"
+      endpoint = "private"
+    },
+    {
+      name     = "mysql_viewer"
+      role     = "Viewer"
+      endpoint = "private"
+    },
+    {
+      name     = "mysql_editor"
+      role     = "Editor"
+      endpoint = "private"
+    }
+  ]
+
   auto_scaling = {
     disk = {
       capacity_enabled : true,

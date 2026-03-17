@@ -120,12 +120,28 @@ module "mysql_db" {
   use_same_kms_key_for_backups = false
   kms_key_crn                  = module.key_protect_all_inclusive.keys["icd-mysql.${local.data_key_name}"].crn
   backup_encryption_key_crn    = module.key_protect_all_inclusive.keys["icd-mysql.${local.backups_key_name}"].crn
-  service_credential_names = {
-    "mysql_admin" : "Administrator",
-    "mysql_operator" : "Operator",
-    "mysql_viewer" : "Viewer",
-    "mysql_editor" : "Editor",
-  }
+  service_credential_names = [
+    {
+      name     = "mysql_admin"
+      role     = "Administrator"
+      endpoint = "private"
+    },
+    {
+      name     = "mysql_operator"
+      role     = "Operator"
+      endpoint = "private"
+    },
+    {
+      name     = "mysql_viewer"
+      role     = "Viewer"
+      endpoint = "private"
+    },
+    {
+      name     = "mysql_editor"
+      role     = "Editor"
+      endpoint = "private"
+    }
+  ]
 
   member_host_flavor = "multitenant"
   cbr_rules = [
