@@ -28,12 +28,28 @@ module "database" {
   service_endpoints   = var.service_endpoints
   member_host_flavor  = var.member_host_flavor
   deletion_protection = false
-  service_credential_names = {
-    "mysql_admin" : "Administrator",
-    "mysql_operator" : "Operator",
-    "mysql_viewer" : "Viewer",
-    "mysql_editor" : "Editor",
-  }
+  service_credential_names = [
+    {
+      name     = "mysql_admin"
+      role     = "Administrator"
+      endpoint = "public"
+    },
+    {
+      name     = "mysql_operator"
+      role     = "Operator"
+      endpoint = "public"
+    },
+    {
+      name     = "mysql_viewer"
+      role     = "Viewer"
+      endpoint = "public"
+    },
+    {
+      name     = "mysql_editor"
+      role     = "Editor"
+      endpoint = "public"
+    }
+  ]
 }
 
 # On destroy, we are seeing that even though the replica has been returned as
