@@ -113,7 +113,7 @@ module "mysql_db" {
   admin_pass          = var.admin_pass
   users               = var.users
   access_tags         = var.access_tags
-  tags                = var.resource_tags
+  resource_tags       = var.resource_tags
   deletion_protection = false
   # Example of how to use different KMS keys for data and backups
   use_ibm_owned_encryption_key = false
