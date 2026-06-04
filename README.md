@@ -55,7 +55,6 @@ This module implements an instance of the IBM Cloud Databases for MySQL service.
   <li><a href="./solutions">Deployable Architectures</a>
     <ul>
       <li><a href="./solutions/fully-configurable">Cloud automation for MySQL (Fully configurable)</a></li>
-      <li><a href="./solutions/security-enforced">Cloud automation for MySQL (Security-enforced)</a></li>
     </ul>
   </li>
   <li><a href="#contributing">Contributing</a></li>
