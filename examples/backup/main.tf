@@ -23,7 +23,7 @@ module "restored_mysql_db" {
   name                = "${var.prefix}-mysql-restored"
   mysql_version       = var.mysql_version
   region              = var.region
-  tags                = var.resource_tags
+  resource_tags       = var.resource_tags
   access_tags         = var.access_tags
   member_host_flavor  = "multitenant"
   deletion_protection = false
