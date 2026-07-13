@@ -72,7 +72,7 @@
                 "crn:v1:bluemix:public:iam::::role:Editor"
               ],
               "service_name": "databases-for-mysql",
-              "notes": "Required to configure a Databases for MySQL instance."
+              "notes": "Required to configure an instance of Databases for MySQL."
             },
             {
               "role_crns": [
