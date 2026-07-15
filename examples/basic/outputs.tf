@@ -36,3 +36,13 @@ output "certificate_base64" {
   value       = module.database.certificate_base64
   sensitive   = true
 }
+
+output "read_replica_ids" {
+  description = "Read-only replica MySQL instance IDs"
+  value       = local.is_gen2 ? null : module.read_only_replica_mysql_db[*].id
+}
+
+output "read_replica_crns" {
+  description = "Read-only replica MySQL CRNs"
+  value       = local.is_gen2 ? null : module.read_only_replica_mysql_db[*].crn
+}

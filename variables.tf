@@ -29,10 +29,29 @@ variable "region" {
   default     = "us-south"
 }
 
+variable "plan" {
+  type        = string
+  description = "The name of the service plan that you choose for your MySQL instance"
+  default     = "standard"
+
+  validation {
+    condition = anytrue([
+      var.plan == "standard",
+      var.plan == "standard-gen2",
+    ])
+    error_message = "Only supported plans are standard and standard-gen2"
+  }
+}
+
 variable "remote_leader_crn" {
   type        = string
   description = "A CRN of the leader database to make the replica(read-only) deployment. The leader database is created by a database deployment with the same service ID. A read-only replica is set up to replicate all of your data from the leader deployment to the replica deployment by using asynchronous replication. For more information, see https://cloud.ibm.com/docs/databases-for-mysql?topic=databases-for-mysql-read-replicas"
   default     = null
+
+  validation {
+    condition     = local.is_classic || (local.is_gen2 && var.remote_leader_crn == null)
+    error_message = "`remote_leader_crn` is only supported for classic instances, remove `remote_leader_crn` or select a classic `plan`."
+  }
 }
 
 ##############################################################################
@@ -57,21 +76,33 @@ variable "disk_mb" {
   type        = number
   description = "Allocated disk per member. [Learn more](https://cloud.ibm.com/docs/databases-for-mysql?topic=databases-for-mysql-resources-scaling)"
   default     = 10240
-  # Validation is done in the Terraform plan phase by the IBM provider, so no need to add extra validation here.
+
+  validation {
+    condition     = local.is_classic || (local.is_gen2 && var.disk_mb >= 10240)
+    error_message = "`disk_mb` for Gen2 must be 10240 or more, either set the `disk_mb` input or select a classic `plan`."
+  }
 }
 
 variable "member_host_flavor" {
   type        = string
   description = "Allocated host flavor per member. [Learn more](https://registry.terraform.io/providers/IBM-Cloud/ibm/latest/docs/resources/database#host_flavor)."
   default     = null
-  # Validation is done in the Terraform plan phase by the IBM provider, so no need to add extra validation here.
+
+  validation {
+    condition     = local.is_classic || var.member_host_flavor != "multitenant"
+    error_message = "`member_host_flavor` cannot be `multitenant` for Gen2 instances."
+  }
 }
 
 variable "memory_mb" {
   type        = number
   description = "Allocated memory per member. [Learn more](https://cloud.ibm.com/docs/databases-for-mysql?topic=databases-for-mysql-resources-scaling)"
   default     = 4096
-  # Validation is done in the Terraform plan phase by the IBM provider, so no need to add extra validation here.
+
+  validation {
+    condition     = local.is_classic || var.memory_mb == 4096
+    error_message = "`memory_mb` is only supported for classic instances. For Gen2 instances, leave `memory_mb` at its default value because memory is determined by `host_flavor`."
+  }
 }
 
 variable "admin_pass" {
@@ -79,6 +110,11 @@ variable "admin_pass" {
   description = "The password for the database administrator. If the admin password is null then the admin user ID cannot be accessed. More users can be specified in a user block."
   default     = null
   sensitive   = true
+
+  validation {
+    condition     = local.is_classic || (local.is_gen2 && var.admin_pass == null)
+    error_message = "`admin_pass` is only supported for classic instances, remove `admin_pass` or select a classic `plan`."
+  }
 }
 
 variable "users" {
@@ -91,6 +127,11 @@ variable "users" {
   description = "A list of users that you want to create on the database. Multiple blocks are allowed. The user password must be in the range of 10-32 characters. Be warned that in most case using IAM service credentials (via the var.service_credential_names) is sufficient to control access to the MySQL instance. These blocks creates native MySQL database users, more info on that can be found here https://cloud.ibm.com/docs/databases-for-mysql?topic=databases-for-mysql-user-management"
   default     = []
   sensitive   = true
+
+  validation {
+    condition     = local.is_classic || (local.is_gen2 && length(var.users) == 0)
+    error_message = "`users` is only supported for classic instances, remove `users` or select a classic `plan`."
+  }
 }
 
 variable "service_credential_names" {
@@ -103,8 +144,13 @@ variable "service_credential_names" {
   default     = []
 
   validation {
-    condition     = alltrue([for credential in var.service_credential_names : contains(["Administrator", "Operator", "Viewer", "Editor"], credential.role)])
-    error_message = "`service_credential_names` role must be one of the following: `Administrator`, `Operator`, `Viewer` or `Editor`."
+    condition     = local.is_classic || (local.is_gen2 && alltrue([for credential in var.service_credential_names : contains(["Viewer", "Editor"], credential.role)]))
+    error_message = "`service_credential_names` role must be one of the following: `Viewer` or `Editor` for Gen2 instances."
+  }
+
+  validation {
+    condition     = local.is_gen2 || (local.is_classic && alltrue([for credential in var.service_credential_names : contains(["Administrator", "Operator", "Viewer", "Editor"], credential.role)]))
+    error_message = "`service_credential_names` role must be one of the following: `Administrator`, `Operator`, `Viewer` or `Editor` for classic instances."
   }
 
   validation {
@@ -137,6 +183,11 @@ variable "service_endpoints" {
   validation {
     condition     = can(regex("^(public|public-and-private|private)$", var.service_endpoints))
     error_message = "Valid values for service_endpoints are 'public', 'public-and-private', and 'private'"
+  }
+
+  validation {
+    condition     = local.is_classic || var.service_endpoints == "private"
+    error_message = "`service_endpoints` must be `private` for Gen2 instances."
   }
 }
 
@@ -214,6 +265,11 @@ variable "configuration" {
   })
   description = "Database configuration parameters, see https://cloud.ibm.com/docs/databases-for-mysql?topic=databases-for-mysql-changing-configuration&interface=api for more details."
   default     = null
+
+  validation {
+    condition     = local.is_classic || (local.is_gen2 && var.configuration == null)
+    error_message = "`configuration` is only supported for classic instances, remove `configuration` or select a classic `plan`."
+  }
 
   validation {
     condition     = var.configuration != null ? (var.configuration["default_authentication_plugin"] != null ? contains(["sha256_password", "caching_sha2_password", "mysql_native_password"], var.configuration["default_authentication_plugin"]) : true) : true
@@ -322,6 +378,11 @@ variable "auto_scaling" {
   })
   description = "Optional rules to allow the database to increase resources in response to usage. Only a single autoscaling block is allowed. Make sure you understand the effects of autoscaling, especially for production environments. See https://cloud.ibm.com/docs/databases-for-mysql?topic=databases-for-mysql-autoscaling-mysql&interface=ui in the IBM Cloud Docs."
   default     = null
+
+  validation {
+    condition     = local.is_classic || (local.is_gen2 && var.auto_scaling == null)
+    error_message = "`auto_scaling` is only supported for classic instances, remove `auto_scaling` or select a classic `plan`."
+  }
 }
 
 ##############################################################
@@ -398,6 +459,11 @@ variable "backup_encryption_key_crn" {
   default     = null
 
   validation {
+    condition     = local.is_classic || (local.is_gen2 && var.backup_encryption_key_crn == null)
+    error_message = "`backup_encryption_key_crn` is not supported for Gen2 instances."
+  }
+
+  validation {
     condition = anytrue([
       var.backup_encryption_key_crn == null,
       can(regex(".*kms.*", var.backup_encryption_key_crn)),
@@ -451,6 +517,11 @@ variable "backup_crn" {
   default     = null
 
   validation {
+    condition     = local.is_classic || (local.is_gen2 && var.backup_crn == null)
+    error_message = "`backup_crn` is only supported for classic instances in this module, remove `backup_crn` or select a classic `plan`."
+  }
+
+  validation {
     condition = anytrue([
       var.backup_crn == null,
       can(regex("^crn:.*:backup:", var.backup_crn))
@@ -469,6 +540,11 @@ variable "pitr_id" {
   default     = null
 
   validation {
+    condition     = local.is_classic || (local.is_gen2 && var.pitr_id == null)
+    error_message = "`pitr_id` is only supported for classic instances, either remove `pitr_id` or select a classic `plan`."
+  }
+
+  validation {
     condition     = var.pitr_id != null ? true : var.pitr_time == null
     error_message = "To use Point-In-Time Recovery (PITR), a value for var.pitr_id needs to be set when var.pitr_time is specified. Otherwise, unset var.pitr_time."
   }
@@ -483,4 +559,9 @@ variable "pitr_time" {
   type        = string
   description = "(Optional) The timestamp in UTC format (%Y-%m-%dT%H:%M:%SZ) for any time in the last 7 days that you want to restore to. To retrieve the timestamp, run the command (ibmcloud cdb mysql earliest-pitr-timestamp <deployment name or CRN>). For more info on Point-in-time Recovery, see https://cloud.ibm.com/docs/databases-for-mysql?topic=databases-for-mysql-pitr"
   default     = null
+
+  validation {
+    condition     = local.is_classic || (local.is_gen2 && var.pitr_time == null)
+    error_message = "`pitr_time` is only supported for classic instances, remove `pitr_time` or select a classic `plan`."
+  }
 }

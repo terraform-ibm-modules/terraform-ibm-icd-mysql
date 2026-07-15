@@ -3,6 +3,7 @@ module "mysql_db" {
   resource_group_id                 = var.resource_group_id
   name                              = var.name
   region                            = var.region
+  plan                              = var.plan
   skip_iam_authorization_policy     = var.skip_iam_authorization_policy
   service_endpoints                 = "private"
   deletion_protection               = var.deletion_protection
