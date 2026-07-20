@@ -8,13 +8,13 @@ locals {
 
   gen2_service_credential_names = [
     {
-      name     = "mysql_viewer"
-      role     = "Viewer"
+      name     = "mysql_manager"
+      role     = "Manager"
       endpoint = local.endpoint_type
     },
     {
-      name     = "mysql_editor"
-      role     = "Editor"
+      name     = "mysql_writer"
+      role     = "Writer"
       endpoint = local.endpoint_type
     }
   ]
@@ -71,7 +71,7 @@ module "database" {
   mysql_version            = var.mysql_version
   access_tags              = var.access_tags
   resource_tags            = var.resource_tags
-  service_endpoints        = local.is_gen2 ? "private" : var.service_endpoints
+  service_endpoints        = var.service_endpoints
   member_host_flavor       = var.member_host_flavor != null ? var.member_host_flavor : (local.is_gen2 ? local.gen2_host_flavor : local.classic_host_flavor)
   deletion_protection      = false
   service_credential_names = local.is_gen2 ? local.gen2_service_credential_names : local.classic_service_credential_names

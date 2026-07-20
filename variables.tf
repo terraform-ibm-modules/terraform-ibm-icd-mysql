@@ -144,8 +144,8 @@ variable "service_credential_names" {
   default     = []
 
   validation {
-    condition     = local.is_classic || (local.is_gen2 && alltrue([for credential in var.service_credential_names : contains(["Viewer", "Editor"], credential.role)]))
-    error_message = "`service_credential_names` role must be one of the following: `Viewer` or `Editor` for Gen2 instances."
+    condition     = local.is_classic || (local.is_gen2 && alltrue([for credential in var.service_credential_names : contains(["Manager", "Writer"], credential.role)]))
+    error_message = "`service_credential_names` role must be one of the following: `Manager` or `Writer` for Gen2 instances."
   }
 
   validation {

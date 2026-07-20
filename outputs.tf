@@ -46,16 +46,16 @@ output "adminuser" {
 
 output "hostname" {
   description = "Database connection hostname"
-  value       = can(data.ibm_database_connection.database_connection.mysql[0].hosts[0].hostname) ? data.ibm_database_connection.database_connection.mysql[0].hosts[0].hostname : null
+  value       = can(data.ibm_database_connection.database_connection[0].mysql[0].hosts[0].hostname) ? data.ibm_database_connection.database_connection[0].mysql[0].hosts[0].hostname : null
 }
 
 output "port" {
   description = "Database connection port"
-  value       = can(data.ibm_database_connection.database_connection.mysql[0].hosts[0].port) ? data.ibm_database_connection.database_connection.mysql[0].hosts[0].port : null
+  value       = can(data.ibm_database_connection.database_connection[0].mysql[0].hosts[0].port) ? data.ibm_database_connection.database_connection[0].mysql[0].hosts[0].port : null
 }
 
 output "certificate_base64" {
   description = "Database connection certificate"
-  value       = can(data.ibm_database_connection.database_connection.mysql[0].certificate[0].certificate_base64) ? data.ibm_database_connection.database_connection.mysql[0].certificate[0].certificate_base64 : null
+  value       = can(data.ibm_database_connection.database_connection[0].mysql[0].certificate[0].certificate_base64) ? data.ibm_database_connection.database_connection[0].mysql[0].certificate[0].certificate_base64 : null
   sensitive   = true
 }

@@ -432,10 +432,11 @@ module "cbr_rule" {
 resource "ibm_resource_key" "service_credentials" {
   for_each             = { for key in var.service_credential_names : key.name => key }
   name                 = each.key
-  role                 = each.value.role
+  role                 = local.is_classic ? each.value.role : null
   resource_instance_id = ibm_database.mysql_db.id
   parameters = {
     service-endpoints = each.value.endpoint
+    role_crn          = local.is_gen2 ? "crn:v1:bluemix:public:iam::::role:${each.value.role}" : null
   }
 }
 
@@ -447,20 +448,21 @@ locals {
   } : null
 
   service_credentials_object = length(var.service_credential_names) > 0 ? {
-    hostname    = ibm_resource_key.service_credentials[var.service_credential_names[0].name].credentials["connection.mysql.hosts.0.hostname"]
-    certificate = ibm_resource_key.service_credentials[var.service_credential_names[0].name].credentials["connection.mysql.certificate.certificate_base64"]
-    port        = ibm_resource_key.service_credentials[var.service_credential_names[0].name].credentials["connection.mysql.hosts.0.port"]
+    hostname    = can(ibm_resource_key.service_credentials[var.service_credential_names[0].name].credentials["connection.mysql.hosts.0.hostname"]) ? ibm_resource_key.service_credentials[var.service_credential_names[0].name].credentials["connection.mysql.hosts.0.hostname"] : null
+    certificate = can(ibm_resource_key.service_credentials[var.service_credential_names[0].name].credentials["connection.mysql.certificate.certificate_base64"]) ? ibm_resource_key.service_credentials[var.service_credential_names[0].name].credentials["connection.mysql.certificate.certificate_base64"] : null
+    port        = can(ibm_resource_key.service_credentials[var.service_credential_names[0].name].credentials["connection.mysql.hosts.0.port"]) ? ibm_resource_key.service_credentials[var.service_credential_names[0].name].credentials["connection.mysql.hosts.0.port"] : null
     credentials = {
       for service_credential in ibm_resource_key.service_credentials :
       service_credential["name"] => {
-        username = service_credential.credentials["connection.mysql.authentication.username"]
-        password = service_credential.credentials["connection.mysql.authentication.password"]
+        username = can(service_credential.credentials["connection.mysql.authentication.username"]) ? service_credential.credentials["connection.mysql.authentication.username"] : null
+        password = can(service_credential.credentials["connection.mysql.authentication.password"]) ? service_credential.credentials["connection.mysql.authentication.password"] : null
       }
     }
   } : null
 }
 
 data "ibm_database_connection" "database_connection" {
+  count         = local.is_classic ? 1 : 0
   endpoint_type = var.service_endpoints == "public-and-private" ? "public" : var.service_endpoints
   deployment_id = ibm_database.mysql_db.id
   user_id       = ibm_database.mysql_db.adminuser
