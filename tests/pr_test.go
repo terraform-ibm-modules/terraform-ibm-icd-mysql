@@ -117,7 +117,7 @@ func GetVersionsGen2(region string, plan string) (string, string) {
 		log.Fatal(err)
 	}
 
-	icdAvailableVersions, err := cloudInfoSvc.GetAvailableIcdVersionsGen2("databases-for-redis", plan, region) // this function takes service, plan and region as arguments in this specific order
+	icdAvailableVersions, err := cloudInfoSvc.GetAvailableIcdVersionsGen2("databases-for-mysql", plan, region) // this function takes service, plan and region as arguments in this specific order
 
 	if err != nil {
 		log.Fatal(err)

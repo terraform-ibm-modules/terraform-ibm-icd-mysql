@@ -72,7 +72,7 @@ module "database" {
   access_tags              = var.access_tags
   resource_tags            = var.resource_tags
   service_endpoints        = var.service_endpoints
-  member_host_flavor       = var.member_host_flavor != null ? var.member_host_flavor : (local.is_gen2 ? local.gen2_host_flavor : local.classic_host_flavor)
+  member_host_flavor       = local.is_gen2 ? local.gen2_host_flavor : local.classic_host_flavor
   deletion_protection      = false
   service_credential_names = local.is_gen2 ? local.gen2_service_credential_names : local.classic_service_credential_names
 }

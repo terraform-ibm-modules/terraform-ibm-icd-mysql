@@ -166,11 +166,12 @@ resource "time_sleep" "wait_for_backup_kms_authorization_policy" {
 ########################################################################################################################
 
 module "available_versions" {
-
   source   = "terraform-ibm-modules/common-utilities/ibm//modules/icd-versions"
   version  = "1.9.0"
   region   = var.region
   icd_type = "mysql"
+  plan     = var.plan
+  service  = "databases-for-mysql"
 }
 
 
@@ -203,7 +204,7 @@ resource "ibm_database" "mysql_db" {
   point_in_time_recovery_time          = var.pitr_time
 
   dynamic "users" {
-    for_each = local.is_classic ? nonsensitive(var.users != null ? var.users : []) : []
+    for_each = nonsensitive(var.users != null ? var.users : [])
     content {
       name     = users.value.name
       password = users.value.password
@@ -240,7 +241,7 @@ resource "ibm_database" "mysql_db" {
 
   ## This block is for if host_flavor IS set to "multitenant"
   dynamic "group" {
-    for_each = local.host_flavor_set && var.member_host_flavor == "multitenant" && !local.recovery_mode && local.is_classic ? [1] : []
+    for_each = local.host_flavor_set && var.member_host_flavor == "multitenant" && !local.recovery_mode ? [1] : []
     content {
       group_id = "member" # Only member type is allowed for IBM Cloud Databases
       host_flavor {
@@ -254,47 +255,6 @@ resource "ibm_database" "mysql_db" {
       }
       cpu {
         allocation_count = var.cpu_count
-      }
-      dynamic "members" {
-        for_each = var.remote_leader_crn == null ? [1] : []
-        content {
-          allocation_count = var.members
-        }
-      }
-    }
-  }
-
-  dynamic "group" {
-    for_each = !local.host_flavor_set && !local.recovery_mode && local.is_classic ? [1] : []
-    content {
-      group_id = "member"
-      disk {
-        allocation_mb = var.disk_mb
-      }
-      memory {
-        allocation_mb = var.memory_mb
-      }
-      cpu {
-        allocation_count = var.cpu_count
-      }
-      dynamic "members" {
-        for_each = var.remote_leader_crn == null ? [1] : []
-        content {
-          allocation_count = var.members
-        }
-      }
-    }
-  }
-
-  dynamic "group" {
-    for_each = !local.host_flavor_set && !local.recovery_mode && local.is_gen2 ? [1] : []
-    content {
-      group_id = "member"
-      host_flavor {
-        id = "bx3d.4x20"
-      }
-      disk {
-        allocation_mb = var.disk_mb
       }
       dynamic "members" {
         for_each = var.remote_leader_crn == null ? [1] : []

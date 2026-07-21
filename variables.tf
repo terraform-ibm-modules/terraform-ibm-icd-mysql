@@ -76,11 +76,7 @@ variable "disk_mb" {
   type        = number
   description = "Allocated disk per member. [Learn more](https://cloud.ibm.com/docs/databases-for-mysql?topic=databases-for-mysql-resources-scaling)"
   default     = 10240
-
-  validation {
-    condition     = local.is_classic || (local.is_gen2 && var.disk_mb >= 10240)
-    error_message = "`disk_mb` for Gen2 must be 10240 or more, either set the `disk_mb` input or select a classic `plan`."
-  }
+  # Validation is done in the Terraform plan phase by the IBM provider, so no need to add extra validation here.
 }
 
 variable "member_host_flavor" {
