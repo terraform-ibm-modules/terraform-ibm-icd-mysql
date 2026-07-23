@@ -408,14 +408,14 @@ locals {
   } : null
 
   service_credentials_object = length(var.service_credential_names) > 0 ? {
-    hostname    = can(ibm_resource_key.service_credentials[var.service_credential_names[0].name].credentials["connection.mysql.hosts.0.hostname"]) ? ibm_resource_key.service_credentials[var.service_credential_names[0].name].credentials["connection.mysql.hosts.0.hostname"] : null
+    hostname    = ibm_resource_key.service_credentials[var.service_credential_names[0].name].credentials["connection.mysql.hosts.0.hostname"]
     certificate = can(ibm_resource_key.service_credentials[var.service_credential_names[0].name].credentials["connection.mysql.certificate.certificate_base64"]) ? ibm_resource_key.service_credentials[var.service_credential_names[0].name].credentials["connection.mysql.certificate.certificate_base64"] : null
-    port        = can(ibm_resource_key.service_credentials[var.service_credential_names[0].name].credentials["connection.mysql.hosts.0.port"]) ? ibm_resource_key.service_credentials[var.service_credential_names[0].name].credentials["connection.mysql.hosts.0.port"] : null
+    port        = ibm_resource_key.service_credentials[var.service_credential_names[0].name].credentials["connection.mysql.hosts.0.port"]
     credentials = {
       for service_credential in ibm_resource_key.service_credentials :
       service_credential["name"] => {
-        username = can(service_credential.credentials["connection.mysql.authentication.username"]) ? service_credential.credentials["connection.mysql.authentication.username"] : null
-        password = can(service_credential.credentials["connection.mysql.authentication.password"]) ? service_credential.credentials["connection.mysql.authentication.password"] : null
+        username = local.is_gen2 ? service_credential.credentials["username"] : service_credential.credentials["connection.mysql.authentication.username"]
+        password = local.is_gen2 ? service_credential.credentials["password"] : service_credential.credentials["connection.mysql.authentication.password"]
       }
     }
   } : null
