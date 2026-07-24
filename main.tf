@@ -17,6 +17,10 @@ locals {
 
   # Determine if restore, from backup or point in time recovery
   recovery_mode = var.backup_crn != null || var.pitr_id != null
+
+  # Determine if gen2 plan is being used
+  is_gen2    = can(regex("-gen2$", var.plan))
+  is_classic = !local.is_gen2
 }
 
 ########################################################################################################################
@@ -162,11 +166,12 @@ resource "time_sleep" "wait_for_backup_kms_authorization_policy" {
 ########################################################################################################################
 
 module "available_versions" {
-
   source   = "terraform-ibm-modules/common-utilities/ibm//modules/icd-versions"
   version  = "1.9.0"
   region   = var.region
   icd_type = "mysql"
+  plan     = var.plan
+  service  = "databases-for-mysql"
 }
 
 
@@ -178,7 +183,7 @@ locals {
 resource "ibm_database" "mysql_db" {
   depends_on                  = [time_sleep.wait_for_authorization_policy]
   name                        = var.name
-  plan                        = "standard" # Only standard plan is available for mysql
+  plan                        = var.plan
   location                    = var.region
   service                     = "databases-for-mysql"
   version                     = var.mysql_version
@@ -387,10 +392,11 @@ module "cbr_rule" {
 resource "ibm_resource_key" "service_credentials" {
   for_each             = { for key in var.service_credential_names : key.name => key }
   name                 = each.key
-  role                 = each.value.role
+  role                 = local.is_classic ? each.value.role : null
   resource_instance_id = ibm_database.mysql_db.id
   parameters = {
     service-endpoints = each.value.endpoint
+    role_crn          = local.is_gen2 ? "crn:v1:bluemix:public:iam::::role:${each.value.role}" : null
   }
 }
 
@@ -403,19 +409,20 @@ locals {
 
   service_credentials_object = length(var.service_credential_names) > 0 ? {
     hostname    = ibm_resource_key.service_credentials[var.service_credential_names[0].name].credentials["connection.mysql.hosts.0.hostname"]
-    certificate = ibm_resource_key.service_credentials[var.service_credential_names[0].name].credentials["connection.mysql.certificate.certificate_base64"]
+    certificate = can(ibm_resource_key.service_credentials[var.service_credential_names[0].name].credentials["connection.mysql.certificate.certificate_base64"]) ? ibm_resource_key.service_credentials[var.service_credential_names[0].name].credentials["connection.mysql.certificate.certificate_base64"] : null
     port        = ibm_resource_key.service_credentials[var.service_credential_names[0].name].credentials["connection.mysql.hosts.0.port"]
     credentials = {
       for service_credential in ibm_resource_key.service_credentials :
       service_credential["name"] => {
-        username = service_credential.credentials["connection.mysql.authentication.username"]
-        password = service_credential.credentials["connection.mysql.authentication.password"]
+        username = local.is_gen2 ? service_credential.credentials["username"] : service_credential.credentials["connection.mysql.authentication.username"]
+        password = local.is_gen2 ? service_credential.credentials["password"] : service_credential.credentials["connection.mysql.authentication.password"]
       }
     }
   } : null
 }
 
 data "ibm_database_connection" "database_connection" {
+  count         = local.is_classic ? 1 : 0
   endpoint_type = var.service_endpoints == "public-and-private" ? "public" : var.service_endpoints
   deployment_id = ibm_database.mysql_db.id
   user_id       = ibm_database.mysql_db.adminuser
