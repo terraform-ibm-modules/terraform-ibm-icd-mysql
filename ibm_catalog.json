@@ -52,7 +52,7 @@
       ],
       "flavors": [
         {
-          "label": "Fully configurable",
+          "label": "Fully configurable Gen 1 (Classic)",
           "name": "fully-configurable",
           "index": 1,
           "install_type": "fullstack",
@@ -182,6 +182,10 @@
                   "value": "8.4"
                 }
               ]
+            },
+            {
+              "key": "plan",
+              "hidden": true
             },
             {
               "key": "name"
@@ -654,9 +658,6 @@
             {
               "key": "delete_timeout",
               "hidden": true
-            },
-            {
-              "key": "version_upgrade_skip_backup"
             },
             {
               "key": "service_credential_names",

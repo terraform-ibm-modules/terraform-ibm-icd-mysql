@@ -55,7 +55,7 @@ This module implements an instance of the IBM Cloud Databases for MySQL service 
   <li><a href="https://github.com/terraform-ibm-modules/terraform-ibm-icd-mysql/tree/main/solutions">Deployable Architectures</a>
     <ul>
       <li><a href="https://github.com/terraform-ibm-modules/terraform-ibm-icd-mysql/tree/main/solutions/fully-configurable">Cloud automation for MySQL (Fully configurable)</a></li>
-      <li><a href="https://github.com/terraform-ibm-modules/terraform-ibm-icd-mysql/tree/main/solutions/fully-configurable-gen2">Databases for MySQL - Fully Configurable (Gen2) Deployable Architecture</a></li>
+      <li><a href="https://github.com/terraform-ibm-modules/terraform-ibm-icd-mysql/tree/main/solutions/fully-configurable-gen2">Databases for MySQL - Fully Configurable (gen2) Deployable Architecture</a></li>
     </ul>
   </li>
   <li><a href="#contributing">Contributing</a></li>

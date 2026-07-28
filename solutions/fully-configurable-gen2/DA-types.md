@@ -9,8 +9,6 @@ Several optional input variables in the IBM Cloud [Databases for MySQL deployabl
 
 You can specify a set of IAM credentials to connect to the database with the `service_credential_names` input variable. Include a resource key name and IAM service role for each key. Each role provides a specific level of access to the database. For more information, see [Adding and viewing credentials](https://cloud.ibm.com/docs/account?topic=account-service_credentials&interface=ui). If you want to add service credentials to secret manager and to allow secret manager to manage it, you should use `service_credential_secrets`, see [Service credential secrets](#service-credential-secrets)
 
-**Note:** Gen2 instances only support private endpoints and the following roles: `Manager` and `Writer`.
-
 - Variable name: `service_credential_names`.
 - Type: A list of objects that represent resource keys.
 - Default value: An empty list (`[]`).
@@ -103,15 +101,3 @@ The following example includes all the configuration options for four service cr
   }
 ]
 ```
-
-## Gen2 Limitations
-
-The following features are **not supported** in Gen2 instances and therefore do not have configuration options:
-
-- **Users**: Native MySQL database users cannot be created. Use IAM service credentials instead.
-- **Autoscaling**: Automatic resource scaling is not available. Resources are determined by the selected `member_host_flavor`.
-- **Configuration**: Database configuration parameters cannot be customized.
-- **Backup encryption keys**: Separate backup encryption keys are not supported.
-- **Public endpoints**: Only private endpoints are supported.
-
-For these features, use the [fully-configurable (Classic)](../fully-configurable/) solution instead.

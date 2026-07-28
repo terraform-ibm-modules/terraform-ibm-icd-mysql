@@ -146,7 +146,7 @@ resource "time_sleep" "wait_for_authorization_policy" {
 }
 
 #######################################################################################################################
-# MySQL
+# MySQL Gen2
 #######################################################################################################################
 
 # Look up existing instance details if user passes one
@@ -159,8 +159,7 @@ module "mysql_instance_crn_parser" {
 
 # Existing instance local vars
 locals {
-  existing_mysql_guid   = var.existing_mysql_instance_crn != null ? module.mysql_instance_crn_parser[0].service_instance : null
-  existing_mysql_region = var.existing_mysql_instance_crn != null ? module.mysql_instance_crn_parser[0].region : null
+  existing_mysql_guid = var.existing_mysql_instance_crn != null ? module.mysql_instance_crn_parser[0].service_instance : null
 }
 
 # Do a data lookup on the resource GUID to get more info that is needed for the 'ibm_database' data lookup below
@@ -180,32 +179,39 @@ data "ibm_database" "existing_db_instance" {
 
 # Create new instance - Gen2 plan
 module "mysql" {
-  count                         = var.existing_mysql_instance_crn != null ? 0 : 1
-  source                        = "../.."
-  depends_on                    = [time_sleep.wait_for_authorization_policy]
-  resource_group_id             = module.resource_group.resource_group_id
-  name                          = "${local.prefix}${var.name}"
-  region                        = var.region
-  plan                          = "standard-gen2" # Gen2 plan
-  mysql_version                 = var.mysql_version
-  skip_iam_authorization_policy = var.kms_encryption_enabled ? var.skip_mysql_kms_auth_policy : true
-  use_ibm_owned_encryption_key  = local.use_ibm_owned_encryption_key
-  kms_key_crn                   = local.kms_key_crn
-  # Gen2 does not support backup encryption keys, admin_pass, users, configuration, auto_scaling, service_endpoints (only private), or backup_crn
-  access_tags                 = var.access_tags
-  resource_tags               = var.resource_tags
-  members                     = var.members
-  member_host_flavor          = var.member_host_flavor
-  memory_mb                   = var.member_memory_mb
-  disk_mb                     = var.member_disk_mb
-  cpu_count                   = var.member_cpu_count
-  service_credential_names    = var.service_credential_names
-  service_endpoints           = "private" # Gen2 only supports private endpoints
-  deletion_protection         = var.deletion_protection
-  version_upgrade_skip_backup = var.version_upgrade_skip_backup
-  create_timeout              = var.create_timeout
-  update_timeout              = var.update_timeout
-  delete_timeout              = var.delete_timeout
+  count                             = var.existing_mysql_instance_crn != null ? 0 : 1
+  source                            = "../.."
+  depends_on                        = [time_sleep.wait_for_authorization_policy]
+  resource_group_id                 = module.resource_group.resource_group_id
+  name                              = "${local.prefix}${var.name}"
+  region                            = var.region
+  plan                              = "standard-gen2" # Gen2 plan
+  mysql_version                     = var.mysql_version
+  skip_iam_authorization_policy     = var.kms_encryption_enabled ? var.skip_mysql_kms_auth_policy : true
+  use_ibm_owned_encryption_key      = local.use_ibm_owned_encryption_key
+  kms_key_crn                       = local.kms_key_crn
+  backup_encryption_key_crn         = null  # not supported by gen2
+  use_same_kms_key_for_backups      = false # not supported by gen2
+  use_default_backup_encryption_key = false # not supported by gen2
+  access_tags                       = var.access_tags
+  resource_tags                     = var.resource_tags
+  admin_pass                        = null # not supported by gen2
+  users                             = []   # not supported by gen2
+  members                           = var.members
+  member_host_flavor                = var.member_host_flavor
+  memory_mb                         = var.member_memory_mb
+  disk_mb                           = var.member_disk_mb
+  cpu_count                         = var.member_cpu_count
+  auto_scaling                      = null # not supported by gen2
+  configuration                     = null # not supported by gen2
+  service_credential_names          = var.service_credential_names
+  backup_crn                        = null      # not supported by gen2
+  service_endpoints                 = "private" # Gen2 only supports private endpoints
+  deletion_protection               = var.deletion_protection
+  version_upgrade_skip_backup       = false
+  create_timeout                    = var.create_timeout
+  update_timeout                    = var.update_timeout
+  delete_timeout                    = var.delete_timeout
 }
 
 locals {

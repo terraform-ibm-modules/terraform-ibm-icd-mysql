@@ -48,14 +48,9 @@ variable "name" {
 }
 
 variable "region" {
-  description = "The region where you want to deploy your instance."
+  description = "The region where you want to deploy your instance. For more information on which regions Gen2 is available, see [Feature differentiators](https://cloud.ibm.com/docs/cloud-databases-gen2?topic=cloud-databases-gen2-overview-gen1-gen2#feature-differentiators)."
   type        = string
   default     = "us-south"
-
-  validation {
-    condition     = var.existing_mysql_instance_crn != null && var.region != local.existing_mysql_region ? false : true
-    error_message = "The region detected in the 'existing_mysql_instance_crn' value must match the value of the 'region' input variable when passing an existing instance."
-  }
 }
 
 variable "existing_mysql_instance_crn" {
@@ -109,7 +104,7 @@ variable "member_disk_mb" {
 variable "member_host_flavor" {
   type        = string
   description = "The host flavor per member. For Gen2, this determines the CPU and memory allocation. [Learn more](https://registry.terraform.io/providers/IBM-Cloud/ibm/latest/docs/resources/database#host_flavor)."
-  default     = "b3c.4x16.encrypted"
+  default     = "bx3d.4x20"
   nullable    = false
   # Prevent null or "", require a valid host flavor for Gen2
   validation {
@@ -126,16 +121,6 @@ variable "service_credential_names" {
     endpoint = optional(string, "private")
   }))
   default = []
-
-  validation {
-    condition     = alltrue([for credential in var.service_credential_names : contains(["Manager", "Writer"], credential.role)])
-    error_message = "`service_credential_names` role must be one of the following: `Manager` or `Writer` for Gen2 instances."
-  }
-
-  validation {
-    condition     = alltrue([for credential in var.service_credential_names : credential.endpoint == "private"])
-    error_message = "`service_credential_names` endpoint must be `private` for Gen2 instances."
-  }
 }
 
 variable "resource_tags" {
@@ -148,12 +133,6 @@ variable "access_tags" {
   type        = list(string)
   description = "Add access management tags to the MySQL instance to control access. [Learn more](https://cloud.ibm.com/docs/account?topic=account-tag&interface=ui#create-access-console)."
   default     = []
-}
-
-variable "version_upgrade_skip_backup" {
-  type        = bool
-  description = "Whether to skip taking a backup before upgrading the database version. Attention: Skipping a backup is not recommended. Skipping a backup before a version upgrade is dangerous and may result in data loss if the upgrade fails at any stage — there will be no immediate backup to restore from."
-  default     = false
 }
 
 variable "deletion_protection" {
@@ -245,7 +224,7 @@ variable "kms_endpoint_type" {
 
 variable "skip_mysql_kms_auth_policy" {
   type        = bool
-  description = "Set to true to skip the creation of IAM authorization policies that permits all Databases for MySQL instances in the account 'Reader' access to the Key Protect or Hyper Protect Crypto Services key. This policy is required in order to enable KMS encryption, so only skip creation if there is one already present in your account. No policy is created if `kms_encryption_enabled` is false. Note: For Gen2, the authorization policy is account-level (not resource-group scoped)."
+  description = "Whether to create an IAM authorization policy that permits all Databases for MySQL instances in the resource group to read the encryption key from the Key Protect instance specified in the `existing_kms_instance_crn` variable."
   default     = false
 }
 
@@ -268,17 +247,6 @@ variable "key_name" {
   description = "The name for the key created for the Databases for MySQL key. Applies only if not specifying an existing key. If a prefix input variable is specified, the prefix is added to the name in the `<prefix>-<name>` format."
 }
 
-variable "provider_visibility" {
-  description = "Set the visibility value for the IBM terraform provider. Supported values are `public`, `private`, `public-and-private`. [Learn more](https://registry.terraform.io/providers/IBM-Cloud/ibm/latest/docs/guides/custom-service-endpoints)."
-  type        = string
-  default     = "private"
-
-  validation {
-    condition     = contains(["public", "private", "public-and-private"], var.provider_visibility)
-    error_message = "Invalid visibility option. Allowed values are 'public', 'private', or 'public-and-private'."
-  }
-}
-
 #############################################################################
 # Secrets Manager Service Credentials
 #############################################################################
@@ -294,17 +262,6 @@ variable "existing_secrets_manager_instance_crn" {
       can(regex("^crn:v\\d:(.*:){2}secrets-manager:(.*:)([aos]\\/[\\w_\\-]+):[0-9a-fA-F]{8}(?:-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}::$", var.existing_secrets_manager_instance_crn))
     ])
     error_message = "The value provided for 'existing_secrets_manager_instance_crn' is not valid."
-  }
-}
-
-variable "existing_secrets_manager_endpoint_type" {
-  type        = string
-  description = "The endpoint type to use if `existing_secrets_manager_instance_crn` is specified. Possible values: public, private."
-  default     = "private"
-
-  validation {
-    condition     = contains(["public", "private"], var.existing_secrets_manager_endpoint_type)
-    error_message = "Only \"public\" and \"private\" are allowed values for 'existing_secrets_endpoint_type'."
   }
 }
 
@@ -352,4 +309,30 @@ variable "skip_mysql_secrets_manager_auth_policy" {
   type        = bool
   default     = false
   description = "Whether an IAM authorization policy is created for Secrets Manager instance to create a service credential secrets for Databases for MySQL. If set to false, the Secrets Manager instance passed by the user is granted the Key Manager access to the MySQL instance created by the Deployable Architecture. Set to `true` to use an existing policy. The value of this is ignored if any value for 'existing_secrets_manager_instance_crn' is not passed."
+}
+
+##############################################################
+# Endpoint Configuration
+##############################################################
+
+variable "provider_visibility" {
+  description = "Set the visibility value for the IBM terraform provider. Supported values are `public`, `private`, `public-and-private`. [Learn more](https://registry.terraform.io/providers/IBM-Cloud/ibm/latest/docs/guides/custom-service-endpoints)."
+  type        = string
+  default     = "private"
+
+  validation {
+    condition     = contains(["public", "private", "public-and-private"], var.provider_visibility)
+    error_message = "Invalid visibility option. Allowed values are 'public', 'private', or 'public-and-private'."
+  }
+}
+
+variable "existing_secrets_manager_endpoint_type" {
+  type        = string
+  description = "The endpoint type to use if `existing_secrets_manager_instance_crn` is specified. Possible values: public, private."
+  default     = "private"
+
+  validation {
+    condition     = contains(["public", "private"], var.existing_secrets_manager_endpoint_type)
+    error_message = "Only \"public\" and \"private\" are allowed values for 'existing_secrets_endpoint_type'."
+  }
 }
