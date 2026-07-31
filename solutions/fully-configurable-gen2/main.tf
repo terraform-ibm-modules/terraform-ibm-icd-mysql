@@ -187,7 +187,7 @@ module "mysql" {
   region                            = var.region
   plan                              = "standard-gen2" # Gen2 plan
   mysql_version                     = var.mysql_version
-  skip_iam_authorization_policy     = var.kms_encryption_enabled ? var.skip_mysql_kms_auth_policy : true
+  skip_iam_authorization_policy     = var.skip_mysql_kms_auth_policy
   use_ibm_owned_encryption_key      = local.use_ibm_owned_encryption_key
   kms_key_crn                       = local.kms_key_crn
   backup_encryption_key_crn         = null  # not supported by gen2
