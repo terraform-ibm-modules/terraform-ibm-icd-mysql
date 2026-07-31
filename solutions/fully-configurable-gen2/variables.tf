@@ -79,25 +79,25 @@ variable "mysql_version" {
 
 variable "members" {
   type        = number
-  description = "The number of members that are allocated. [Learn more](https://cloud.ibm.com/docs/databases-for-mysql?topic=databases-for-mysql-resources-scaling)."
+  description = "The number of members that are allocated. [Learn more](https://cloud.ibm.com/docs/databases-for-mysql-gen2?topic=databases-for-mysql-gen2-resources-scaling&interface=ui)."
   default     = 3
 }
 
 variable "member_memory_mb" {
   type        = number
-  description = "The memory per member that is allocated. For Gen2, memory is determined by `member_host_flavor`. [Learn more](https://cloud.ibm.com/docs/databases-for-mysql?topic=databases-for-mysql-resources-scaling)"
+  description = "The memory per member that is allocated. For Gen2, memory is determined by `member_host_flavor`. [Learn more](https://cloud.ibm.com/docs/databases-for-mysql-gen2?topic=databases-for-mysql-gen2-resources-scaling&interface=ui)"
   default     = 4096
 }
 
 variable "member_cpu_count" {
   type        = number
-  description = "The dedicated CPU per member that is allocated. For Gen2, CPU is determined by `member_host_flavor`. [Learn more](https://cloud.ibm.com/docs/databases-for-mysql?topic=databases-for-mysql-resources-scaling)."
+  description = "The dedicated CPU per member that is allocated. For Gen2, CPU is determined by `member_host_flavor`. [Learn more](https://cloud.ibm.com/docs/databases-for-mysql-gen2?topic=databases-for-mysql-gen2-resources-scaling&interface=ui)."
   default     = 0
 }
 
 variable "member_disk_mb" {
   type        = number
-  description = "The disk that is allocated per member. [Learn more](https://cloud.ibm.com/docs/databases-for-mysql?topic=databases-for-mysql-resources-scaling)."
+  description = "The disk that is allocated per member. [Learn more](https://cloud.ibm.com/docs/databases-for-mysql-gen2?topic=databases-for-mysql-gen2-resources-scaling&interface=ui)."
   default     = 10240
 }
 
