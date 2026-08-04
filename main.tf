@@ -175,10 +175,6 @@ module "available_versions" {
 }
 
 
-locals {
-  icd_supported_versions = module.available_versions.supported_versions
-}
-
 
 resource "ibm_database" "mysql_db" {
   depends_on                  = [time_sleep.wait_for_authorization_policy]
