@@ -320,8 +320,7 @@ resource "ibm_database" "mysql_db" {
     ignore_changes = [
       # Ignore changes to these because a change will destroy and recreate the instance
       key_protect_key,
-      backup_encryption_key_crn,
-      version
+      backup_encryption_key_crn
     ]
   }
 
