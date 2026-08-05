@@ -86,9 +86,8 @@ variable "plan" {
   validation {
     condition = anytrue([
       var.plan == "standard",
-      var.plan == "standard-gen2",
     ])
-    error_message = "Only supported plans are standard and standard-gen2"
+    error_message = "Only supported plans is standard"
   }
 }
 
