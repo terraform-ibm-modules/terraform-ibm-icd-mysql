@@ -184,10 +184,6 @@
               ]
             },
             {
-              "key": "plan",
-              "hidden": true
-            },
-            {
               "key": "name"
             },
             {

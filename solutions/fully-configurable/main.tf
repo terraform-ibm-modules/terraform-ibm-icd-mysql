@@ -280,7 +280,7 @@ module "mysql" {
   depends_on                        = [time_sleep.wait_for_authorization_policy, time_sleep.wait_for_backup_kms_authorization_policy]
   resource_group_id                 = module.resource_group.resource_group_id
   name                              = "${local.prefix}${var.name}"
-  plan                              = var.plan
+  plan                              = "standard"
   region                            = var.region
   mysql_version                     = var.mysql_version
   skip_iam_authorization_policy     = var.kms_encryption_enabled ? var.skip_mysql_kms_auth_policy : true
