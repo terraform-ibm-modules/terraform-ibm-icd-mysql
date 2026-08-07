@@ -234,18 +234,6 @@ resource "time_sleep" "wait_for_gen2_authorization_policies" {
 # MySQL instance
 ########################################################################################################################
 
-module "available_versions" {
-  source   = "terraform-ibm-modules/common-utilities/ibm//modules/icd-versions"
-  version  = "1.9.0"
-  region   = var.region
-  icd_type = "mysql"
-  plan     = var.plan
-  service  = "databases-for-mysql"
-}
-
-
-
-
 resource "ibm_database" "mysql_db" {
   depends_on                  = [time_sleep.wait_for_authorization_policy, time_sleep.wait_for_gen2_authorization_policies]
   name                        = var.name
