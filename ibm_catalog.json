@@ -592,11 +592,11 @@
             {
               "key": "mysql_version",
               "required": true,
-              "default_value": "8.0",
+              "default_value": "8.4",
               "options": [
                 {
-                  "displayname": "8.0",
-                  "value": "8.0"
+                  "displayname": "8.4",
+                  "value": "8.4"
                 }
               ]
             },
