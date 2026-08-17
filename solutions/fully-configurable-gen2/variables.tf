@@ -185,13 +185,13 @@ variable "kms_encryption_enabled" {
 
 variable "existing_kms_instance_crn" {
   type        = string
-  description = "The CRN of a Key Protect or Hyper Protect Crypto Services instance. Required to create a new encryption key and key ring which will be used to encrypt deployment data. To use an existing key, pass a value for `existing_kms_key_crn`. Note: Gen2 instances do not support separate backup encryption keys."
+  description = "The CRN of a Key Protect instance. Required to create a new encryption key and key ring which will be used to encrypt deployment data. To use an existing key, pass a value for `existing_kms_key_crn`. Note: Gen2 instances do not support separate backup encryption keys."
   default     = null
 
   validation {
     condition = anytrue([
       var.existing_kms_instance_crn == null,
-      can(regex("^crn:v\\d:(.*:){2}(kms|hs-crypto):(.*:)([aos]\\/[\\w_\\-]+):[0-9a-fA-F]{8}(?:-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}::$", var.existing_kms_instance_crn))
+      can(regex("^crn:v\\d:(.*:){2}kms:(.*:)([aos]\\/[\\w_\\-]+):[0-9a-fA-F]{8}(?:-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}::$", var.existing_kms_instance_crn))
     ])
     error_message = "The value provided for 'existing_kms_instance_crn' is not valid."
   }
@@ -199,13 +199,13 @@ variable "existing_kms_instance_crn" {
 
 variable "existing_kms_key_crn" {
   type        = string
-  description = "The CRN of a Key Protect or Hyper Protect Crypto Services encryption key to encrypt your data. If no value is passed a new key will be created in the instance specified in the `existing_kms_instance_crn` input. Note: Gen2 instances do not support separate backup encryption keys."
+  description = "The CRN of a Key Protect encryption key to encrypt your data. If no value is passed a new key will be created in the instance specified in the `existing_kms_instance_crn` input. Note: Gen2 instances do not support separate backup encryption keys."
   default     = null
 
   validation {
     condition = anytrue([
       var.existing_kms_key_crn == null,
-      can(regex("^crn:v\\d:(.*:){2}(kms|hs-crypto):(.*:)([aos]\\/[\\w_\\-]+):[0-9a-fA-F]{8}(?:-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}:key:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$", var.existing_kms_key_crn))
+      can(regex("^crn:v\\d:(.*:){2}kms:(.*:)([aos]\\/[\\w_\\-]+):[0-9a-fA-F]{8}(?:-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}:key:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$", var.existing_kms_key_crn))
     ])
     error_message = "The value provided for 'existing_kms_key_crn' is not valid."
   }
@@ -213,7 +213,7 @@ variable "existing_kms_key_crn" {
 
 variable "kms_endpoint_type" {
   type        = string
-  description = "The type of endpoint to use for communicating with the Key Protect or Hyper Protect Crypto Services instance. Possible values: `public`, `private`. Applies only if `existing_kms_key_crn` is not specified."
+  description = "The type of endpoint to use for communicating with the Key Protect instance. Possible values: `public`, `private`. Applies only if `existing_kms_key_crn` is not specified."
   default     = "private"
 
   validation {
