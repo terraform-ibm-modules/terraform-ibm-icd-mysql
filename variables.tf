@@ -57,7 +57,10 @@ variable "members" {
   type        = number
   description = "Allocated number of members. Members can be scaled up but not down."
   default     = 3
-  # Validation is done in terraform plan phase by IBM provider, so no need to add any extra validation here
+  validation {
+    condition     = local.is_classic || var.members == 2
+    error_message = "MySQL on VPC (standard-gen2 plan) only supports 2 members."
+  }
 }
 
 variable "cpu_count" {

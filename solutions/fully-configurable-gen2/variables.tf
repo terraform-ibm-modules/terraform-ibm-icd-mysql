@@ -80,7 +80,7 @@ variable "mysql_version" {
 variable "members" {
   type        = number
   description = "The number of members that are allocated. [Learn more](https://cloud.ibm.com/docs/databases-for-mysql-gen2?topic=databases-for-mysql-gen2-resources-scaling&interface=ui)."
-  default     = 3
+  default     = 2
 }
 
 variable "member_memory_mb" {
