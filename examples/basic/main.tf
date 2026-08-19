@@ -73,6 +73,7 @@ module "database" {
   resource_tags            = var.resource_tags
   service_endpoints        = var.service_endpoints
   member_host_flavor       = local.is_gen2 ? local.gen2_host_flavor : local.classic_host_flavor
+  members                  = local.is_gen2 ? 2 : 3
   deletion_protection      = false
   service_credential_names = local.is_gen2 ? local.gen2_service_credential_names : local.classic_service_credential_names
 }
@@ -107,7 +108,6 @@ module "read_only_replica_mysql_db" {
   resource_tags       = var.resource_tags
   access_tags         = var.access_tags
   mysql_version       = var.mysql_version
-  members             = 2
   deletion_protection = false
   remote_leader_crn   = module.database.crn
   memory_mb           = 12288 # Must be an increment of 384 megabytes. The minimum size of a read-only replica is 12 GB RAM

@@ -196,7 +196,7 @@ module "mysql" {
   resource_tags                     = var.resource_tags
   admin_pass                        = null # not supported by gen2
   users                             = []   # not supported by gen2
-  members                           = var.members
+  members                           = 2
   member_host_flavor                = var.member_host_flavor
   memory_mb                         = var.member_memory_mb
   disk_mb                           = var.member_disk_mb
