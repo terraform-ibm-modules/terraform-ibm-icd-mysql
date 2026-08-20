@@ -138,7 +138,6 @@ func TestRunBasicGen2Example(t *testing.T) {
 		TerraformDir:       "examples/basic",
 		Prefix:             "mysql-gen2",
 		BestRegionYAMLPath: regionSelectionPath,
-		ResourceGroup:      resourceGroup,
 		TerraformVars: map[string]interface{}{
 			"region":            "eu-de",
 			"plan":              "standard-gen2",
@@ -331,7 +330,6 @@ func TestRunFullyConfigurableGen2SolutionSchematics(t *testing.T) {
 		},
 		TemplateFolder:             fullyConfigurableGen2SolutionTerraformDir,
 		Prefix:                     fmt.Sprintf("%s-gen2da", icdShortType),
-		ResourceGroup:              resourceGroup,
 		DeleteWorkspaceOnFail:      false,
 		WaitJobCompleteMinutes:     60,
 		CheckApplyResultForUpgrade: true,
