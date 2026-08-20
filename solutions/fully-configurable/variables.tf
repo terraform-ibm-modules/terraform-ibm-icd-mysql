@@ -107,12 +107,6 @@ variable "service_endpoints" {
   }
 }
 
-variable "members" {
-  type        = number
-  description = "The number of members that are allocated. [Learn more](https://cloud.ibm.com/docs/databases-for-mysql?topic=databases-for-mysql-resources-scaling)."
-  default     = 3
-}
-
 variable "member_memory_mb" {
   type        = number
   description = "The memory per member that is allocated. [Learn more](https://cloud.ibm.com/docs/databases-for-mysql?topic=databases-for-mysql-resources-scaling)"

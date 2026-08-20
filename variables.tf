@@ -53,16 +53,6 @@ variable "remote_leader_crn" {
 # ICD hosting model properties
 ##############################################################################
 
-variable "members" {
-  type        = number
-  description = "Allocated number of members. Members can be scaled up but not down."
-  default     = 3
-  validation {
-    condition     = local.is_classic || var.members == 2
-    error_message = "MySQL on VPC (standard-gen2 plan) only supports 2 members."
-  }
-}
-
 variable "cpu_count" {
   type        = number
   description = "Allocated dedicated CPU per member. For shared CPU, set to 0. [Learn more](https://cloud.ibm.com/docs/databases-for-mysql?topic=databases-for-mysql-resources-scaling)"
