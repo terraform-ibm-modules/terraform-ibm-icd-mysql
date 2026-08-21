@@ -133,12 +133,13 @@ func TestRunBasicGen2Example(t *testing.T) {
 	latestVersion, _ := GetVersionsGen2("eu-de", "standard-gen2")
 	fmt.Println("Latest version is ", latestVersion)
 
+	// ResourceGroup is intentionally not set so a unique group is created per run for this test.
+	// Independent backup policies may not be destroyed on failure, causing conflicts on re-runs within the same group.
 	options := testhelper.TestOptionsDefaultWithVars(&testhelper.TestOptions{
 		Testing:            t,
 		TerraformDir:       "examples/basic",
 		Prefix:             "mysql-gen2",
 		BestRegionYAMLPath: regionSelectionPath,
-		ResourceGroup:      resourceGroup,
 		TerraformVars: map[string]interface{}{
 			"region":            "eu-de",
 			"plan":              "standard-gen2",
@@ -323,6 +324,8 @@ func TestRunFullyConfigurableWithKMSUpgradeSolution(t *testing.T) {
 func TestRunFullyConfigurableGen2SolutionSchematics(t *testing.T) {
 	t.Parallel()
 
+	// ResourceGroup is intentionally not set so a unique group is created per run for this test.
+	// Independent backup policies may not be destroyed on failure, causing conflicts on re-runs within the same group.
 	options := testschematic.TestSchematicOptionsDefault(&testschematic.TestSchematicOptions{
 		Testing: t,
 		TarIncludePatterns: []string{
@@ -331,7 +334,6 @@ func TestRunFullyConfigurableGen2SolutionSchematics(t *testing.T) {
 		},
 		TemplateFolder:             fullyConfigurableGen2SolutionTerraformDir,
 		Prefix:                     fmt.Sprintf("%s-gen2da", icdShortType),
-		ResourceGroup:              resourceGroup,
 		DeleteWorkspaceOnFail:      false,
 		WaitJobCompleteMinutes:     60,
 		CheckApplyResultForUpgrade: true,

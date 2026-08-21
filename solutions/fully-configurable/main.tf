@@ -293,7 +293,6 @@ module "mysql" {
   resource_tags                     = var.resource_tags
   admin_pass                        = local.admin_pass
   users                             = var.users
-  members                           = var.members
   member_host_flavor                = var.member_host_flavor
   memory_mb                         = var.member_memory_mb
   disk_mb                           = var.member_disk_mb

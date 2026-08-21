@@ -209,9 +209,6 @@
               }
             },
             {
-              "key": "members"
-            },
-            {
               "key": "member_memory_mb"
             },
             {
@@ -624,9 +621,6 @@
                   "type": "string"
                 }
               }
-            },
-            {
-              "key": "members"
             },
             {
               "key": "member_memory_mb"
