@@ -287,7 +287,7 @@ resource "ibm_database" "mysql_db" {
       dynamic "members" {
         for_each = var.remote_leader_crn == null ? [1] : []
         content {
-          allocation_count = var.members
+          allocation_count = local.is_gen2 ? 2 : 3
         }
       }
     }
@@ -313,7 +313,7 @@ resource "ibm_database" "mysql_db" {
       dynamic "members" {
         for_each = var.remote_leader_crn == null ? [1] : []
         content {
-          allocation_count = var.members
+          allocation_count = local.is_gen2 ? 2 : 3
         }
       }
     }
@@ -336,7 +336,7 @@ resource "ibm_database" "mysql_db" {
       dynamic "members" {
         for_each = var.remote_leader_crn == null ? [1] : []
         content {
-          allocation_count = var.members
+          allocation_count = local.is_gen2 ? 2 : 3
         }
       }
     }
