@@ -320,10 +320,7 @@ func TestRunFullyConfigurableWithKMSUpgradeSolution(t *testing.T) {
 	}
 }
 
-// Test the fully-configurable-gen2 DA with defaults (IBM owned encryption keys)
-func TestRunFullyConfigurableGen2SolutionSchematics(t *testing.T) {
-	t.Parallel()
-
+func setupFullyConfigurableGen2Options(t *testing.T, prefix string) (*testschematic.TestSchematicOptions, string) {
 	// ResourceGroup is intentionally not set so a unique group is created per run for this test.
 	// Independent backup policies may not be destroyed on failure, causing conflicts on re-runs within the same group.
 	options := testschematic.TestSchematicOptionsDefault(&testschematic.TestSchematicOptions{
@@ -333,9 +330,9 @@ func TestRunFullyConfigurableGen2SolutionSchematics(t *testing.T) {
 			fullyConfigurableGen2SolutionTerraformDir + "/*.tf",
 		},
 		TemplateFolder:             fullyConfigurableGen2SolutionTerraformDir,
-		Prefix:                     fmt.Sprintf("%s-gen2da", icdShortType),
+		Tags:                       []string{prefix},
+		Prefix:                     prefix,
 		DeleteWorkspaceOnFail:      false,
-		WaitJobCompleteMinutes:     60,
 		CheckApplyResultForUpgrade: true,
 	})
 
@@ -381,11 +378,37 @@ func TestRunFullyConfigurableGen2SolutionSchematics(t *testing.T) {
 		{Name: "mysql_version", Value: latestVersion, DataType: "string"}, // Always lock this test into the latest supported MySQL version
 	}
 
+	return options, uniqueResourceGroup
+}
+
+// Test the fully-configurable-gen2 DA with defaults (IBM owned encryption keys)
+func TestRunFullyConfigurableGen2SolutionSchematics(t *testing.T) {
+	t.Parallel()
+
+	options, uniqueResourceGroup := setupFullyConfigurableGen2Options(t, fmt.Sprintf("%s-gen2da", icdShortType))
+	options.WaitJobCompleteMinutes = 60
+
 	err := sharedInfoSvc.WithNewResourceGroup(uniqueResourceGroup, func() error {
 		return options.RunSchematicTest()
 	})
 	assert.Nil(t, err, "This should not have errored")
 }
+
+// Upgrade test the fully-configurable-gen2 DA
+func TestRunFullyConfigurableGen2UpgradeSolutionSchematics(t *testing.T) {
+	t.Parallel()
+
+	options, uniqueResourceGroup := setupFullyConfigurableGen2Options(t, fmt.Sprintf("%s-gen2upg", icdShortType))
+	options.WaitJobCompleteMinutes = 120
+
+	err := sharedInfoSvc.WithNewResourceGroup(uniqueResourceGroup, func() error {
+		return options.RunSchematicUpgradeTest()
+	})
+	if !options.UpgradeTestSkipped {
+		assert.Nil(t, err, "This should not have errored")
+	}
+}
+
 func TestRunUpgradeCompleteExample(t *testing.T) {
 	t.Parallel()
 
