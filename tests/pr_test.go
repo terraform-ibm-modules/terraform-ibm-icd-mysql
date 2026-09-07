@@ -330,7 +330,6 @@ func setupFullyConfigurableGen2Options(t *testing.T, prefix string) (*testschema
 			fullyConfigurableGen2SolutionTerraformDir + "/*.tf",
 		},
 		TemplateFolder:             fullyConfigurableGen2SolutionTerraformDir,
-		Tags:                       []string{prefix},
 		Prefix:                     prefix,
 		DeleteWorkspaceOnFail:      false,
 		CheckApplyResultForUpgrade: true,
