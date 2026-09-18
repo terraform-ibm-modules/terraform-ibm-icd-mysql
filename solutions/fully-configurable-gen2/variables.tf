@@ -77,12 +77,6 @@ variable "mysql_version" {
 # ICD hosting model properties
 ##############################################################################
 
-variable "members" {
-  type        = number
-  description = "The number of members that are allocated. [Learn more](https://cloud.ibm.com/docs/databases-for-mysql-gen2?topic=databases-for-mysql-gen2-resources-scaling&interface=ui)."
-  default     = 3
-}
-
 variable "member_memory_mb" {
   type        = number
   description = "The memory per member that is allocated. For Gen2, memory is determined by `member_host_flavor`. [Learn more](https://cloud.ibm.com/docs/databases-for-mysql-gen2?topic=databases-for-mysql-gen2-resources-scaling&interface=ui)"

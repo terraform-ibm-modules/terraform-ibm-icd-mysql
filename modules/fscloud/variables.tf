@@ -40,12 +40,6 @@ variable "remote_leader_crn" {
 # ICD hosting model properties
 ##############################################################################
 
-variable "members" {
-  type        = number
-  description = "Allocated number of members. Members can be scaled up but not down."
-  default     = 3
-}
-
 variable "cpu_count" {
   type        = number
   description = "Allocated dedicated CPU per member. For shared CPU, set to 0. For more information, see https://cloud.ibm.com/docs/databases-for-mysql?topic=databases-for-mysql-resources-scaling"

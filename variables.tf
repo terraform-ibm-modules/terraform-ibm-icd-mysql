@@ -53,13 +53,6 @@ variable "remote_leader_crn" {
 # ICD hosting model properties
 ##############################################################################
 
-variable "members" {
-  type        = number
-  description = "Allocated number of members. Members can be scaled up but not down."
-  default     = 3
-  # Validation is done in terraform plan phase by IBM provider, so no need to add any extra validation here
-}
-
 variable "cpu_count" {
   type        = number
   description = "Allocated dedicated CPU per member. For shared CPU, set to 0. [Learn more](https://cloud.ibm.com/docs/databases-for-mysql?topic=databases-for-mysql-resources-scaling)"

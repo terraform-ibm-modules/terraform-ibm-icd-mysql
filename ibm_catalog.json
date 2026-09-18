@@ -80,6 +80,15 @@
               ],
               "service_name": "kms",
               "notes": "[Optional] Editor access is required to create keys. It is only required when using Key Protect for encryption."
+            },
+            {
+              "role_crns": [
+                "crn:v1:bluemix:public:iam::::role:Operator",
+                "crn:v1:bluemix:public:iam::::serviceRole:Writer",
+                "crn:v1:bluemix:public:iam::::serviceRole:Manager"
+              ],
+              "service_name": "secrets-manager",
+              "notes": "[Optional] Required to write service credentials to an existing IBM Cloud Secrets Manager instance. 'Manager' access is required if new secret groups need to be created."
             }
           ],
           "architecture": {
@@ -200,9 +209,6 @@
                   "type": "string"
                 }
               }
-            },
-            {
-              "key": "members"
             },
             {
               "key": "member_memory_mb"
@@ -505,6 +511,15 @@
               ],
               "service_name": "kms",
               "notes": "[Optional] Editor access is required to create keys. It is only required when using Key Protect for encryption."
+            },
+            {
+              "role_crns": [
+                "crn:v1:bluemix:public:iam::::role:Operator",
+                "crn:v1:bluemix:public:iam::::serviceRole:Writer",
+                "crn:v1:bluemix:public:iam::::serviceRole:Manager"
+              ],
+              "service_name": "secrets-manager",
+              "notes": "[Optional] Required to write service credentials to an existing IBM Cloud Secrets Manager instance. 'Manager' access is required if new secret groups need to be created."
             }
           ],
           "architecture": {
@@ -610,9 +625,6 @@
                   "type": "string"
                 }
               }
-            },
-            {
-              "key": "members"
             },
             {
               "key": "member_memory_mb"
