@@ -753,6 +753,9 @@
               "key": "skip_mysql_kms_auth_policy"
             },
             {
+              "key": "skip_independent_backup_policies"
+            },
+            {
               "key": "existing_mysql_instance_crn",
               "display_name": "existing_mysql_instance",
               "custom_config": {
