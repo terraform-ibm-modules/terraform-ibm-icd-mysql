@@ -309,7 +309,7 @@ func TestRunFullyConfigurableWithKMSUpgradeSolution(t *testing.T) {
 		{Name: "admin_pass_secrets_manager_secret_name", Value: options.Prefix, DataType: "string"},
 		{Name: "admin_pass", Value: common.GetRandomPasswordWithPrefix(), DataType: "string"},
 		{Name: "kms_encryption_enabled", Value: true, DataType: "bool"},
-		{Name: "existing_kms_instance_crn", Value: permanentResources["kp_us_south_crn"], DataType: "string"},
+		{Name: "existing_kms_instance_crn", Value: permanentResources["kp_multitenant_us_south_crn"], DataType: "string"},
 		{Name: "mysql_version", Value: latestVersion, DataType: "string"}, // Always lock this test into the latest supported MySQL version
 	}
 	err := sharedInfoSvc.WithNewResourceGroup(uniqueResourceGroup, func() error {
@@ -373,7 +373,7 @@ func setupFullyConfigurableGen2Options(t *testing.T, prefix string) (*testschema
 		{Name: "service_credential_secrets", Value: serviceCredentialSecrets, DataType: "list(object)"},
 		{Name: "existing_secrets_manager_instance_crn", Value: permanentResources["secretsManagerCRN"], DataType: "string"},
 		{Name: "kms_encryption_enabled", Value: true, DataType: "bool"},
-		{Name: "existing_kms_instance_crn", Value: permanentResources["kp_us_south_crn"], DataType: "string"},
+		{Name: "existing_kms_instance_crn", Value: permanentResources["kp_multitenant_us_south_crn"], DataType: "string"},
 		{Name: "mysql_version", Value: latestVersion, DataType: "string"}, // Always lock this test into the latest supported MySQL version
 	}
 
@@ -474,7 +474,7 @@ func TestPlanValidation(t *testing.T) {
 	// Test the DA when using an existing KMS instance
 	var fullyConfigurableWithExistingKms = map[string]interface{}{
 		"access_tags":               permanentResources["accessTags"],
-		"existing_kms_instance_crn": permanentResources["kp_us_south_crn"],
+		"existing_kms_instance_crn": permanentResources["kp_multitenant_us_south_crn"],
 		"kms_encryption_enabled":    true,
 	}
 
