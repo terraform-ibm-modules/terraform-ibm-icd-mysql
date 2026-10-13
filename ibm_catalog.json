@@ -746,7 +746,7 @@
               "key": "skip_mysql_kms_auth_policy"
             },
             {
-              "key": "skip_independent_backup_policies"
+              "key": "skip_independent_backup_auth_policies"
             },
             {
               "key": "existing_mysql_instance_crn",
