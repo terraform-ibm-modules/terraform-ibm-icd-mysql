@@ -218,7 +218,7 @@ variable "kms_endpoint_type" {
 
 variable "skip_mysql_kms_auth_policy" {
   type        = bool
-  description = "Whether to create an IAM authorization policy that permits all Databases for MySQL instances in the resource group to read the encryption key from the Key Protect instance specified in the `existing_kms_instance_crn` variable."
+  description = "Whether to skip the creation of IAM authorization policies for the MySQL instance. When set to false (default) and `kms_encryption_enabled` is true, a policy that permits all Databases for MySQL instances in the resource group 'Reader' access to the encryption key from the Key Protect instance specified in the `existing_kms_instance_crn` variable (required for KMS encryption) is created. Skip only if one already exists in your account."
   default     = false
 }
 
