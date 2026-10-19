@@ -646,6 +646,19 @@
               "key": "member_host_flavor"
             },
             {
+              "key": "configuration",
+              "custom_config": {
+                "type": "code_editor",
+                "grouping": "deployment",
+                "original_grouping": "deployment",
+                "config_constraints": {
+                  "supportedLanguages": [
+                    "hcl"
+                  ]
+                }
+              }
+            },
+            {
               "key": "deletion_protection"
             },
             {
