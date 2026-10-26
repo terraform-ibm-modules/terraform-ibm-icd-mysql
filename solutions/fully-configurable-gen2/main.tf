@@ -172,7 +172,7 @@ data "ibm_database" "existing_db_instance" {
   count             = var.existing_mysql_instance_crn != null ? 1 : 0
   name              = data.ibm_resource_instance.existing_instance_resource[0].name
   resource_group_id = data.ibm_resource_instance.existing_instance_resource[0].resource_group_id
-  location          = var.region
+  location          = data.ibm_resource_instance.existing_instance_resource[0].location
   service           = "databases-for-mysql"
 }
 
