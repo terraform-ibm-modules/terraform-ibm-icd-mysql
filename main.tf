@@ -267,7 +267,7 @@ resource "ibm_database" "mysql_db" {
   remote_leader_id            = var.remote_leader_crn
 
   # remove elements with null values: see https://github.com/terraform-ibm-modules/terraform-ibm-icd-postgresql/issues/273
-  configuration                        = var.configuration != null ? jsonencode({ for k, v in var.configuration : k => v if v != null }) : null
+  configuration                        = local.is_gen2 ? (var.configuration_gen2 != null ? jsonencode({ for k, v in var.configuration_gen2 : k => v if v != null }) : null) : (var.configuration != null ? jsonencode({ for k, v in var.configuration : k => v if v != null }) : null)
   point_in_time_recovery_deployment_id = var.pitr_id
   point_in_time_recovery_time          = var.pitr_time
 
