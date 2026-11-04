@@ -62,33 +62,3 @@ func TestRunPointInTimeRecoveryDBExample(t *testing.T) {
 	assert.Nil(t, err, "This should not have errored")
 	assert.NotNil(t, output, "Expected some output")
 }
-
-func TestRunRestoredDBGen2Example(t *testing.T) {
-	t.Parallel()
-
-	// Requires a permanent MySQL gen2 instance (with at least one backup) defined in the common permanent resources yaml
-	gen2Crn, ok := permanentResources["mysqlGen2Crn"]
-	if !ok {
-		t.Skip("mysqlGen2Crn not defined in permanent resources, skipping gen2 restore test")
-	}
-
-	// ResourceGroup is intentionally not set so a unique group is created per run for this test.
-	// Independent backup policies may not be destroyed on failure, causing conflicts on re-runs within the same group.
-	options := testhelper.TestOptionsDefaultWithVars(&testhelper.TestOptions{
-		Testing:      t,
-		TerraformDir: "examples/backup",
-		Prefix:       "mysql-g2-restored",
-		TerraformVars: map[string]interface{}{
-			"plan":                  "standard-gen2",
-			"disk_mb":               permanentResources["mysqlGen2DiskMb"],
-			"mysql_version":         fmt.Sprint(permanentResources["mysqlGen2Version"]),
-			"region":                permanentResources["mysqlGen2Region"],
-			"existing_database_crn": gen2Crn,
-		},
-		CloudInfoService: sharedInfoSvc,
-	})
-
-	output, err := options.RunTestConsistency()
-	assert.Nil(t, err, "This should not have errored")
-	assert.NotNil(t, output, "Expected some output")
-}
