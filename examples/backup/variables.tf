@@ -30,7 +30,7 @@ variable "plan" {
 
 variable "disk_mb" {
   type        = number
-  description = "The disk that is allocated per member. [Learn more](https://cloud.ibm.com/docs/databases-for-mysql?topic=databases-for-mysql-resources-scaling)"
+  description = "The disk that is allocated per member. [Learn more](https://cloud.ibm.com/docs/databases-for-mysql-gen2?topic=databases-for-mysql-gen2-resources-scaling&utm_source=chatgpt.com&interface=ui)"
   default     = 10240
   # Validation is done in the Terraform plan phase by the IBM provider, so no need to add extra validation here.
 }
