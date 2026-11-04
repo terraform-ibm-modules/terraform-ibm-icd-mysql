@@ -9,8 +9,28 @@
 </p>
 <!-- END SCHEMATICS DEPLOY HOOK -->
 
-This example provides an end-to-end executable flow of how a MySQL DB can be created from a backup instance. This example uses the IBM Cloud terraform provider to:
+This example provides an end-to-end executable flow of how a MySQL instance can be restored from a backup. It supports both classic and Gen2 plans. This example uses the IBM Cloud Terraform provider to:
 
 - Create a new resource group if one is not passed in.
-- Create a new ICD MySQL database instance if no existing backup crn is provided.
-- Create a restored ICD MySQL database instance pointing to the backup of the first instance.
+- Look up the latest available backup of an existing MySQL instance using the `ibm_database_backups` data source.
+- Create a restored ICD MySQL instance from that backup.
+
+## Classic restore
+
+Set `plan` to a classic plan (e.g. `standard`) and provide the CRN of an existing **classic** MySQL instance via `existing_database_crn`. The `member_host_flavor` is automatically set to `multitenant`.
+
+## Gen2 restore
+
+Set `plan` to a Gen2 plan (e.g. `standard-gen2`) and provide the CRN of an existing **Gen2** MySQL instance via `existing_database_crn`. The `member_host_flavor` is automatically set to `bx3d.4x20`.
+
+The `ibm_database_backups` data source returns backups for the given deployment. For Gen2 instances, the backup CRN is in the `databases-independent-backups` format:
+
+```
+crn:v1:bluemix:public:databases-independent-backups:<region>:a/<account-id>:<backup-id>::
+```
+
+For classic instances, the backup CRN is in the legacy format:
+
+```
+crn:v1:bluemix:public:databases-for-mysql:<region>:a/<account-id>:<instance-id>:backup:<backup-id>
+```

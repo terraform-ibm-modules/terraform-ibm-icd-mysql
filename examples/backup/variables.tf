@@ -22,6 +22,19 @@ variable "mysql_version" {
   default     = null
 }
 
+variable "plan" {
+  type        = string
+  description = "The name of the service plan that you choose for your MySQL instance. Use a `-gen2` plan (e.g. `standard-gen2`) to restore a Gen2 backup."
+  default     = "standard"
+}
+
+variable "disk_mb" {
+  type        = number
+  description = "The disk that is allocated per member. [Learn more](https://cloud.ibm.com/docs/databases-for-mysql?topic=databases-for-mysql-resources-scaling)"
+  default     = 10240
+  # Validation is done in the Terraform plan phase by the IBM provider, so no need to add extra validation here.
+}
+
 variable "resource_group" {
   type        = string
   description = "An existing resource group name to use for this example, if unset a new resource group will be created"
@@ -42,6 +55,6 @@ variable "access_tags" {
 
 variable "existing_database_crn" {
   type        = string
-  description = "The existing CRN of a backup resource to restore from. If null then it will create a new instance first and then create another instance pointing to the backup of the first instance."
+  description = "The existing CRN of a MySQL instance to fetch the latest backup CRN from."
   default     = null
 }
