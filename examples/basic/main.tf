@@ -16,6 +16,11 @@ locals {
       name     = "mysql_writer"
       role     = "Writer"
       endpoint = local.endpoint_type
+    },
+    {
+      name     = "mysql_reader"
+      role     = "Reader"
+      endpoint = local.endpoint_type
     }
   ]
 

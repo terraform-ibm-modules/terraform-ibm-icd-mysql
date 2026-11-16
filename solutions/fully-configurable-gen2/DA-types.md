@@ -16,7 +16,7 @@ You can specify a set of IAM credentials to connect to the database with the `se
 ### Options for service_credential_names
 
 - `name` (required): A unique human-readable name that identifies this resource key.
-- `role` (optional, default = `Writer`): The IAM service role assigned to the credential. Valid values for Gen2 are `Manager` and `Writer`.
+- `role` (optional, default = `Writer`): The IAM service role assigned to the credential. Valid values for Gen2 are `Manager`, `Writer` and `Reader`.
 - `endpoint` (optional, default = `private`): The endpoint type for the resource key. For Gen2, this must be `private`.
 
 ### Example service credentials
