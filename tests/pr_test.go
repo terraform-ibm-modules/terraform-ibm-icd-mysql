@@ -362,6 +362,11 @@ func setupFullyConfigurableGen2Options(t *testing.T, prefix string) (*testschema
 			"role":     "Manager",
 			"endpoint": "private",
 		},
+		{
+			"name":     "mysql-reader",
+			"role":     "Reader",
+			"endpoint": "private",
+		},
 	}
 
 	latestVersion, _ := GetVersionsGen2("eu-de", "standard-gen2")
